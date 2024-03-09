@@ -1,0 +1,135 @@
+[
+  {
+    "id": 1,
+    "title": "Pantalon Babucha",
+    "description": "descripción de Pantalon Babucha",
+    "category": "pantalones",
+    "price": 16500,
+    "thumbnails": [
+      "public\\img\\babucha.webp"
+    ],
+    "code": "AAA123",
+    "stock": 5,
+    "status": true
+  },
+  {
+    "id": 2,
+    "title": "Pantalon Jeans",
+    "description": "descripción de Pantalon Jeans",
+    "category": "pantalones",
+    "price": 20000,
+    "thumbnails": [
+      "public\\img\\jeans.webp"
+    ],
+    "code": "BBB123",
+    "stock": 10,
+    "status": true
+  },
+  {
+    "id": 3,
+    "title": "Pantalon Joggers",
+    "description": "descripción de Pantalon Joggers",
+    "category": "pantalones",
+    "price": 15500,
+    "thumbnails": [
+      "public\\img\\joggers.webp"
+    ],
+    "code": "CCC123",
+    "stock": 8,
+    "status": true
+  },
+  {
+    "id": 4,
+    "title": "Pantalon Baggy",
+    "description": "descripción de Pantalon Baggy",
+    "category": "pantalones",
+    "price": 15500,
+    "thumbnails": [
+      "public\\img\\baggy.webp"
+    ],
+    "code": "DDD123",
+    "stock": 3,
+    "status": true
+  },
+  {
+    "id": 5,
+    "title": "Buzo blue",
+    "description": "descripción de Buzo blue",
+    "category": "buzos",
+    "price": 16500,
+    "thumbnails": [
+      "public\\img\\buzo.webp"
+    ],
+    "code": "EEE123",
+    "stock": 12,
+    "status": true
+  },
+  {
+    "id": 6,
+    "title": "Buzo escoces",
+    "description": "descripción de Buzo escoces",
+    "category": "buzos",
+    "price": 16500,
+    "thumbnails": [],
+    "code": "FFF123",
+    "stock": 15,
+    "status": true
+  },
+  {
+    "id": 7,
+    "title": "Sweater grey",
+    "description": "descripción de Sweater grey",
+    "category": "buzos",
+    "price": 12500,
+    "thumbnails": [],
+    "code": "GGG123",
+    "stock": 18,
+    "status": true
+  },
+  {
+    "id": 8,
+    "title": "Canguro b&w",
+    "description": "descripción de Canguro b&w",
+    "category": "buzos",
+    "price": 16500,
+    "thumbnails": [],
+    "code": "HHH123",
+    "stock": 20,
+    "status": true
+  },
+  {
+    "id": 9,
+    "title": "Remera Tommy",
+    "description": "descripción de Remera Tommy",
+    "category": "remeras",
+    "price": 5000,
+    "thumbnails": [],
+    "code": "III123",
+    "stock": 5,
+    "status": true
+  },
+  {
+    "id": 10,
+    "title": "Campera chopera",
+    "description": "descripción de Campera chopera",
+    "category": "camperas",
+    "price": 35000,
+    "thumbnails": [],
+    "code": "JJJ123",
+    "stock": 3,
+    "status": true
+  },
+  {
+    "id": 11,
+    "title": "camisa",
+    "description": "descripcion de camisa",
+    "category": "camisas",
+    "price": 15000,
+    "code": "ZZZ123",
+    "stock": 10,
+    "thumbnails": [
+      "public\\img\\camisa.webp"
+    ],
+    "status": true
+  }
+]
