@@ -1,5 +1,6 @@
 import fs from "fs";
 import { generateNewId } from "../middleware/idGenerator.js";
+import { readFromFile, writeToFile } from "../middleware/fileManager.js";
 
 export default class CartManager {
   constructor(path) {
@@ -9,17 +10,12 @@ export default class CartManager {
   }
 
   async init() {
-    try {
-      const data = await fs.promises.readFile(this.path, "utf-8");
-      this.carts = JSON.parse(data);
-    } catch (error) {
-      console.error("Error al cargar los carritos:", error);
-    }
+    this.carts = await readFromFile(this.path);
   }
 
   async addCart() {
     try {
-      const newCart = { id: this.generateNewId(), products: [] };
+      const newCart = { id: generateNewId(this.carts), products: [] };
       this.carts.push(newCart);
       await this.saveCarts();
       return newCart;
@@ -28,17 +24,12 @@ export default class CartManager {
     }
   }
 
-  generateNewId() {
-    return generateNewId(this.carts);
+  async saveCarts() {
+    await writeToFile(this.path, this.carts);
   }
 
-  async saveCarts() {
-    try {
-      const data = JSON.stringify(this.carts, null, 2);
-      await fs.promises.writeFile(this.path, data);
-    } catch (error) {
-      console.error("Error al guardar los carritos:", error);
-    }
+  async getCarts() {
+    return this.carts;
   }
 
   getCart(cartId) {

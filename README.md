@@ -1,9 +1,9 @@
-# Curso "Programación Backend" - Entrega 3
+# Curso "Programación Backend" - Final Entrega 1
 
 ### Clonar el repositorio:
 
 ```bash
-git clone https://github.com/juanfreille/backend-entrega-03
+git clone https://github.com/juanfreille/backend-final
 ```
 
 ### Instalar dependencias:

@@ -1,5 +1,4 @@
 export function generateNewId(items) {
-  return (
-    items.reduce((maxId, item) => (item.id > maxId ? item.id : maxId), 0) + 1
-  );
+  const maxId = items.reduce((max, item) => (item.id > max ? item.id : max), 0);
+  return maxId + 1;
 }

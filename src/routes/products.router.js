@@ -2,6 +2,10 @@ import express from "express";
 import ProductManager from "../controller/ProductManager.js";
 import { uploader } from "../middleware/utils.js";
 import { validateFields } from "../middleware/productValidator.js";
+import {
+  handleInternalServerError,
+  handleNotFoundError,
+} from "../middleware/errorHandlers.js";
 
 const router = express.Router();
 const productManager = new ProductManager("./data/products.json");
@@ -20,7 +24,7 @@ async function getAllProducts(req, res) {
     res.json(limitedProducts);
   } catch (error) {
     console.error("Error al obtener productos:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    handleInternalServerError(res, error);
   }
 }
 
@@ -29,12 +33,12 @@ async function getProductById(req, res) {
     const productId = parseInt(req.params.productId);
     const product = await productManager.getProductById(productId);
     if (!product) {
-      res.status(404).send("Producto no encontrado");
+      handleNotFoundError(res, "Producto no encontrado");
     } else {
       res.json(product);
     }
   } catch (error) {
-    handleErrors(res, error);
+    handleInternalServerError(res, error);
   }
 }
 
@@ -49,7 +53,7 @@ async function addProduct(req, res) {
     await productManager.addProduct(product);
     res.json(product);
   } catch (error) {
-    handleErrors(res, error);
+    handleInternalServerError(res, error);
   }
 }
 
@@ -94,7 +98,7 @@ async function updateProduct(req, res) {
 
     res.json(updatedProduct);
   } catch (error) {
-    handleErrors(res, error);
+    handleInternalServerError(res, error);
   }
 }
 
@@ -106,11 +110,6 @@ async function deleteProduct(req, res) {
   } catch (error) {
     handleErrors(res, error);
   }
-}
-
-function handleErrors(res, error) {
-  console.error("Error:", error);
-  res.status(500).json({ error: "Error interno del servidor" });
 }
 
 export default router;

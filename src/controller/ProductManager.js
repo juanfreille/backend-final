@@ -1,5 +1,6 @@
 import fs from "fs";
 import { generateNewId } from "../middleware/idGenerator.js";
+import { readFromFile, writeToFile } from "../middleware/fileManager.js";
 
 export default class ProductManager {
   constructor(path) {
@@ -9,12 +10,7 @@ export default class ProductManager {
   }
 
   async init() {
-    try {
-      const data = await fs.promises.readFile(this.path, "utf-8");
-      this.products = JSON.parse(data);
-    } catch (error) {
-      console.error("Error al cargar los productos:", error);
-    }
+    this.products = await readFromFile(this.path);
   }
 
   async addProduct(product) {
@@ -25,7 +21,7 @@ export default class ProductManager {
     }
 
     const newProduct = {
-      id: this.generateNewId(),
+      id: generateNewId(this.products),
       ...product,
       status: true,
     };
@@ -33,10 +29,6 @@ export default class ProductManager {
     await this.saveProducts();
     console.log("Producto agregado:", newProduct);
     return true;
-  }
-
-  generateNewId() {
-    return generateNewId(this.products);
   }
 
   async getProducts() {
@@ -64,11 +56,6 @@ export default class ProductManager {
   }
 
   async saveProducts() {
-    try {
-      const data = JSON.stringify(this.products, null, 2);
-      await fs.promises.writeFile(this.path, data);
-    } catch (error) {
-      console.error("Error al guardar los productos:", error);
-    }
+    await writeToFile(this.path, this.products);
   }
 }

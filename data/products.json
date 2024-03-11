@@ -5,11 +5,11 @@
     "description": "descripción de Pantalon Babucha",
     "category": "pantalones",
     "price": 16500,
+    "code": "AAA123",
+    "stock": 5,
     "thumbnails": [
       "public\\img\\babucha.webp"
     ],
-    "code": "AAA123",
-    "stock": 5,
     "status": true
   },
   {
@@ -18,11 +18,11 @@
     "description": "descripción de Pantalon Jeans",
     "category": "pantalones",
     "price": 20000,
+    "code": "BBB123",
+    "stock": 10,
     "thumbnails": [
       "public\\img\\jeans.webp"
     ],
-    "code": "BBB123",
-    "stock": 10,
     "status": true
   },
   {
@@ -31,11 +31,11 @@
     "description": "descripción de Pantalon Joggers",
     "category": "pantalones",
     "price": 15500,
+    "code": "CCC123",
+    "stock": 8,
     "thumbnails": [
       "public\\img\\joggers.webp"
     ],
-    "code": "CCC123",
-    "stock": 8,
     "status": true
   },
   {
@@ -44,11 +44,11 @@
     "description": "descripción de Pantalon Baggy",
     "category": "pantalones",
     "price": 15500,
+    "code": "DDD123",
+    "stock": 3,
     "thumbnails": [
       "public\\img\\baggy.webp"
     ],
-    "code": "DDD123",
-    "stock": 3,
     "status": true
   },
   {
@@ -57,11 +57,11 @@
     "description": "descripción de Buzo blue",
     "category": "buzos",
     "price": 16500,
+    "code": "EEE123",
+    "stock": 12,
     "thumbnails": [
       "public\\img\\buzo.webp"
     ],
-    "code": "EEE123",
-    "stock": 12,
     "status": true
   },
   {
@@ -70,9 +70,9 @@
     "description": "descripción de Buzo escoces",
     "category": "buzos",
     "price": 16500,
-    "thumbnails": [],
     "code": "FFF123",
     "stock": 15,
+    "thumbnails": [],
     "status": true
   },
   {
@@ -81,9 +81,9 @@
     "description": "descripción de Sweater grey",
     "category": "buzos",
     "price": 12500,
-    "thumbnails": [],
     "code": "GGG123",
     "stock": 18,
+    "thumbnails": [],
     "status": true
   },
   {
@@ -92,9 +92,9 @@
     "description": "descripción de Canguro b&w",
     "category": "buzos",
     "price": 16500,
-    "thumbnails": [],
     "code": "HHH123",
     "stock": 20,
+    "thumbnails": [],
     "status": true
   },
   {
@@ -103,9 +103,9 @@
     "description": "descripción de Remera Tommy",
     "category": "remeras",
     "price": 5000,
-    "thumbnails": [],
     "code": "III123",
     "stock": 5,
+    "thumbnails": [],
     "status": true
   },
   {
@@ -114,9 +114,9 @@
     "description": "descripción de Campera chopera",
     "category": "camperas",
     "price": 35000,
-    "thumbnails": [],
     "code": "JJJ123",
     "stock": 3,
+    "thumbnails": [],
     "status": true
   },
   {
