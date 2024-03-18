@@ -4,5 +4,9 @@ export function handleInternalServerError(res, error) {
 }
 
 export function handleNotFoundError(res, message) {
-  res.status(404).send(message);
+  res.status(404).json({ error: message });
+}
+
+export function handleBadRequestError(res, message) {
+  res.status(400).json({ error: message });
 }

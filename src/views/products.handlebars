@@ -1,0 +1,82 @@
+<div class="mx-auto px-4">
+  <div class="mx-auto my-2 text-center border-2 text-uppercase">
+    <h1>Tienda</h1>
+  </div>
+  {{#if products}}
+    <div class="row centrar no-selection">
+      {{#each products}}
+        <article class="col-6 col-xl-3 col-lg-4">
+          <div class="tarjeta thumb-wrapper">
+            <figure>
+              <div class="image-container">
+                <img
+                  class="card-img"
+                  src="{{this.thumbnails}}"
+                  alt="{{this.title}}"
+                />
+                <div class="mask"></div>
+                <figcaption>
+                  <button
+                    class="btn-detalles"
+                    data-id="{{this.id}}"
+                    data-title="{{this.title}}"
+                    data-description="{{this.description}}"
+                    data-category="{{this.category}}"
+                    data-price="{{this.price}}"
+                    data-code="{{this.code}}"
+                    data-stock="{{this.stock}}"
+                    data-thumbnails="{{this.thumbnails}}"
+                  >
+                    Ver Detalles
+                  </button>
+
+                </figcaption>
+              </div>
+            </figure>
+            <p>{{this.title}}</p>
+            <p>${{this.price}}</p>
+          </div>
+        </article>
+
+      {{/each}}
+    </div>
+  {{else}}
+    <h1 class="text-center md:mt-12 text-lg">No hay productos agregados por el
+      momento...</h1>
+  {{/if}}
+</div>
+
+<!-- MODAL DETALLES -->
+<div
+  class="modal fade"
+  id="detallesModal"
+  tabindex="-1"
+  aria-labelledby="detallesModalLabel"
+>
+  <div class="modal-dialog modal-dialog-mio modal-dialog-centered">
+    <div class="modal-content modal-content-mio" id="detallesModalLabel">
+      <div class="modal-header">
+        <h1 class="modal-title texto-xs"></h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <span id="productDetails">Detalles del producto</span>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary btn-mio"
+          data-dismiss="modal"
+        >Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts necesarios -->
+<script src="/js/modalScript.js"></script>

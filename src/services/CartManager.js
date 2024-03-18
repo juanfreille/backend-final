@@ -1,6 +1,5 @@
-import fs from "fs";
-import { generateNewId } from "../middleware/idGenerator.js";
-import { readFromFile, writeToFile } from "../middleware/fileManager.js";
+import { generateNewId } from "../middlewares/idGenerator.js";
+import { readFromFile, writeToFile } from "../middlewares/fileManager.js";
 
 export default class CartManager {
   constructor(path) {

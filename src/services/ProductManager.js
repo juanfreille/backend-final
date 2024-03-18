@@ -1,6 +1,5 @@
-import fs from "fs";
-import { generateNewId } from "../middleware/idGenerator.js";
-import { readFromFile, writeToFile } from "../middleware/fileManager.js";
+import { generateNewId } from "../middlewares/idGenerator.js";
+import { readFromFile, writeToFile } from "../middlewares/fileManager.js";
 
 export default class ProductManager {
   constructor(path) {
@@ -31,8 +30,11 @@ export default class ProductManager {
     return true;
   }
 
-  async getProducts() {
-    return this.products;
+  async getProducts(limit) {
+    const limitedProducts = limit
+      ? this.products.slice(0, limit)
+      : this.products;
+    return limitedProducts;
   }
 
   getProductById(id) {
@@ -51,8 +53,9 @@ export default class ProductManager {
   async deleteProduct(id) {
     const index = this.products.findIndex((product) => product.id === id);
     if (index === -1) return;
-    this.products.splice(index, 1);
+    const deletedProduct = this.products.splice(index, 1)[0];
     await this.saveProducts();
+    return deletedProduct;
   }
 
   async saveProducts() {

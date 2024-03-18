@@ -1,0 +1,34 @@
+<div class="mx-auto px-4">
+  <div class="mx-auto my-2 text-center border-2 text-uppercase">
+    <h1>Bienvenido</h1>
+  </div>
+
+  <section class="hero">
+    <div style="padding: 50px 0;">
+      <h2 style="font-size:4rem">Descubre el estilo urbano que te define</h2>
+      <p style="margin: 0 0 4rem 0 !important;">Explora nuestra colección y
+        encuentra lo último en moda urbana.</p>
+      <a
+        href="/products"
+        style="background-color: #fff; color: #333; padding: 10px 30px; border-radius: 5px; text-decoration: none;"
+      >Ver colección</a>
+    </div>
+  </section>
+
+  <section class="featured-products">
+    <h2>Productos Destacados</h2>
+    {{#if products}}
+      {{#each products}}
+        <div class="product">
+          <img src="{{this.thumbnails}}" alt="{{this.title}}" />
+          <h3>{{this.title}}</h3>
+          <p>${{this.price}}</p>
+          <a href="/products">Comprar</a>
+        </div>
+      {{/each}}
+    {{else}}
+      <h1 class="text-center md:mt-12 text-lg">No hay productos agregados por el
+        momento...</h1>
+    {{/if}}
+  </section>
+</div>

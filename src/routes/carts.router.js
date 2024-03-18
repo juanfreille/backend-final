@@ -1,9 +1,9 @@
 import express from "express";
-import CartManager from "../controller/CartManager.js";
+import CartManager from "../services/CartManager.js";
 import {
   handleInternalServerError,
   handleNotFoundError,
-} from "../middleware/errorHandlers.js";
+} from "../middlewares/errorHandlers.js";
 
 const router = express.Router();
 const cartManager = new CartManager("./data/carts.json");
