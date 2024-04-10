@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".btn-detalles").forEach((boton) => {
     boton.addEventListener("click", function () {
-      const id = this.getAttribute("data-id");
+      const _id = this.getAttribute("data-id");
       const title = this.getAttribute("data-title");
       const description = this.getAttribute("data-description");
       const category = this.getAttribute("data-category");
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const thumbnails = this.getAttribute("data-thumbnails");
 
       const productoItem = {
-        id: id,
+        _id: _id,
         title: title,
         description: description,
         category: category,
@@ -26,8 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function openModal(productoItem) {
-  const { id, title, description, category, price, code, stock, thumbnails } =
+  const { _id, title, description, category, price, code, stock, thumbnails } =
     productoItem;
+  const thumbnailSrc = thumbnails
+    ? `img/${thumbnails}`
+    : "img/noThumbnails.webp";
 
   document.getElementById("detallesModalLabel").innerHTML = `      
 
@@ -40,10 +43,10 @@ function openModal(productoItem) {
   <div class="modal-body">
     <div class="row">
       <div class="col-md-6">
-        <img src="${thumbnails}" alt="${title}" class="img-fluid">
+      <img src="${thumbnailSrc}" alt="${title}" class="img-fluid">
       </div>
       <div class="col-md-6">
-        <p>ID: ${id}</p>
+        <p>ID: ${_id}</p>
         <p>Precio: ${price}</p>
         <p>Stock disponible: ${stock}</p>
       </div>

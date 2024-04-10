@@ -1,63 +1,57 @@
 import express from "express";
-import CartManager from "../services/CartManager.js";
-import {
-  handleInternalServerError,
-  handleNotFoundError,
-} from "../middlewares/errorHandlers.js";
+import { productManagerFS } from "../dao/ProductManagerFS.js";
+import { CartManagerFS } from "../dao/CartManagerFS.js";
 
 const router = express.Router();
-const cartManager = new CartManager("./data/carts.json");
+const ProductService = new productManagerFS("data/products.json");
+const CartService = new CartManagerFS("data/carts.json", ProductService);
 
-router.get("/", getAllCarts);
-router.get("/:cartId", getCart);
-router.post("/", addCart);
-router.post("/:cartId/product/:productId", addProductToCart);
+router.get("/:cid", async (req, res) => {
+  try {
+    const result = await CartService.getProductsFromCartByID(req.params.cid);
+    res.send({
+      status: "success",
+      payload: result,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
 
-async function getAllCarts(req, res) {
+router.post("/", async (req, res) => {
   try {
-    const carts = await cartManager.getCarts();
-    res.json(carts);
+    const result = await CartService.createCart();
+    res.send({
+      status: "success",
+      payload: result,
+    });
   } catch (error) {
-    console.error("Error", error);
-    handleInternalServerError(res, error);
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
   }
-}
-async function getCart(req, res) {
-  try {
-    const cartId = parseInt(req.params.cartId);
-    const cart = cartManager.getCart(cartId);
-    if (!cart) {
-      handleNotFoundError(res, "Carrito no encontrado");
-    } else {
-      res.json(cart);
-    }
-  } catch (error) {
-    handleInternalServerError(res, error);
-  }
-}
+});
 
-async function addCart(req, res) {
+router.post("/:cid/product/:pid", async (req, res) => {
   try {
-    const newCart = await cartManager.addCart();
-    res.json(newCart);
+    const result = await CartService.addProductByID(
+      req.params.cid,
+      req.params.pid
+    );
+    res.send({
+      status: "success",
+      payload: result,
+    });
   } catch (error) {
-    handleInternalServerError(res, error);
+    res.status(400).send({
+      status: "error",
+      message: error.message,
+    });
   }
-}
-
-async function addProductToCart(req, res) {
-  try {
-    const cartId = parseInt(req.params.cartId);
-    const productId = parseInt(req.params.productId);
-    const updatedCart = await cartManager.addProductToCart(cartId, productId);
-    if (!updatedCart) {
-      handleNotFoundError(res, "Carrito no encontrado");
-    } else {
-      res.json(updatedCart);
-    }
-  } catch (error) {
-    handleInternalServerError(res, error);
-  }
-}
+});
 
 export default router;

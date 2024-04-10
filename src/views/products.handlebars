@@ -9,70 +9,43 @@
           <div class="tarjeta thumb-wrapper">
             <figure>
               <div class="image-container">
-                <img
-                  class="card-img"
-                  src="{{this.thumbnails}}"
-                  alt="{{this.title}}"
-                />
+                {{#if thumbnails}}
+                  <img class="card-img" src="img/{{thumbnails}}" alt="{{title}}"/>
+                {{else}}
+                  <img class="card-img" src="img/noThumbnails.webp" alt="{{title}}"/>
+                {{/if}}
                 <div class="mask"></div>
                 <figcaption>
-                  <button
-                    class="btn-detalles"
-                    data-id="{{this.id}}"
-                    data-title="{{this.title}}"
-                    data-description="{{this.description}}"
-                    data-category="{{this.category}}"
-                    data-price="{{this.price}}"
-                    data-code="{{this.code}}"
-                    data-stock="{{this.stock}}"
-                    data-thumbnails="{{this.thumbnails}}"
-                  >
-                    Ver Detalles
-                  </button>
-
+                  <button class="btn-detalles" data-id="{{_id}}" data-title="{{title}}" data-description="{{description}}"
+                  data-category="{{category}}" data-price="{{price}}" data-code="{{code}}" data-stock="{{stock}}"
+                    data-thumbnails="{{thumbnails}}">Ver Detalles</button>
                 </figcaption>
               </div>
             </figure>
-            <p>{{this.title}}</p>
-            <p>${{this.price}}</p>
+            <p>{{title}}</p>
+            <p>${{price}}</p>
           </div>
         </article>
-
       {{/each}}
     </div>
   {{else}}
-    <h1 class="text-center md:mt-12 text-lg">No hay productos agregados por el
-      momento...</h1>
+    <h1 class="text-center md:mt-12 text-lg">No hay productos</h1>
   {{/if}}
 </div>
 
 <!-- MODAL DETALLES -->
-<div
-  class="modal fade"
-  id="detallesModal"
-  tabindex="-1"
-  aria-labelledby="detallesModalLabel"
->
+<div class="modal fade" id="detallesModal" tabindex="-1" aria-labelledby="detallesModalLabel">
   <div class="modal-dialog modal-dialog-mio modal-dialog-centered">
     <div class="modal-content modal-content-mio" id="detallesModalLabel">
       <div class="modal-header">
         <h1 class="modal-title texto-xs"></h1>
-        <button
-          type="button"
-          class="btn-close"
-          data-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <span id="productDetails">Detalles del producto</span>
       </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-primary btn-mio"
-          data-dismiss="modal"
-        >Cerrar</button>
+        <button type="button" class="btn btn-primary btn-mio" data-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
@@ -80,3 +53,4 @@
 
 <!-- Scripts necesarios -->
 <script src="/js/modalScript.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

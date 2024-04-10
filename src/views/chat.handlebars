@@ -1,0 +1,25 @@
+<title>Chat</title>
+<div class="mx-auto my-2 text-center border-2 text-uppercase">
+  <h1>Chat de la tienda</h1>
+</div>
+<div class="container-mio">
+<aside class="py-3 aside-mio">
+  <h3 class="m-2 text-center text-white">Usuarios online</h3>
+  <hr />
+  <ul class="m-2" id="usersDB"></ul>
+</aside>
+<main class="container py-3" style="font-size: 18px;">
+      <section id="chat-container" class="rounded">
+        <div id="messages-history" class="bg-chat mb-3">
+            {{!-- Mensajes aca --}}
+        </div>
+        <form id="form" style="flex-wrap: nowrap;">
+          <input id="chat-message" class="form-control me-2" type="text" placeholder="Escribe tu mensaje aquí..." />
+          <button id="send-button" class="btn btn-primary" type="button"><i class="fas fa-paper-plane"></i>Enviar</button>
+        </form>
+      </section>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chatScript.js"></script>

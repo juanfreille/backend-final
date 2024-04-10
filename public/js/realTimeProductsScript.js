@@ -20,69 +20,76 @@ function showProducts(products) {
   });
 }
 
-socket.on("products", (data) => {
-  console.log("Lista de productos recibida del servidor:", data);
+socket.on("products", (products) => {
   emptyTable();
-  showProducts(data);
+  showProducts(products);
 });
 
 function createTableRow(product) {
   const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${product.id}</td>
+    <td>${product._id}</td>
     <td class="text-nowrap">${product.title}</td>
     <td>${product.description}</td>
     <td class="text-nowrap">$ ${product.price}</td>
     <td>${product.category}</td>
     <td>${product.stock}</td>
     <td>${product.code}</td>
-    <td><img src="${product.thumbnails[0]}" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
-    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${product.id}')">Eliminar</button></td>
+    <td><img src="${
+      product.thumbnails && product.thumbnails.length
+        ? "img/" + product.thumbnails[0]
+        : "img/noThumbnails.webp"
+    }" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
+    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${
+      product._id
+    }')">Eliminar</button></td>
   `;
   return row;
 }
 
 function deleteProduct(productId) {
-  const id = parseInt(productId);
+  const id = productId;
   console.log("ID del producto a eliminar:", id);
-  emptyTable();
-  socket.emit("delete", id);
+  confirmarEliminacionProducto(productId);
 }
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const price = parseFloat(document.getElementById("price").value);
-  const stock = parseInt(document.getElementById("stock").value);
   const fileInput = document.getElementById("thumbnails");
   const file = fileInput.files[0];
 
-  const formData = new FormData();
-  formData.append("title", document.getElementById("title").value);
-  formData.append("description", document.getElementById("description").value);
-  formData.append("category", document.getElementById("category").value);
-  formData.append("price", price);
-  formData.append("code", document.getElementById("code").value);
-  formData.append("stock", stock);
-  formData.append("thumbnails", file);
+  product = {
+    title: document.getElementById("title").value,
+    description: document.getElementById("description").value,
+    category: document.getElementById("category").value,
+    price: parseInt(document.getElementById("price").value),
+    code: document.getElementById("code").value,
+    stock: parseInt(document.getElementById("stock").value),
+    thumbnail: file,
+  };
 
   try {
-    const response = await fetch("/api/products", {
-      method: "POST",
-      body: formData,
-    });
+    const newProduct = product;
+    console.log(newProduct);
+    socket.emit("createProduct", newProduct);
 
-    if (!response.ok) {
-      throw new Error("Error al agregar el producto");
-    }
-
-    const newProduct = await response.json();
-
-    socket.emit("add", newProduct);
     const cancelButtonContainer = document.getElementById(
       "cancelButtonContainer"
     );
     cancelButtonContainer.style.display = "none";
+
+    Toastify({
+      text: `Producto agregado exitosamente`,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      avatar: "../img/check-mark.png",
+      style: {
+        background: "#96c93d",
+      },
+      stopOnFocus: true,
+    }).showToast();
   } catch (error) {
     console.error("Error al agregar el producto:", error);
   }
@@ -140,3 +147,43 @@ function showCancelButton() {
   );
   cancelButtonContainer.style.display = "block";
 }
+
+function confirmarEliminacionProducto(idProducto) {
+  const customAlertConfig = {
+    title: "Eliminar producto",
+    reverseButtons: true,
+    html: "<div class='modal-body'><p>¿Está seguro que desea eliminar producto?</p><p>Esta operación no puede ser revertida.</p></div>",
+    icon: "warning",
+    showCancelButton: true,
+    cancelButtonText: "Cancelar",
+    confirmButtonText: "Sí, eliminar producto",
+  };
+  customSwalert.fire(customAlertConfig).then((result) => {
+    if (result.isConfirmed) {
+      const id = idProducto;
+      console.log("ID del producto a eliminar:", id);
+      socket.emit("deleteProduct", id);
+      emptyTable();
+      Toastify({
+        text: "Producto eliminado exitosamente",
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        avatar: "../img/check-mark.png",
+        style: {
+          background: "#96c93d",
+        },
+        stopOnFocus: true,
+      }).showToast();
+    }
+  });
+}
+
+const customSwalert = Swal.mixin({
+  customClass: {
+    cancelButton: "swal2-deny swal2-styled btn px-5 mt-3 mx-1 btn-secondary",
+    confirmButton:
+      "swal2-deny swal2-styled btn px-5 mt-3 mx-1 btn-danger btn-delete",
+  },
+  buttonsStyling: false,
+});

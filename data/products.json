@@ -1,132 +1,141 @@
 [
-  {
-    "id": 1,
-    "title": "Pantalon Babucha",
-    "description": "Las babuchas son una prenda cómoda y relajada que combina funcionalidad y estilo. Confeccionadas con telas suaves y elásticas, estas prendas ofrecen una sensación de ligereza y libertad de movimiento.",
-    "category": "pantalones",
-    "price": 16500,
-    "code": "AAA123",
-    "stock": 5,
-    "thumbnails": [
-      "public\\img\\babucha.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 2,
-    "title": "Pantalon Jeans",
-    "description": "Los jeans son un clásico atemporal en el mundo de la moda, conocidos por su durabilidad y versatilidad. Este icónico pantalón ofrece un estilo casual y elegante que se adapta a una amplia gama de ocasiones, desde un día relajado en casa hasta una salida informal con amigos. ",
-    "category": "pantalones",
-    "price": 25000,
-    "code": "BBB123",
-    "stock": 5,
-    "thumbnails": [
-      "public\\img\\jeans.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 3,
-    "title": "Pantalon Joggers",
-    "description": "Los joggers son una opción de pantalones versátiles y cómodos, ideales tanto para el entrenamiento activo como para el uso diario. Diseñados con un ajuste holgado en la parte superior y un ajuste más ceñido en los tobillos, los joggers ofrecen libertad de movimiento y un estilo moderno y relajado.",
-    "category": "pantalones",
-    "price": 15500,
-    "code": "CCC123",
-    "stock": 8,
-    "thumbnails": [
-      "public\\img\\joggers.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 4,
-    "title": "Pantalon Baggy",
-    "description": "Los pantalones de tipo baggy son la elección perfecta para quienes buscan un estilo urbano y desenfadado. Con su corte amplio y suave, estos pantalones ofrecen una sensación de comodidad y libertad de movimiento incomparables.",
-    "category": "pantalones",
-    "price": 15500,
-    "code": "DDD123",
-    "stock": 3,
-    "thumbnails": [
-      "public\\img\\baggy.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 5,
-    "title": "Buzo blue",
-    "description": "Un buzo de algodón típico, una prenda clásica y versátil que ofrece comodidad y estilo en cualquier ocasión. Fabricado con suave algodón, este buzo proporciona una sensación acogedora y transpirable que es perfecta para el uso diario.",
-    "category": "buzos",
-    "price": 16500,
-    "code": "EEE123",
-    "stock": 12,
-    "thumbnails": [
-      "public\\img\\buzo.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 6,
-    "title": "Buzo escoces",
-    "description": "Este buzo es una prenda que evoca un estilo clásico y atemporal con un toque de elegancia rústica. Confeccionado con un tejido de patrón escocés, este buzo ofrece un aspecto distintivo y lleno de carácter.",
-    "category": "buzos",
-    "price": 16500,
-    "code": "FFF123",
-    "stock": 15,
-    "thumbnails": [
-      "public\\img\\camisa.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 7,
-    "title": "Sweater grey",
-    "description": "Este sweater es una prenda básica y versátil que ofrece un estilo sencillo y elegante. Confeccionado en un tono gris neutro, este sweater es fácil de combinar con una amplia variedad de atuendos y colores.",
-    "category": "buzos",
-    "price": 12500,
-    "code": "GGG123",
-    "stock": 18,
-    "thumbnails": [
-      "public\\img\\sweater.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 8,
-    "title": "Canguro b&w",
-    "description": "Una campera tipo canguro, o hoodie, es una prenda cómoda y funcional que ofrece un estilo informal y deportivo. La campera tipo canguro brinda comodidad y abrigo en condiciones climáticas frescas. Su estilo versátil permite usarla como una capa adicional sobre otras prendas o como una opción independiente para un look casual.",
-    "category": "buzos",
-    "price": 16500,
-    "code": "HHH123",
-    "stock": 20,
-    "thumbnails": [
-      "public\\img\\canguro.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 9,
-    "title": "Remera Tommy",
-    "description": "Esta remera es un símbolo de estilo clásico y atemporal. Confeccionada con algodón suave y de alta calidad, esta prenda ofrece comodidad y estilo en igual medida. Presenta el icónico logo de la marca Tommy Hilfiger, que añade un toque distintivo y elegante al diseño.",
-    "category": "remeras",
-    "price": 5000,
-    "code": "III123",
-    "stock": 5,
-    "thumbnails": [
-      "img/noThumbnails.webp"
-    ],
-    "status": true
-  },
-  {
-    "id": 10,
-    "title": "Campera chopera",
-    "description": "Es una prenda de estilo robusto y urbano que evoca una sensación de aventura y exploración. Inspirada en la moda motociclista, esta campera se caracteriza por su diseño resistente y su aspecto desgastado.",
-    "category": "camperas",
-    "price": 35000,
-    "code": "JJJ123",
-    "stock": 3,
-    "thumbnails": [
-      "img/noThumbnails.webp"
-    ],
-    "status": true
-  }
+	{
+		"id": 1,
+		"title": "Pantalon Babucha",
+		"description": "Las babuchas son una prenda cómoda y relajada que combina funcionalidad y estilo. Confeccionadas con telas suaves y elásticas, estas prendas ofrecen una sensación de ligereza y libertad de movimiento.",
+		"category": "pantalones",
+		"price": 16500,
+		"code": "AAA123",
+		"stock": 5,
+		"thumbnails": [
+			"babucha.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 2,
+		"title": "Pantalon Jeans",
+		"description": "Los jeans son un clásico atemporal en el mundo de la moda, conocidos por su durabilidad y versatilidad. Este icónico pantalón ofrece un estilo casual y elegante que se adapta a una amplia gama de ocasiones, desde un día relajado en casa hasta una salida informal con amigos. ",
+		"category": "pantalones",
+		"price": 25000,
+		"code": "BBB123",
+		"stock": 5,
+		"thumbnails": [
+			"jeans.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 3,
+		"title": "Pantalon Joggers",
+		"description": "Los joggers son una opción de pantalones versátiles y cómodos, ideales tanto para el entrenamiento activo como para el uso diario. Diseñados con un ajuste holgado en la parte superior y un ajuste más ceñido en los tobillos, los joggers ofrecen libertad de movimiento y un estilo moderno y relajado.",
+		"category": "pantalones",
+		"price": 30000,
+		"code": "CCC123",
+		"stock": 8,
+		"thumbnails": [],
+		"status": true
+	},
+	{
+		"id": 4,
+		"title": "Pantalon Baggy",
+		"description": "Los pantalones de tipo baggy son la elección perfecta para quienes buscan un estilo urbano y desenfadado. Con su corte amplio y suave, estos pantalones ofrecen una sensación de comodidad y libertad de movimiento incomparables.",
+		"category": "pantalones",
+		"price": 15500,
+		"code": "DDD123",
+		"stock": 3,
+		"thumbnails": [
+			"baggy.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 5,
+		"title": "Buzo blue",
+		"description": "Un buzo de algodón típico, una prenda clásica y versátil que ofrece comodidad y estilo en cualquier ocasión. Fabricado con suave algodón, este buzo proporciona una sensación acogedora y transpirable que es perfecta para el uso diario.",
+		"category": "buzos",
+		"price": 16500,
+		"code": "EEE123",
+		"stock": 12,
+		"thumbnails": [
+			"buzo.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 6,
+		"title": "Buzo escoces",
+		"description": "Este buzo es una prenda que evoca un estilo clásico y atemporal con un toque de elegancia rústica. Confeccionado con un tejido de patrón escocés, este buzo ofrece un aspecto distintivo y lleno de carácter.",
+		"category": "buzos",
+		"price": 16500,
+		"code": "FFF123",
+		"stock": 15,
+		"thumbnails": [
+			"camisa.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 7,
+		"title": "Sweater grey",
+		"description": "Este sweater es una prenda básica y versátil que ofrece un estilo sencillo y elegante. Confeccionado en un tono gris neutro, este sweater es fácil de combinar con una amplia variedad de atuendos y colores.",
+		"category": "buzos",
+		"price": 12500,
+		"code": "GGG123",
+		"stock": 18,
+		"thumbnails": [
+			"sweater.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 8,
+		"title": "Canguro b&w",
+		"description": "Una campera tipo canguro, o hoodie, es una prenda cómoda y funcional que ofrece un estilo informal y deportivo. La campera tipo canguro brinda comodidad y abrigo en condiciones climáticas frescas. Su estilo versátil permite usarla como una capa adicional sobre otras prendas o como una opción independiente para un look casual.",
+		"category": "buzos",
+		"price": 16500,
+		"code": "HHH123",
+		"stock": 20,
+		"thumbnails": [
+			"canguro.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 9,
+		"title": "Remera Tommy",
+		"description": "Esta remera es un símbolo de estilo clásico y atemporal. Confeccionada con algodón suave y de alta calidad, esta prenda ofrece comodidad y estilo en igual medida. Presenta el icónico logo de la marca Tommy Hilfiger, que añade un toque distintivo y elegante al diseño.",
+		"category": "remeras",
+		"price": 5000,
+		"code": "III123",
+		"stock": 5,
+		"thumbnails": [
+			"noThumbnails.webp"
+		],
+		"status": true
+	},
+	{
+		"id": 10,
+		"title": "Campera chopera",
+		"description": "Es una prenda de estilo robusto y urbano que evoca una sensación de aventura y exploración. Inspirada en la moda motociclista, esta campera se caracteriza por su diseño resistente y su aspecto desgastado.",
+		"category": "camperas",
+		"price": 26000,
+		"code": "JJJ123",
+		"stock": 3,
+		"thumbnails": [],
+		"status": true
+	},
+	{
+		"id": 11,
+		"title": "camisa",
+		"description": "Es una prenda clásica y elegante que presenta un diseño de cuadros o tartán tradicionalmente asociado con la cultura escocesa. Fabricada con algodón suave o tejidos similares, esta camisa ofrece una sensación cómoda y transpirable, ideal para diversas ocasiones.",
+		"code": "ZZZ123",
+		"price": 15000,
+		"status": true,
+		"stock": 10,
+		"category": "camisas",
+		"thumbnails": [
+			"camisa.webp"
+		]
+	}
 ]

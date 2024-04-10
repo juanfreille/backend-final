@@ -7,7 +7,7 @@
       <div class="form-items">
         <h3>Agregar nuevo producto</h3>
         <br />
-        <form id="formulario">
+        <form id="formulario" method="post" enctype="multipart/form-data">
           <div class="col-md-12 col-padding">
             <label for="title">Nombre</label>
             <input
@@ -15,7 +15,7 @@
               type="text"
               id="title"
               name="title"
-              required=""
+              required
             />
           </div>
           <div class="col-md-12 col-padding">
@@ -25,7 +25,7 @@
               type="text"
               id="description"
               name="description"
-              required=""
+              required
             />
           </div>
           <div class="col-md-12 split col-padding">
@@ -35,7 +35,7 @@
               type="text"
               id="category"
               name="category"
-              required=""
+              required
             />
           </div>
           <div class="col-md-12 split col-padding">
@@ -45,17 +45,17 @@
               type="number"
               id="price"
               name="price"
-              required=""
+              required
             />
           </div>
           <div class="col-md-12 split col-padding">
-            <label for="code">Codigo</label><br />
+            <label for="code">Código</label><br />
             <input
               class="form-control"
               type="text"
               id="code"
               name="code"
-              required=""
+              required
             />
           </div>
           <div class="col-md-12 split col-padding">
@@ -65,7 +65,7 @@
               type="number"
               id="stock"
               name="stock"
-              required=""
+              required
             />
           </div>
           <div class="col-md-12 col-padding">
@@ -92,16 +92,12 @@
             <button
               class="btn btn-effect btn-dark btn-jif bg-black zoomy"
               id="addProduct"
-              type="submit"
-            >
-              Agregar Producto
-            </button>
+              type="submit">Agregar Producto</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-
   <div>
     <h1 class="text-uppercase">Lista de productos en tiempo real</h1>
   </div>
@@ -127,4 +123,7 @@
 
 <!-- Scripts necesarios -->
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/realTimeProductsScript.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>
