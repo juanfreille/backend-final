@@ -9,7 +9,7 @@ const leaveButton = document.getElementById("leaveButton");
 let currentUser;
 let userColors = {};
 chatBox.disabled = true;
-
+sendButton.disabled = true;
 joinButton.addEventListener("click", joinChat);
 leaveButton.addEventListener("click", leaveChat);
 
@@ -40,6 +40,7 @@ function joinChat() {
       currentUser = email;
       socket.emit("registerEmail", email);
       chatBox.disabled = false;
+      sendButton.disabled = false;
     }
   });
 }
@@ -58,6 +59,7 @@ function leaveChat() {
   leaveButton.style.display = "none";
   userDbHTML.innerHTML = "";
   chatBox.disabled = true;
+  sendButton.disabled = true;
 }
 
 function connectSocket() {
