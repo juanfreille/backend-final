@@ -4,13 +4,12 @@ import { messageService } from "./services/messageService.js";
 
 const ProductService = new productManagerDB();
 let users = [];
-let usersDB = [];
 
 export default (io) => {
   io.on("connection", handleConnection);
 
   async function handleConnection(socket) {
-    console.log(`Nuevo cliente conectado ${socket.id}`);
+    console.log(`Nuevo cliente conectado: ${socket.id}`);
     emitProducts(socket);
 
     socket.on("createProduct", async (product) => {
@@ -22,7 +21,7 @@ export default (io) => {
     socket.on("message", async (data) => {
       await messageService.saveMessage(data);
       const messages = await messageModel.find().lean();
-      socket.emit("messagesLogs", messages);
+      io.emit("messagesLogs", messages);
     });
 
     const messages = await messageModel.find().lean();
@@ -31,22 +30,27 @@ export default (io) => {
       console.log(users);
       io.emit("updateUserList", users);
       socket.emit("messagesLogs", messages);
-      socket.emit("activ-user", users);
-      socket.broadcast.emit("newUser", data);
+      socket.broadcast.emit("newUser", `${data} se ha unido al chat`);
     });
     socket.on("registerEmail", (email) => {
-      if (usersDB.includes(email)) {
+      console.log(email);
+      if (users.map((user) => user.name).includes(email)) {
+        console.log("ya existe");
         socket.emit("registerResponse", {
           success: false,
-          message: `El email ${email} ya se encuentra registrado`,
+          message: `El email ${email} ya está registrado`,
         });
       } else {
-        usersDB.push(email);
+        console.log("nuevo usuario");
         socket.emit("registerResponse", {
           success: true,
           email: email,
         });
+        io.emit("updateUserList", users);
       }
+    });
+    socket.on("disconnect", () => {
+      handleDisconnect(socket);
     });
   }
 
@@ -68,6 +72,15 @@ export default (io) => {
       await ProductService.deleteProduct(pid), emitProducts(io);
     } catch (error) {
       throw new Error("Error al eliminar el producto");
+    }
+  }
+
+  function handleDisconnect(socket) {
+    const disconnectedUser = users.find((user) => user.id === socket.id);
+    if (disconnectedUser) {
+      users = users.filter((user) => user.id !== socket.id);
+      io.emit("updateUserList", users);
+      io.emit("newUser", `${disconnectedUser.name} ha abandonado el chat`);
     }
   }
 };
