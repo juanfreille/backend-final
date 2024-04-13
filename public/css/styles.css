@@ -40,6 +40,7 @@ div:where(.swal2-container) h2:where(.swal2-title) {
 .row {
   margin-right: 1% !important;
   margin-left: 1% !important;
+  flex: 8;
 }
 .tarjeta {
   display: flex;
@@ -212,7 +213,6 @@ img {
 }
 .thumb-wrapper {
   padding: 0 0 12px 0;
-  background: #eeaeca;
   background: radial-gradient(circle, #eeaeca 0, #94bbe9 100%);
   border-radius: 10px;
   text-align: center;
@@ -645,33 +645,34 @@ div:where(.swal2-container) button:where(.swal2-close):hover {
 }
 
 .message-container {
-  clear: both;
   float: left;
   padding: 6px 10px 7px;
-  border-radius: 10px 10px 10px 0;
-  background: white;
   margin: 8px 0;
   line-height: 1.4;
   margin-left: 35px;
-  position: relative;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
 }
-.message-container::before {
+.message-body-span::before {
   content: "";
   position: absolute;
-  bottom: -6px;
-  border-top: 6px solid white;
-  left: 0;
-  border-right: 7px solid transparent;
+  bottom: 0px;
+  border-bottom: 6px solid white;
+  left: -7px;
+  border-left: 7px solid transparent;
 }
 .message-container.right {
   float: right;
   color: #fff;
   text-align: right;
-  background: linear-gradient(120deg, #248a52, #257287);
   border-radius: 10px 10px 0 10px;
-  width: 75%;
+  display: flex;
+  flex-direction: row-reverse;
+  text-align: -webkit-right;
 }
+
 .message-container.right::before {
   left: auto;
   right: 0;
@@ -680,12 +681,19 @@ div:where(.swal2-container) button:where(.swal2-close):hover {
   border-top: 4px solid #257287;
   bottom: -4px;
 }
-.message-container.left {
-  width: 75%;
+
+.message-container.right div span::before {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  border-bottom: 6px solid #bbc3e3fc;
+  left: 98%;
+  border-right: 10px solid transparent;
 }
 
 .chat-avatar {
-  margin: 0px 0px 5px 0px;
+  width: 50px;
+  margin: 0 10px;
 }
 
 .bg-chat {
@@ -703,16 +711,275 @@ div:where(.swal2-container) button:where(.swal2-close):hover {
 }
 
 .aside-mio {
-  width: 260px;
-  height: 800px;
-  background-color: #3b3e49;
-  display: inline-block;
-  font-size: 15px;
-  vertical-align: top;
+  width: 20%;
 }
+
 aside li h2 {
   font-size: 14px;
   color: #fff;
   font-weight: normal;
   margin-bottom: 5px;
+}
+
+.message-body p {
+  border-radius: 20px;
+  padding: 5px 0 !important;
+  max-width: 75%;
+  display: block;
+}
+
+.message-body {
+  grid-column: 2;
+  padding: 10px 10px 0 0;
+  border-radius: 5px;
+  background-color: rgb(255, 255, 255);
+  color: black;
+  margin-left: 0px;
+  border-radius: 20px 20px 20px 0;
+  padding: 5px 15px;
+  max-width: 75%;
+  display: block;
+  position: relative;
+}
+
+.message-container.right div {
+  border-radius: 20px 20px 0px 20px !important;
+}
+
+.far-right {
+  background: #bbc3e3fc;
+}
+
+.containerProducts {
+  width: 95%;
+  margin: 0 auto;
+  min-height: 68%;
+  display: flex;
+}
+
+.sidebar {
+  flex: 1;
+  background-color: #f5f6fa;
+  padding: 10px;
+}
+.sidebar input[type="text"] {
+  padding: 5px 5px;
+  outline: none;
+  width: 100%;
+  margin-bottom: 15px;
+}
+.sidebar h3 {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+.sidebar ul li {
+  margin: 5px 0;
+  padding-left: 5px;
+  cursor: pointer;
+}
+.sidebar ul li:hover {
+  background-color: #dcdde1;
+}
+.logo {
+  font-weight: 800;
+  font-size: 20px;
+  text-transform: uppercase;
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+.container h3 {
+  font-size: 1.2rem;
+}
+
+.category-list a {
+  font-size: 1.2rem;
+}
+
+.carrito21BoxCol2 {
+  width: calc(100% - 290px);
+  padding-left: 1em;
+  font-size: 0.9em;
+}
+
+.tituloNombreCart {
+  color: brown;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.iniciarCompra {
+  text-align: right;
+  margin: 5% 0 0 0;
+}
+.antiquewhite {
+  background-color: antiquewhite;
+}
+.carrito21BoxCol1 {
+  width: 130px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.wrapper {
+  background: rgb(238, 174, 202);
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(148, 187, 233, 1) 100%
+  );
+  margin: 2rem 0;
+}
+.card-img {
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.product-container {
+  display: flex;
+  margin: 3% 5% 15% 5%;
+}
+
+.carousel-container {
+  width: 32%;
+  margin: 0 15%;
+}
+
+.product-info {
+  width: 40%;
+}
+
+.descripcion {
+  color: dimgray;
+  background: #fcfcfc;
+  border: 1px solid #f7f7f7;
+  font-size: 1.2rem;
+  font-weight: 400;
+  padding: 10px !important;
+}
+@media (max-width: 767px) {
+  .product-container {
+    flex-direction: column;
+    margin: 3% 5% 5% 5%;
+  }
+
+  .carousel-container {
+    width: 100%;
+    margin: 0;
+  }
+
+  .product-info {
+    width: 100%;
+    margin: 25% 0 0 0;
+  }
+}
+
+.price-box .pricebox-price {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.button-ef {
+  border-radius: 4px;
+  background-color: #000000;
+  border: none;
+  color: #fff;
+  text-align: center;
+  font-size: 26px;
+  padding: 16px;
+  width: 20%;
+  transition: all 0.5s;
+  cursor: pointer;
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.7);
+}
+
+.button-ef {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button-ef:after {
+  content: "◄";
+  position: absolute;
+  opacity: 0;
+  top: 14px;
+  left: -20px;
+  transition: 0.5s;
+}
+
+.button-ef:hover {
+  padding-left: 24px;
+  padding-right: 8px;
+}
+
+.button-ef:hover:after {
+  opacity: 1;
+  left: 10px;
+}
+
+.button-black {
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+  background-color: #040404;
+  border-radius: 0;
+  border: 0;
+}
+
+.button-black:hover {
+  background-color: #333;
+  color: #fff;
+}
+.prev {
+  position: relative;
+  transition: 0.5s;
+}
+
+.prev:after {
+  content: "◄";
+  position: absolute;
+  opacity: 0;
+  top: 15%;
+  left: -5%;
+  transition: 0.5s;
+}
+
+.prev:hover {
+  padding-left: 24px;
+  padding-right: 8px;
+}
+
+.prev:hover:after {
+  opacity: 1;
+  left: 10px;
+}
+
+.next {
+  position: relative;
+  transition: 0.5s;
+}
+
+.next:after {
+  content: "►";
+  position: absolute;
+  opacity: 0;
+  top: 15%;
+  right: -5%;
+  transition: 0.5s;
+}
+
+.next:hover {
+  padding-right: 24px;
+  padding-left: 8px;
+}
+
+.next:hover:after {
+  opacity: 1;
+  right: 10px;
 }

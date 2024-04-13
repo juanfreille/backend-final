@@ -1,0 +1,44 @@
+<div class="row">
+  <div class="m-2">
+    <div class="d-flex justify-content-center align-items-center my-3">
+      <a href="/products" class="button-ef">
+        <span title="Continuar comprando">Continuar comprando</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="product-container">
+    <div id="carouselExampleSlidesOnly" class="carousel slide carousel-container" data-ride="carousel">
+      <div class="carousel-inner">
+        {{#each product.thumbnails}}
+        <div class="carousel-item active">
+          <img class="d-block w-75" src="../../img/{{this}}" alt="Product slide">
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="product-info">
+      <h2>{{product.title}}</h2>
+      <div class="price-box">
+        <span class="pricebox-price">$ {{product.price}}</span>
+      </div>
+      <hr>
+      <p class="descripcion">{{product.description}}</p>
+      <br>
+      <p>ID de producto: {{product._id}}</p>
+      <p>Stock disponible: {{product.stock}}</p>
+      <p>Categoría: {{product.category}}</p>
+      <p>Código: {{product.code}}</p>
+      <hr>
+      <div class="text-center zoomy">
+        <button class="btn btn-effect btn-dark btn-jif bg-black btn-detalles mt-2 mx-4">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Scripts necesarios -->
+<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>

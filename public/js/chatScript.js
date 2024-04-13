@@ -22,7 +22,7 @@ sendButton.addEventListener("click", sendMessage);
 chatBox.addEventListener("keypress", handleEnterPress);
 
 function joinChat() {
-  connectSocket(); // Conectar el socket
+  connectSocket();
   Swal.fire({
     title: "¡Bienvenido al Chat!",
     text: "Por favor, ingresa tu email para comenzar a chatear:",
@@ -97,7 +97,7 @@ function handleNewUser(data) {
 function updateUserList(users) {
   let usersHtml = "";
   users.forEach(({ id, name }) => {
-    usersHtml += `<li><p class="text-success">${name}</p></li>`;
+    usersHtml += `<li style="color:green;font-size: 18px;"><p class="text-white">${name}</p></li>`;
   });
   userDbHTML.innerHTML = usersHtml;
 }
@@ -137,32 +137,38 @@ function generateMessageElement(user, message) {
   const userColor = getUserColor(user);
   const messageElement = document.createElement("div");
   messageElement.classList.add("message-container");
-  messageElement.classList.add(user === currentUser ? "right" : "left");
+
+  const horizontalAlignment = user === currentUser ? "right" : "left";
+  messageElement.classList.add(horizontalAlignment);
+  const horizontalClass =
+    horizontalAlignment === "right" ? "far-right" : "far-left";
+
   messageElement.innerHTML = `
     <div class="chat-avatar">
-      <img style="width: 10%;border-radius: 50%;" src="https://icon-library.com/images/unknown-person-icon/unknown-person-icon-4.jpg" alt="">
+      <img style="border-radius: 50%;" src="../img/user_1.jpg" alt="">
     </div>
-    <p style="color: ${userColor};width: -webkit-fill-available;">${user}:</p>
-    <p>${message}</p>`;
+    <div class="message-body ${horizontalClass}">
+      <p style="color: ${userColor};width: -webkit-fill-available;">${user}</p>
+      <span class="message-body-span">${message}</span>
+    </div>`;
+
   return messageElement;
 }
 
 function getUserColor(user) {
-  const colors = [
-    "#06cf9c",
-    "#007bfc",
-    "#d42a66",
-    "#ea0038",
-    "#fa6533",
-    "#ffbc38",
-    "#25d366",
-    "#028377",
-    "#009de2",
-    "#5e47de",
-  ];
+  if (userColors.hasOwnProperty(user)) {
+    return userColors[user];
+  } else {
+    userColors[user] = getRandomColor();
+    return userColors[user];
+  }
+}
 
-  return (
-    userColors[user] ||
-    (userColors[user] = colors[Math.floor(Math.random() * colors.length)])
-  );
+function getRandomColor() {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }

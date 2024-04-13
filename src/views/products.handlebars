@@ -2,9 +2,21 @@
   <div class="mx-auto my-2 text-center border-2 text-uppercase">
     <h1>Tienda</h1>
   </div>
-  {{#if products}}
+  <div class="containerProducts">
+    <div class="sidebar">
+      <div class="logo text-center">JIF Style Store</div>
+      <input type="text" id="txtSearch" placeholder="Buscar Producto..." />
+      <h3>Categoría</h3>
+      <ul class="category-list text-capitalize">
+        <li><a href="/products">Todos</a></li>
+        {{#each uniqueCategories}}
+          <li><a href="/products?query={{this}}">{{this}}</a></li>
+        {{/each}}
+      </ul>
+    </div>
+    {{#if payload}}
     <div class="row centrar no-selection">
-      {{#each products}}
+      {{#each payload}}
         <article class="col-6 col-xl-3 col-lg-4">
           <div class="tarjeta thumb-wrapper">
             <figure>
@@ -16,9 +28,7 @@
                 {{/if}}
                 <div class="mask"></div>
                 <figcaption>
-                  <button class="btn-detalles" data-id="{{_id}}" data-title="{{title}}" data-description="{{description}}"
-                  data-category="{{category}}" data-price="{{price}}" data-code="{{code}}" data-stock="{{stock}}"
-                    data-thumbnails="{{thumbnails}}">Ver Detalles</button>
+                  <a href="/products/item/{{_id}}" class="btn btn-effect btn-dark btn-jif bg-black btn-detalles">Ver Detalles</a>
                 </figcaption>
               </div>
             </figure>
@@ -28,29 +38,23 @@
         </article>
       {{/each}}
     </div>
-  {{else}}
+    {{else}}
     <h1 class="text-center md:mt-12 text-lg">No hay productos</h1>
-  {{/if}}
-</div>
+    {{/if}}
+  </div>
 
-<!-- MODAL DETALLES -->
-<div class="modal fade" id="detallesModal" tabindex="-1" aria-labelledby="detallesModalLabel">
-  <div class="modal-dialog modal-dialog-mio modal-dialog-centered">
-    <div class="modal-content modal-content-mio" id="detallesModalLabel">
-      <div class="modal-header">
-        <h1 class="modal-title texto-xs"></h1>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <span id="productDetails">Detalles del producto</span>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary btn-mio" data-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
+  <div style="position:relative" class="container d-flex justify-content-center align-items-center gap-4 p-4">
+    {{#if hasPrevPage}}
+            
+    <a style="position:relative" class="btn button-black prev px-5" href="{{this.prevLink}}">
+      <div class="arrow"><span></span><span></span></div>Atrás</a>
+    {{/if}}
+    {{#if hasNextPage}}
+    <a class="btn button-black next px-5" href="{{this.nextLink}}">Siguiente</a>
+    {{/if}}
+    <h3>Página: {{page}}/{{totalPages}}</h3>
   </div>
 </div>
 
 <!-- Scripts necesarios -->
-<script src="/js/modalScript.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>

@@ -7,8 +7,10 @@
   <h3 class="m-2 text-center text-white">Usuarios online</h3>
   <hr />
   <ul class="m-2" id="usersDB"></ul>
-  <button id="joinButton">Ingresar al Chat</button>
-<button id="leaveButton" style="display: none;">Salir del Chat</button>
+       <div style="text-align: -webkit-center;">
+        <button class="btn btn-effect btn-dark btn-jif bg-black btn-detalles" id="joinButton">Ingresar al Chat</button>
+<button class="btn btn-effect btn-dark btn-jif bg-black btn-detalles" id="leaveButton" style="display: none;">Salir del Chat</button>
+</div>
 
 </aside>
 <main class="container py-3" style="font-size: 18px;">
@@ -23,6 +25,9 @@
       </section>
 </main>
 </div>
+
+<!-- Scripts necesarios -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/chatScript.js"></script>
+<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>

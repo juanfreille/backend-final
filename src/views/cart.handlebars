@@ -1,0 +1,99 @@
+<title>Carrito</title>
+
+<div class="mx-auto my-2 text-center border-2 text-uppercase">
+  <h1>Carrito</h1>
+</div>
+
+{{#if payload.length}}
+  <div class="row gap-3 justify-content-evenly">
+    <div class="col-8">
+      <div class="border border-1 bg-white">
+        <div class="text-black antiquewhite p-2">
+          <h4>Productos en carrito</h4>
+        </div>
+        <ul>
+          {{#each payload}}
+            <li class="d-flex border-bottom py-3">
+              <a href="../products/item/{{product._id}}">
+                <img class="carrito21BoxCol1" src="../../img/{{product.thumbnails}}" alt="{{product.title}}">
+              </a>
+              <div class="carrito21BoxCol2">
+                <h4 class="tituloNombreCart">{{product.title}}</h4>
+                <h5 class="texto-s mt-2">Precio x unidad:&nbsp; $<strong class="price">{{product.price}}</strong></h5>
+                <h5 class="texto-s mt-5">Unidades:&nbsp;&nbsp;<strong class="quantity">{{quantity}}</strong></h5>
+                <h5 class="texto-s mt-3">Precio x lote ({{quantity}}):&nbsp; $<strong class="totalPrice"></strong></h5>
+              </div>
+            </li>
+          {{/each}}
+        </ul>
+        <button class="btn btn-effect btn-dark btn-jif px-5 mt-3 uppercase">Vaciar carrito</button>
+      </div>
+    </div>
+  {{else}}
+    <div>
+      <h1 class="font-semibold text-4xl text-gray-700 text-center uppercase my-5">El carrito no existe</h1>
+    </div>
+  </div>
+{{/if}}
+
+<div class="col-3">
+  <div class="border border-1 bg-white">
+    <div class="p-2 text-black antiquewhite">
+      <h4>Detalle de compra</h4>
+    </div>
+    <div>
+      <table class="table table-borderless align-middle">
+        <tbody>
+          <tr>
+            <td class="col-10 fs-14">Cantidad de productos:</td>
+            <td class="col-12 fs-14 text-end">{{payload.length}}</td>
+          </tr>
+          <tr>
+            <td class="col-10 fs-14">Subtotal: </td>
+            <td class="col-2 fs-14 text-end" id="subtotal">$0.00</td>
+          </tr>
+          <tr>
+            <td class="col-10 fs-14">Descuento: </td>
+            <td class="col-2 fs-14 text-end">$0.00</td>
+          </tr>
+          <tr class="">
+            <td class="col-10">Total:</td>
+            <td class="col-2 text-end" id="total">$0.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="iniciarCompra">
+    <a class="btn btn-effect btn-dark btn-jif bg-black px-5 uppercase">Iniciar Compra</a>
+  </div>
+</div>
+
+<script>
+  const prices = document.querySelectorAll('.price');
+  const quantities = document.querySelectorAll('.quantity');
+  const totalPrices = document.querySelectorAll('.totalPrice');
+  prices.forEach((priceElement, index) => {
+    const price = parseFloat(priceElement.innerText);
+    const quantity = parseInt(quantities[index].innerText);
+    const totalPrice = price * quantity;
+    totalPrices[index].innerText = totalPrice.toFixed(0);
+  });
+
+  const pricesT = document.querySelectorAll('.totalPrice');
+  const quantitiesT = document.querySelectorAll('.quantity');
+  let subtotal = 0;
+
+  pricesT.forEach((priceElement, index) => {
+    const price = parseFloat(priceElement.innerText);
+    const quantity = parseInt(quantitiesT[index].innerText);
+    subtotal += price * quantity;
+  });
+
+  const subtotalElement = document.getElementById('subtotal');
+  const totalElement = document.getElementById('total');
+
+  subtotalElement.innerText = `$${subtotal.toFixed(0)}`;
+  totalElement.innerText = `$${subtotal.toFixed(0)}`;
+
+</script>

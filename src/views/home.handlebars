@@ -1,29 +1,34 @@
-<div class="mx-auto px-4">
-  <div class="mx-auto my-2 text-center border-2 text-uppercase">
+<div class="container mx-auto px-4">
+  <div class="my-2 text-center border-2 text-uppercase">
     <h1>Bienvenido</h1>
   </div>
 
   <section class="hero">
     <div style="padding: 50px 0;">
-      <h2 style="font-size:4rem">Descubre el estilo urbano que te define</h2>
-      <p style="margin: 0 0 4rem 0 !important;">Explora nuestra colección y encuentra lo último en moda urbana.</p>
-      <a href="/products" style="background-color: #fff; color: #333; padding: 10px 30px; border-radius: 5px; text-decoration: none;">Ver colección</a>
+      <h2 class="text-center" style="font-size: 4rem;">Descubre el estilo urbano que te define</h2>
+      <p class="text-center" style="margin: 0 0 4rem 0 !important;">Explora nuestra colección y encuentra lo último en moda urbana.</p>
+      <a href="/products" class="btn btn-effect btn-dark btn-jif bg-black zoomy">Ver colección</a>
     </div>
   </section>
 
   <section class="featured-products">
-    <h2>Productos Destacados</h2>
+    <h2 class="text-center">Productos Destacados</h2>
     {{#if products}}
-      {{#each products}}
-        <div class="product">
-          <img src="img/{{thumbnails}}" alt="{{title}}" />
-          <h3>{{title}}</h3>
-          <p>${{price}}</p>
-          <a href="/products">Comprar</a>
-        </div>
-      {{/each}}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {{#each products}}
+          <div class="product">
+            <img src="img/{{thumbnails}}" alt="{{title}}" />
+            <h3>{{title}}</h3>
+            <p>${{price}}</p>
+            <a style="padding: 1% 20%" href="/products/item/{{_id}}" class="btn button-black mt-2">Comprar</a>
+          </div>
+        {{/each}}
+      </div>
     {{else}}
-      <h1 class="text-center md:mt-12 text-lg">No hay productos</h1>
+      <h1 class="text-center mt-12 text-lg">No hay productos</h1>
     {{/if}}
   </section>
 </div>
+
+<!-- Scripts necesarios -->
+<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>
