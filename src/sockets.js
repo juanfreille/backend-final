@@ -1,8 +1,10 @@
 import { messageModel } from "./dao/models/messageModel.js";
 import { productManagerDB } from "./dao/ProductManagerDB.js";
 import { messageService } from "./services/messageService.js";
+import { cartManagerDB } from "./dao/CartManagerDB.js";
 
 const ProductService = new productManagerDB();
+const CartService = new cartManagerDB();
 let users = [];
 
 export default (io) => {
@@ -18,6 +20,18 @@ export default (io) => {
     socket.on("deleteProduct", async (pid) => {
       await deleteProductAndEmit(pid);
     });
+    socket.on("addToCart", async (productId) => {
+      try {
+        const cart = await CartService.createCart();
+        const cartId = cart._id;
+        await CartService.addProductByID(cartId, productId);
+        io.emit("cartUpdated");
+        socket.emit("cartId", cartId);
+      } catch (error) {
+        console.error("Error al agregar producto al carrito:", error);
+      }
+    });
+
     socket.on("message", async (data) => {
       await messageService.saveMessage(data);
       const messages = await messageModel.find().lean();

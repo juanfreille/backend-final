@@ -22,60 +22,94 @@ router.get("/", async (req, res) => {
 
 router.get("/products", async (req, res) => {
   try {
-    let { page, limit, sort, query } = req.query;
+    const { page = 1, limit = 8, sort } = req.query;
+    //uso limit 8 solo por cuestiones esteticas para que funcione bien con mi frontEnd
+    const options = {
+      page: Number(page),
+      limit: Number(limit),
+      lean: true,
+    };
 
-    if (!page) page = 1;
-    if (!limit) limit = 8;
+    const searchQuery = {};
 
-    let sortOptions = {};
-    if (sort) {
-      if (sort === "asc") {
-        sortOptions = { price: 1 };
-      } else if (sort === "desc") {
-        sortOptions = { price: -1 };
+    if (req.query.category) {
+      searchQuery.category = req.query.category;
+    }
+
+    if (req.query.title) {
+      searchQuery.title = { $regex: req.query.title, $options: "i" };
+    }
+
+    if (req.query.stock) {
+      const stockNumber = parseInt(req.query.stock);
+      if (!isNaN(stockNumber)) {
+        searchQuery.stock = stockNumber;
       }
     }
 
-    let filter = {};
-    if (query) {
-      filter = { category: query };
+    if (sort === "asc" || sort === "desc") {
+      options.sort = { price: sort === "asc" ? 1 : -1 };
     }
 
-    const uniqueCategories = await productModel.distinct("category");
+    const buildLinks = (products) => {
+      const { prevPage, nextPage } = products;
+      const baseUrl = req.originalUrl.split("?")[0];
+      const sortParam = sort ? `&sort=${sort}` : "";
 
-    const result = await productModel.paginate(filter, {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      sort: sortOptions,
-      lean: true,
-    });
+      const prevLink = prevPage
+        ? `${baseUrl}?page=${prevPage}${sortParam}`
+        : null;
+      const nextLink = nextPage
+        ? `${baseUrl}?page=${nextPage}${sortParam}`
+        : null;
 
-    const count = await productModel.countDocuments(filter);
-    const totalPages = Math.ceil(count / limit);
-    const hasNextPage = result.hasNextPage;
-    const hasPrevPage = result.hasPrevPage;
-    const nextPage = hasNextPage ? parseInt(page) + 1 : null;
-    const prevPage = hasPrevPage ? parseInt(page) - 1 : null;
-    const baseURL = req.baseUrl;
-    const prevLink = hasPrevPage ? `${baseURL}?page=${prevPage}` : null;
-    const nextLink = hasNextPage ? `${baseURL}?page=${nextPage}` : null;
+      return {
+        prevPage: prevPage ? parseInt(prevPage) : null,
+        nextPage: nextPage ? parseInt(nextPage) : null,
+        prevLink,
+        nextLink,
+      };
+    };
 
-    res.render("products", {
+    const products = await ProductService.getPaginateProducts(
+      searchQuery,
+      options
+    );
+    const { prevPage, nextPage, prevLink, nextLink } = buildLinks(products);
+    const categories = await productModel.distinct("category");
+
+    let requestedPage = parseInt(page);
+    if (isNaN(requestedPage) || requestedPage < 1) {
+      requestedPage = 1;
+    }
+
+    if (requestedPage > products.totalPages) {
+      return res.render("error", {
+        title: "Backend / Final - Products",
+        style: "styles.css",
+        error: "/products",
+      });
+    }
+
+    const response = {
       title: "Backend / Final - Products",
       style: "styles.css",
       status: "success",
-      payload: result.docs,
-      totalPages,
+      payload: products.docs,
+      totalPages: products.totalPages,
+      page: parseInt(page),
+      hasPrevPage: products.hasPrevPage,
+      hasNextPage: products.hasNextPage,
       prevPage,
       nextPage,
-      page: parseInt(page),
-      hasPrevPage,
-      hasNextPage,
       prevLink,
       nextLink,
-      uniqueCategories: uniqueCategories,
-    });
+      categories: categories,
+    };
+
+    return res.render("products", response);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
@@ -98,7 +132,7 @@ router.get("/cart/:cid", async (req, res) => {
     const { cid } = req.params;
     const cart = await cartModel.findOne({ _id: cid }).lean();
     if (!cart) {
-      return res.status(404).json({ error: "Cart not found" });
+      return res.status(404).json({ error: "No se encontró el carrito" });
     }
     const products = await Promise.all(
       cart.products.map(async (product) => {
@@ -108,7 +142,6 @@ router.get("/cart/:cid", async (req, res) => {
         return { ...product, product: productData };
       })
     );
-    console.log(products);
     res.render("cart", {
       title: "Backend / Final - cart",
       style: "styles.css",

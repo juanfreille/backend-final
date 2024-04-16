@@ -5,6 +5,17 @@ class productManagerDB {
   async getAllProducts() {
     try {
       return await productModel.find().lean();
+      // return await productModel.paginate(filter, options);
+    } catch (error) {
+      console.error(error.message);
+      throw new Error("Error al buscar los productos");
+    }
+  }
+
+  async getPaginateProducts(filter, options) {
+    try {
+      // return await productModel.find().lean();
+      return await productModel.paginate(filter, options);
     } catch (error) {
       console.error(error.message);
       throw new Error("Error al buscar los productos");

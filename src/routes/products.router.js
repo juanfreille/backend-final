@@ -1,73 +1,95 @@
 import express from "express";
-// import { productManagerFS } from "../dao/ProductManagerFS.js";
 import { productManagerDB } from "../dao/ProductManagerDB.js";
 import { uploader } from "../utils/multer.js";
-import { productModel } from "../dao/models/productModel.js";
 
 const router = express.Router();
-// const ProductService = new productManagerFS("data/products.json");
 const ProductService = new productManagerDB();
 
 router.get("/", async (req, res) => {
   try {
-    let { page, limit, sort, query } = req.query;
-    if (!page) page = 1;
-    if (!limit) limit = 10;
+    const { page = 1, limit = 10, sort } = req.query;
 
-    let sortOptions = {};
-    if (sort) {
-      if (sort === "asc") {
-        sortOptions = { price: 1 };
-      } else if (sort === "desc") {
-        sortOptions = { price: -1 };
+    const options = {
+      page: Number(page),
+      limit: Number(limit),
+      lean: true,
+    };
+
+    const searchQuery = {};
+
+    if (req.query.category) {
+      searchQuery.category = req.query.category;
+    }
+
+    if (req.query.title) {
+      searchQuery.title = { $regex: req.query.title, $options: "i" };
+    }
+
+    if (req.query.stock) {
+      const stockNumber = parseInt(req.query.stock);
+      if (!isNaN(stockNumber)) {
+        searchQuery.stock = stockNumber;
       }
     }
 
-    let filter = {};
-    if (query) {
-      filter = { category: query };
+    if (sort === "asc" || sort === "desc") {
+      options.sort = { price: sort === "asc" ? 1 : -1 };
     }
 
-    const result = await productModel.paginate(filter, {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      sort: sortOptions,
-      lean: true,
-    });
+    const buildLinks = (products) => {
+      const { prevPage, nextPage } = products;
+      const baseUrl = req.originalUrl.split("?")[0];
+      const sortParam = sort ? `&sort=${sort}` : "";
 
-    const count = await productModel.countDocuments(filter);
-    const totalPages = Math.ceil(count / limit);
-    const hasNextPage = result.hasNextPage;
-    const hasPrevPage = result.hasPrevPage;
-    const nextPage = hasNextPage ? parseInt(page) + 1 : null;
-    const prevPage = hasPrevPage ? parseInt(page) - 1 : null;
+      const prevLink = prevPage
+        ? `${baseUrl}?page=${prevPage}${sortParam}`
+        : null;
+      const nextLink = nextPage
+        ? `${baseUrl}?page=${nextPage}${sortParam}`
+        : null;
 
-    const baseURL = req.baseUrl;
-    const prevLink = hasPrevPage ? `${baseURL}?page=${prevPage}` : null;
-    const nextLink = hasNextPage ? `${baseURL}?page=${nextPage}` : null;
+      return {
+        prevPage: prevPage ? parseInt(prevPage) : null,
+        nextPage: nextPage ? parseInt(nextPage) : null,
+        prevLink,
+        nextLink,
+      };
+    };
+
+    const products = await ProductService.getPaginateProducts(
+      searchQuery,
+      options
+    );
+    const { prevPage, nextPage, prevLink, nextLink } = buildLinks(products);
+
+    let requestedPage = parseInt(page);
+    if (isNaN(requestedPage) || requestedPage < 1) {
+      requestedPage = 1;
+    }
+
+    if (requestedPage > products.totalPages) {
+      return res
+        .status(404)
+        .json({ error: "La página solicitada está fuera de rango" });
+    }
 
     const response = {
       status: "success",
-      payload: result.docs,
-      totalPages,
+      payload: products.docs,
+      totalPages: products.totalPages,
+      page: parseInt(page),
+      hasPrevPage: products.hasPrevPage,
+      hasNextPage: products.hasNextPage,
       prevPage,
       nextPage,
-      page: parseInt(page),
-      hasPrevPage,
-      hasNextPage,
       prevLink,
       nextLink,
     };
 
-    res.send({
-      status: "success",
-      payload: response,
-    });
+    return res.status(200).send(response);
   } catch (error) {
-    res.status(400).send({
-      status: "error",
-      message: error.message,
-    });
+    console.log(error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
