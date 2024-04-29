@@ -10,6 +10,8 @@ import __dirname from "./utils/constantsUtil.js";
 import { Server } from "socket.io";
 import Sockets from "./sockets.js";
 import mongoose from "mongoose";
+import passport from "passport";
+import initializatePassport from "./config/passport.config.js";
 
 const app = express();
 const port = 8080;
@@ -33,6 +35,10 @@ app.use(
     cookie: { maxAge: 60 * 1000 * 60 }, // 60 minutos en milisegundos
   })
 );
+
+initializatePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use("/api/products", productsRouter);
