@@ -24,6 +24,9 @@
       </div>
     </div>
 
+    <input type="hidden" id="user-email" value="{{ user.email }}">
+    <input type="hidden" id="userCartID" value="{{ user.cart._id }}">
+
     <div class="product-info">
       <h2>{{product.title}}</h2>
       <div class="price-box">
@@ -48,46 +51,4 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  const socket = io(); 
-  document.addEventListener("DOMContentLoaded", function() { 
-    const addToCartButton = document.getElementById('addToCartBtn'); 
-    const productId = addToCartButton.dataset.productId; 
-    
-    addToCartButton.addEventListener('click', async function(event) { 
-      event.preventDefault(); 
-      try { 
-        socket.emit("addToCart", productId); 
-        console.log("ID del producto agregado", productId) 
-        
-      socket.on("cartId", (cartId) => { 
-        console.log("ID del carrito nuevo", cartId);
-        Swal.fire({
-          icon: 'success',
-          title: '¡Producto agregado al carrito!',
-          text: `ID del carrito: ${cartId}`,
-          showCancelButton: true,
-          confirmButtonText: 'Ir al carrito',
-          cancelButtonText: 'Seguir comprando',
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = `/cart/${cartId}`;
-          }
-        });
-      }); 
-    } 
-
-      catch (error) { 
-        console.error("Error al agregar producto al carrito:", error); 
-        Swal.fire({
-          icon: 'error',
-          title: '¡Error!',
-          text: 'Ocurrió un error al agregar el producto al carrito',
-        });
-      } 
-    }); 
-  });
-</script>
-
+<script src="/js/productDetailsScript.js"></script>

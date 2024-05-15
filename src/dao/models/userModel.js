@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const userCollection = "users";
 
@@ -18,17 +19,23 @@ const userSchema = mongoose.Schema({
   },
   age: {
     type: Number,
-    min: 18,
-    required: true,
   },
   password: {
     type: String,
+  },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "carts",
   },
   role: {
     type: String,
     enum: ["user", "admin"],
     default: "user",
   },
+});
+userSchema.pre("find", function (next) {
+  this.populate("cart");
+  next();
 });
 
 const userModel = mongoose.model(userCollection, userSchema);

@@ -569,10 +569,8 @@ div:where(.swal2-icon).swal2-success .swal2-success-fix {
   background-color: transparent !important;
 }
 
-div:where(.swal2-icon).swal2-success
-  [class^="swal2-success-line"][class$="long"],
-div:where(.swal2-icon).swal2-success
-  [class^="swal2-success-line"][class$="tip"] {
+div:where(.swal2-icon).swal2-success [class^="swal2-success-line"][class$="long"],
+div:where(.swal2-icon).swal2-success [class^="swal2-success-line"][class$="tip"] {
   background-color: white;
 }
 
@@ -582,10 +580,8 @@ div:where(.swal2-icon).swal2-error {
   background-color: #cf3010 !important;
 }
 
-div:where(.swal2-icon).swal2-success
-  [class^="swal2-success-circular-line"][class$="left"],
-div:where(.swal2-icon).swal2-success
-  [class^="swal2-success-circular-line"][class$="right"] {
+div:where(.swal2-icon).swal2-success [class^="swal2-success-circular-line"][class$="left"],
+div:where(.swal2-icon).swal2-success [class^="swal2-success-circular-line"][class$="right"] {
   background-color: transparent !important;
 }
 
@@ -847,11 +843,7 @@ aside li h2 {
 
 .wrapper {
   background: rgb(238, 174, 202);
-  background: radial-gradient(
-    circle,
-    rgba(238, 174, 202, 1) 0%,
-    rgba(148, 187, 233, 1) 100%
-  );
+  background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
   margin: 2rem 0;
 }
 .card-img {
@@ -1198,6 +1190,21 @@ aside li h2 {
   padding: 0 5%;
   box-sizing: border-box;
 }
+.contenedor-registro {
+  width: 32em;
+  max-width: 100%;
+  padding: 0 0 1.25em;
+  border: none;
+  border-radius: 5px;
+  background: #fff;
+  color: #545454;
+  font-family: inherit;
+  font-size: 1rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .form-panel.one:before {
   content: "";
   display: block;
@@ -1213,6 +1220,14 @@ aside li h2 {
 .form-header {
   margin: 0;
 }
+.modal-header h5 {
+  padding: 4px 0;
+  color: #4285f4;
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .form-header h1 {
   padding: 4px 0;
   color: #4285f4;
@@ -1239,8 +1254,16 @@ aside li h2 {
 .user-menu {
   display: flex;
   position: absolute;
-  right: 0%;
+  right: 10%;
   flex-direction: column;
+}
+
+.vaciar-carrito-cancel {
+  background-color: #d33 !important;
+  box-shadow: none !important;
+}
+.vaciar-carrito-confirm {
+  box-shadow: none !important;
 }
 
 @media (max-width: 769px) {

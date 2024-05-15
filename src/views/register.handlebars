@@ -2,6 +2,55 @@
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<input type="hidden" id="errorMessage" value="{{ message }}">
+<!-- Modal -->
+<div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+<div class="swal2-icon swal2-info swal2-icon-show" style="display: flex;"><div class="swal2-icon-content"><img class="zoom-icon" style="filter: invert(100%)" src="../img/person-plus-fill.svg"></div></div>      <div style="padding: 0;" class="modal-header justify-content-center">
+        <h5 class="modal-title" id="registroModalLabel">Registrar una cuenta</h5>
+      </div>
+      <div class="modal-body">
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="first_name">Nombre</label>
+            <input type="text" id="first_name" name="first_name" required="required">
+          </div>
+          <div class="form-group">
+            <label for="last_name">Apellido</label>
+            <input type="text" name="last_name" id="last_name" required="required">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required="required">
+          </div>
+          <div class="form-group">
+            <label for="age">Edad</label>
+            <input type="number" name="age" id="age" required="required">
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" required="required">
+          </div>
+          <div class="form-group">
+            <input type="hidden" id="errorMessage" value="{{ message }}">
+            <input type="hidden" id="failRegister" value="{{ failRegister }}">
+            <button type="submit" class="btn btn-primary btn-createAccount">Crear cuenta</button>
+          </div>
+          <p class="text-center">o</p>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary btn-signIn" onclick="window.location.href='/login'">Iniciar Sesión</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts necesarios Fuentes y Bootstrap-->
+<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 <!-- Estilos -->
 <style>
   .zoom-icon {
@@ -14,79 +63,14 @@
 </style>
 
 <!-- Scripts -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/registerScript.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    showRegisterModal();
-    showFailRegisterToast();
-  });
-
-  function showRegisterModal() {
-    Swal.fire({
-      icon: "info",
-      iconHtml: '<img class="zoom-icon" style="filter: invert(100%)" src="../img/person-plus-fill.svg">',
-      html: `<div class="form-panel one">
-                <div class="form-header">
-                  <h1>Registrar una cuenta</h1>
-                </div>
-                <div class="form-content">
-                  <form id="registerForm" method="post" action="/api/sessions/register">
-                    <div class="form-group">
-                      <label for="first_name">Nombre</label>
-                      <input type="text" id="first_name" name="first_name" required="required">
-                    </div>
-                    <div class="form-group">
-                      <label for="last_name">Apellido</label>
-                      <input type="text" name="last_name" id="last_name" required="required">
-                    </div>
-                    <div class="form-group">
-                      <label for="email">Email</label>
-                      <input type="email" id="email" name="email" required="required">
-                    </div>
-                    <div class="form-group">
-                      <label for="age">Edad</label>
-                      <input type="number" name="age" id="age" required="required">
-                    </div>
-                    <div class="form-group">
-                      <label for="password">Contraseña</label>
-                      <input type="password" id="password" name="password" required="required">
-                    </div>
-                    <div class="form-group">
-                      <input type="hidden" id="message" value="{{ message }}">
-                      <input type="hidden" id="failRegister" value="{{ failRegister }}">
-                      <button type="submit" class="btn btn-primary btn-createAccount" >Crear cuenta</button>
-                    </div>
-                    <span>o</span>
-                    <div class="form-group">
-                      <button type="button" class="btn btn-primary btn-signIn" onclick="window.location.href='/login'">Iniciar Sesión</button>
-                    </div>
-                  </form>
-                </div>
-              </div>`,
-      showCloseButton: false,
-      showConfirmButton: false,
-      showCancelButton: false,
-      focusConfirm: false,
-      allowOutsideClick: false,
-      allowEscapeKey: false
+  window.onload = function() {
+    var myModal = new bootstrap.Modal(document.getElementById('registroModal'), {
+      backdrop: 'static',
+      keyboard: false
     });
-  }
-
-  function showFailRegisterToast() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const failRegister = urlParams.get('failRegister');
-    {{!-- const failRegister = document.getElementById('failRegister').value === 'true'; --}}
-    const errorMessage = document.getElementById('message').value;
-    if (failRegister && errorMessage) {
-      Toastify({
-        text: errorMessage,
-        duration: 3200,
-        gravity: "bottom",
-        position: "right",
-      style: {
-        textAlign: "center",
-        background: "#b14040",
-      }
-      }).showToast();
-    }
-  }
+    myModal.show();
+  };
 </script>

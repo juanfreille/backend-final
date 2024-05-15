@@ -5,74 +5,51 @@
 {{#if message}}
 <input type="hidden" id="errorMessage" value="{{ message }}">
 {{/if}}
-
-<!-- Scripts -->
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const failLogin = urlParams.get('failLogin');
-    const errorMessage = document.getElementById('errorMessage');
-
-    if (failLogin && errorMessage) {
-      Toastify({
-        text: errorMessage.value,
-        duration: 3200,
-        gravity: "bottom",
-        position: "right",
-        close: false,
-        style: {
-          textAlign: "center",
-          background: "#b14040",
-        }
-      }).showToast();
-    }
-
-    Swal.fire({
-      icon: "info",
-      iconHtml: '<img class="zoom-icon" style="filter: invert(100%)" src="../img/lock-fill.svg">',
-      html: `<div class="form-panel one">
-        <div class="form-header">
-          <h1>Iniciar Sesión</h1>
-        </div>
-        <div class="form-content">
-          <form id="loginForm" method="post" action="/api/sessions/login">
-            <div class="form-group">
-              <label for="email">Correo electrónico</label>
-              <input type="email" name="email" id="email" required="required">
-            </div>
-            <div class="form-group">
-              <label for="password">Contraseña</label>
-              <input type="password" id="password" name="password" required="required">
-            </div>
-            {{!-- <div class="form-group">
-              <label class="form-remember">
-                <input type="checkbox" id="remember-me" name="remember">Recordarme</input>
-              </label>
-              <a class="form-recovery" href="#">¿Olvidó su contraseña?</a>
-            </div> --}}
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary btn-signIn">Iniciar Sesión</button>
-            </div>
-          </form>
+<div id="loginModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content form-panel">
+<div class="swal2-icon swal2-info swal2-icon-show" style="display: flex;"><div class="swal2-icon-content"><img class="zoom-icon" style="filter: invert(100%)" src="../img/lock-fill.svg"></div></div>      <div style="padding: 0;" class="modal-header justify-content-center">
+        <h5 class="modal-title">Iniciar Sesión</h5>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm" method="post" action="/api/sessions/login">
           <div class="form-group">
-            <button class="btn button-black" onclick="window.location.href='/api/sessions/github'">
-            <i class="fa fa-github"></i> Iniciar sesión con GitHub</button>
+            <label for="email">Correo electrónico</label>
+            <input type="email" name="email" id="email" class="form-control" required="required">
           </div>
-          <div class="form-group justify-content-center">
-            <span>No estás registrado? <a style="padding: 0;color: #4285f4;" href="/register">Crear una cuenta</a></span>
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" class="form-control" required="required">
           </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-signIn">Iniciar Sesión</button>
+          </div>
+        </form>
+        <div class="form-group">
+          <button class="btn button-black" onclick="window.location.href='/api/sessions/github'">
+            <i class="fa fa-github"></i> Iniciar sesión con GitHub
+          </button>
         </div>
-      </div>`,
-      showCloseButton: false,
-      showConfirmButton: false,
-      showCancelButton: false,
-      focusConfirm: false,
-      allowOutsideClick: false,
-      allowEscapeKey: false
-    });
-  });
-</script>
+        <div class="form-group justify-content-center">
+          <span>No estás registrado? <a style="padding: 0;color: #4285f4;" href="/register" id="register">Crear una cuenta</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script src="/js/loginScript.js"></script>
+<script>
+  window.onload = function() {
+    var myModal = new bootstrap.Modal(document.getElementById('loginModal'), {
+      backdrop: 'static',
+      keyboard: false
+    });
+    myModal.show();
+  };
+</script>
 <!-- Estilos -->
 <style>
   .zoom-icon {

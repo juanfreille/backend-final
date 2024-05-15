@@ -2,6 +2,7 @@ import { messageModel } from "./dao/models/messageModel.js";
 import { productManagerDB } from "./dao/ProductManagerDB.js";
 import { messageService } from "./services/messageService.js";
 import { cartManagerDB } from "./dao/CartManagerDB.js";
+import userModel from "./dao/models/userModel.js";
 
 const ProductService = new productManagerDB();
 const CartService = new cartManagerDB();
@@ -38,6 +39,22 @@ export default (io) => {
     // Manejar eventos del socket relacionados con productos
     socket.on("createProduct", addProduct);
     socket.on("deleteProduct", deleteProduct);
+    socket.on("addToCart", async ({ productId, userEmail, userCartID }) => {
+      try {
+        if (userEmail === "adminCoder@coder.com") {
+          const errorMessage = "No se pueden agregar productos al carrito del administrador";
+          socket.emit("cartNotUpdated", errorMessage);
+        } else {
+          await CartService.addProductByID(userCartID, productId);
+          const totalQuantityInCart = await CartService.getTotalQuantityInCart(userCartID);
+          socket.emit("cartUpdated", { cartId: userCartID, totalQuantityInCart });
+          socket.emit("cartId", userCartID);
+        }
+      } catch (error) {
+        console.error("Error al agregar producto al carrito:", error);
+      }
+    });
+    await emitProducts();
 
     // Manejo de chat
     socket.on("message", async (data) => {

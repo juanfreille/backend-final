@@ -41,9 +41,7 @@ class cartManagerDB {
       if (!cart) {
         throw new Error(`El carrito ${cid} no existe`);
       }
-      const existingProductIndex = cart.products.findIndex(
-        (product) => product._id._id.toString() === pid
-      );
+      const existingProductIndex = cart.products.findIndex((product) => product._id._id.toString() === pid);
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity++;
       } else {
@@ -59,11 +57,7 @@ class cartManagerDB {
 
   async deleteProductInCart(cid, pid) {
     try {
-      const cart = await cartModel.findOneAndUpdate(
-        { _id: cid },
-        { $pull: { products: { _id: pid } } },
-        { new: true }
-      );
+      const cart = await cartModel.findOneAndUpdate({ _id: cid }, { $pull: { products: { _id: pid } } }, { new: true });
       return cart;
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
@@ -89,9 +83,7 @@ class cartManagerDB {
         { new: true }
       );
       if (!cart) {
-        throw new Error(
-          "Carrito no encontrado o el producto no está en el carrito"
-        );
+        throw new Error("Carrito no encontrado o el producto no está en el carrito");
       }
       return cart;
     } catch (error) {
@@ -115,6 +107,25 @@ class cartManagerDB {
     } catch (error) {
       console.error(error.message);
       throw new Error("Error al vaciar carrito");
+    }
+  }
+
+  async getTotalQuantityInCart(cid) {
+    try {
+      const cart = await cartModel.findOne({ _id: cid }).lean();
+      if (!cart) {
+        throw new Error(`El carrito ${cid} no existe`);
+      }
+
+      let totalQuantity = 0;
+      for (const product of cart.products) {
+        totalQuantity += product.quantity;
+      }
+
+      return totalQuantity;
+    } catch (error) {
+      console.error("Error al obtener la cantidad total de productos en el carrito:", error);
+      throw error;
     }
   }
 }

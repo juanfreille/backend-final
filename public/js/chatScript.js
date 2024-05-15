@@ -1,19 +1,18 @@
-const socket = io();
+let socket = io();
 const chatBox = document.getElementById("chat-message");
 const messagesLogs = document.getElementById("messages-history");
 const userDbHTML = document.getElementById("usersDB");
 const sendButton = document.getElementById("send-button");
 const joinButton = document.getElementById("joinButton");
 const leaveButton = document.getElementById("leaveButton");
+const currentUser = document.getElementById("user").value;
 
-let currentUser;
 let userColors = {};
 chatBox.disabled = true;
 sendButton.disabled = true;
 joinButton.addEventListener("click", joinChat);
 leaveButton.addEventListener("click", leaveChat);
 
-socket.on("registerResponse", handleRegisterResponse);
 socket.on("newUser", handleNewUser);
 socket.on("updateUserList", updateUserList);
 socket.on("messagesLogs", loadOldMessages);
@@ -22,68 +21,22 @@ sendButton.addEventListener("click", sendMessage);
 chatBox.addEventListener("keypress", handleEnterPress);
 
 function joinChat() {
-  connectSocket();
-  Swal.fire({
-    title: "¡Bienvenido al Chat!",
-    text: "Por favor, ingresa tu email para comenzar a chatear:",
-    iconHtml: '<img src="../img/chat.png">',
-    input: "email",
-    inputValidator: validateEmail,
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showCancelButton: true,
-    cancelButtonText: "Cancelar",
-    confirmButtonText: "Unirse",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const email = result.value;
-      currentUser = email;
-      socket.emit("registerEmail", email);
-      chatBox.disabled = false;
-      sendButton.disabled = false;
-    }
-  });
-}
-
-function validateEmail(value) {
-  if (!value) {
-    return "Debes ingresar un email";
-  } else if (!/\S+@\S+\.\S+/.test(value)) {
-    return "Debes ingresar un email válido";
-  }
+  socket.emit("joinChat", currentUser);
+  chatBox.disabled = false;
+  sendButton.disabled = false;
+  socket.emit("userConnect", currentUser);
+  joinButton.style.display = "none";
+  leaveButton.style.display = "block";
 }
 
 function leaveChat() {
-  disconnectSocket();
   joinButton.style.display = "block";
   leaveButton.style.display = "none";
   userDbHTML.innerHTML = "";
+  messagesLogs.innerHTML = "";
   chatBox.disabled = true;
   sendButton.disabled = true;
-}
-
-function connectSocket() {
-  if (!socket.connected) {
-    socket.connect();
-  }
-}
-
-function disconnectSocket() {
-  if (socket.connected) {
-    socket.disconnect();
-  }
-}
-
-function handleRegisterResponse(response) {
-  if (response.success) {
-    user = response.email;
-    console.log(`Tu email es ${user}`);
-    socket.emit("userConnect", user);
-    joinButton.style.display = "none";
-    leaveButton.style.display = "block";
-  } else {
-    showErrorMessage(response.message);
-  }
+  location.reload();
 }
 
 function handleNewUser(data) {
@@ -140,8 +93,7 @@ function generateMessageElement(user, message) {
 
   const horizontalAlignment = user === currentUser ? "right" : "left";
   messageElement.classList.add(horizontalAlignment);
-  const horizontalClass =
-    horizontalAlignment === "right" ? "far-right" : "far-left";
+  const horizontalClass = horizontalAlignment === "right" ? "far-right" : "far-left";
 
   messageElement.innerHTML = `
     <div class="chat-avatar">

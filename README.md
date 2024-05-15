@@ -1,6 +1,6 @@
 # Curso "Programación Backend" - Final
 
-# NODEJS - EXPRESS - HANDLEBARS - MONGODB
+# NODEJS - EXPRESS - HANDLEBARS - MONGODB - JWT
 
 Tecnologías utilizadas:
 
@@ -10,10 +10,8 @@ Tecnologías utilizadas:
 - MongoDB
 - Handlebars
 - Socket.io
-
-## Deploy
-
-Enlace al [Sitio](https://ancient-polite-napkin.glitch.me/)
+- JWT
+- Passport
 
 ### Clonar el repositorio:
 

@@ -5,7 +5,6 @@ class productManagerDB {
   async getAllProducts() {
     try {
       return await productModel.find().lean();
-      // return await productModel.paginate(filter, options);
     } catch (error) {
       console.error(error.message);
       throw new Error("Error al buscar los productos");
@@ -14,7 +13,6 @@ class productManagerDB {
 
   async getPaginateProducts(filter, options) {
     try {
-      // return await productModel.find().lean();
       return await productModel.paginate(filter, options);
     } catch (error) {
       console.error(error.message);
@@ -30,8 +28,7 @@ class productManagerDB {
 
   async createProduct(product) {
     productValidator(product);
-    const { title, description, code, price, stock, category, thumbnails } =
-      product;
+    const { title, description, code, price, stock, category, thumbnails } = product;
 
     try {
       const result = await productModel.create({
@@ -63,8 +60,7 @@ class productManagerDB {
     try {
       const result = await productModel.deleteOne({ _id: pid });
 
-      if (result.deletedCount === 0)
-        throw new Error(`El producto ${pid} no existe!`);
+      if (result.deletedCount === 0) throw new Error(`El producto ${pid} no existe!`);
 
       return result;
     } catch (error) {
