@@ -1,5 +1,5 @@
-import { productModel } from "../dao/models/productModel.js";
-import { productValidator } from "../utils/productValidator.js";
+import { productModel } from "../../models/productModel.js";
+import { productValidator } from "../../utils/productValidator.js";
 
 class productManagerDB {
   async getAllProducts() {

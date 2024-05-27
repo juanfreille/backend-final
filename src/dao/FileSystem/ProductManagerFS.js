@@ -1,6 +1,6 @@
-import { readFromFile, writeToFile } from "../utils/fileManager.js";
-import { generateNewId } from "../utils/idGenerator.js";
-import { productValidator } from "../utils/productValidator.js";
+import { readFromFile, writeToFile } from "../../utils/fileManager.js";
+import { generateNewId } from "../../utils/idGenerator.js";
+import { productValidator } from "../../utils/productValidator.js";
 
 class productManagerFS {
   constructor(file) {
@@ -29,8 +29,7 @@ class productManagerFS {
   async createProduct(product) {
     productValidator(product);
 
-    const { title, description, code, price, stock, category, thumbnails } =
-      product;
+    const { title, description, code, price, stock, category, thumbnails } = product;
     const parsedPrice = parseFloat(price);
     const parsedStock = parseFloat(stock);
 
@@ -56,16 +55,7 @@ class productManagerFS {
   }
 
   async updateProduct(pid, productUpdate) {
-    const {
-      title,
-      description,
-      code,
-      price,
-      status,
-      stock,
-      category,
-      thumbnails,
-    } = productUpdate;
+    const { title, description, code, price, status, stock, category, thumbnails } = productUpdate;
 
     const updatedPrice = parseFloat(price);
     const updatedStock = parseFloat(stock);
@@ -78,18 +68,13 @@ class productManagerFS {
     });
     if (productIndex !== -1) {
       products[productIndex].title = title || products[productIndex].title;
-      products[productIndex].description =
-        description || products[productIndex].description;
+      products[productIndex].description = description || products[productIndex].description;
       products[productIndex].code = code || products[productIndex].code;
-      products[productIndex].price =
-        updatedPrice || products[productIndex].price;
+      products[productIndex].price = updatedPrice || products[productIndex].price;
       products[productIndex].status = status || products[productIndex].status;
-      products[productIndex].stock =
-        updatedStock || products[productIndex].stock;
-      products[productIndex].category =
-        category || products[productIndex].category;
-      products[productIndex].thumbnails =
-        thumbnails || products[productIndex].thumbnails;
+      products[productIndex].stock = updatedStock || products[productIndex].stock;
+      products[productIndex].category = category || products[productIndex].category;
+      products[productIndex].thumbnails = thumbnails || products[productIndex].thumbnails;
       try {
         await writeToFile(this.file, products);
         return products[productIndex];

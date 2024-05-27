@@ -1,8 +1,7 @@
-import userModel from "../dao/models/userModel.js";
-import { productManagerDB } from "../dao/ProductManagerDB.js";
-import { productModel } from "../dao/models/productModel.js";
-
-const ProductService = new productManagerDB();
+import userModel from "../models/userModel.js";
+import { productModel } from "../models/productModel.js";
+import productService from "../services/productService.js";
+import { cartModel } from "../models/cartModel.js";
 
 export const goHome = async (req, res) => {
   try {
@@ -10,6 +9,25 @@ export const goHome = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).send({ error: err.message });
+  }
+};
+
+export const renderHome = async (req, res) => {
+  try {
+    const limit = 5;
+    const products = await productModel.find().limit(limit).lean();
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+
+    res.render("home", {
+      title: "Backend / Final - Home",
+      style: "styles.css",
+      products: products,
+      user: req.user,
+      userAdmin: req.isAdmin,
+      totalQuantityInCart,
+    });
+  } catch (error) {
+    res.redirect("/login");
   }
 };
 
@@ -23,6 +41,16 @@ export const renderLogin = (req, res) => {
   delete req.session.messages;
   req.session.save();
   return;
+};
+
+export const renderRegister = (req, res) => {
+  res.render("register", {
+    title: "Backend / Final - Registro",
+    style: "styles.css",
+    message: req.session.messages ?? "",
+  });
+  delete req.session.messages;
+  req.session.save();
 };
 
 export const getProducts = async (req, res) => {
@@ -56,7 +84,7 @@ export const getProducts = async (req, res) => {
       options.sort = { price: sort === "asc" ? 1 : -1 };
     }
 
-    const products = await ProductService.getPaginateProducts(searchQuery, options);
+    const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productModel.distinct("category");
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
@@ -94,6 +122,78 @@ export const getProducts = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+export const renderRealTimeProducts = async (req, res) => {
+  const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+
+  res.render("realTimeProducts", {
+    products: productService.getAllProducts,
+    style: "styles.css",
+    user: req.user,
+    userAdmin: req.isAdmin,
+    totalQuantityInCart,
+  });
+};
+
+export const renderChat = async (req, res) => {
+  const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+  res.render("chat", {
+    style: "styles.css",
+    user: req.user,
+    userAdmin: req.isAdmin,
+    totalQuantityInCart,
+  });
+};
+
+export const renderCart = async (req, res) => {
+  try {
+    const { cid } = req.params;
+    const cart = await cartModel.findOne({ _id: cid }).lean();
+    if (!cart) {
+      return res.status(404).json({ error: "No se encontró el carrito" });
+    }
+    const products = await Promise.all(
+      cart.products.map(async (product) => {
+        const productData = await productModel.findOne({ _id: product._id }).lean();
+        return { ...product, product: productData };
+      })
+    );
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+
+    res.render("cart", {
+      title: "Backend / Final - cart",
+      style: "styles.css",
+      payload: products,
+      user: req.user,
+      userAdmin: req.isAdmin,
+      totalQuantityInCart,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const renderProductDetails = async (req, res) => {
+  try {
+    const { pid } = req.params;
+    const product = await productModel.findOne({ _id: pid }).lean();
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+
+    res.render("product-details", {
+      title: "Detalles del Producto",
+      style: "styles.css",
+      product: product,
+      user: req.user,
+      userAdmin: req.isAdmin,
+      totalQuantityInCart,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -160,4 +260,12 @@ export const buildPaginationLinks = (req, products) => {
     prevLink,
     nextLink,
   };
+};
+
+export const verifyUserSession = (req, res, next) => {
+  if (!req.user) {
+    res.clearCookie("connect.sid");
+    return res.redirect("/login");
+  }
+  next();
 };

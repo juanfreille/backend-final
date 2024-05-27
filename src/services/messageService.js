@@ -1,4 +1,4 @@
-import { messageModel } from "../dao/models/messageModel.js";
+import { messageModel } from "../models/messageModel.js";
 
 export const messageService = {
   async getAllMessages() {

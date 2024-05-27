@@ -1,5 +1,5 @@
-import { readFromFile, writeToFile } from "../utils/fileManager.js";
-import { generateNewId } from "../utils/idGenerator.js";
+import { readFromFile, writeToFile } from "../../utils/fileManager.js";
+import { generateNewId } from "../../utils/idGenerator.js";
 
 class CartManagerFS {
   constructor(file, ProductService) {
@@ -49,9 +49,7 @@ class CartManagerFS {
         throw new Error(`El carrito ${cid} no existe`);
       }
 
-      const productIndex = cart.products.findIndex(
-        (item) => item.product === pid
-      );
+      const productIndex = cart.products.findIndex((item) => item.product === pid);
       if (productIndex !== -1) {
         cart.products[productIndex].quantity++;
       } else {

@@ -1,4 +1,4 @@
-import userModel from "../dao/models/userModel.js";
+import userModel from "../models/userModel.js";
 // import { isValidPassword } from "../utils/functionsUtil.js";
 
 export const userService = {

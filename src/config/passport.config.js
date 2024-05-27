@@ -4,7 +4,8 @@ import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtil.js";
 import { userService } from "../services/userService.js";
-import { cartManagerDB } from "../dao/CartManagerDB.js";
+import { cartManagerDB } from "../dao/MongoDB/CartManagerDB.js";
+import config from "./config.js";
 
 const initializePassport = () => {
   const localStratergy = local.Strategy;
@@ -14,14 +15,14 @@ const initializePassport = () => {
   const admin = {
     first_name: "Coder",
     last_name: "Admin",
-    email: "adminCoder@coder.com",
-    password: "adminCod3r123",
+    email: config.ADMIN_EMAIL,
+    password: config.ADMIN_PASSWORD,
     role: "admin",
   };
 
-  const CLIENT_ID = "Iv1.b97af23bd5cfaeb0";
-  const SECRET_ID = "84c23856a5dd1a8737b61fd694ba91b541e05bca";
-  const githubCallbackURL = "http://localhost:8080/api/sessions/githubcallback";
+  const CLIENT_ID = config.CLIENT_ID;
+  const SECRET_ID = config.SECRET_ID;
+  const githubCallbackURL = config.GITHUB_CALLBACK_URL;
 
   const cookieExtractor = (req) => {
     let token = null;
@@ -78,7 +79,7 @@ const initializePassport = () => {
       },
       async (username, password, done) => {
         try {
-          if (username === "adminCoder@coder.com" && password === "adminCod3r123") {
+          if (username === config.ADMIN_EMAIL && password === config.ADMIN_PASSWORD) {
             const adminUser = admin;
             return done(null, adminUser);
           }
@@ -159,7 +160,7 @@ const initializePassport = () => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: "coderSecret",
+        secretOrKey: config.JWT_SECRET,
       },
       async (jwt_payload, done) => {
         try {

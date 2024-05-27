@@ -13,10 +13,11 @@ import mongoose from "mongoose";
 import passport from "passport";
 import initializatePassport from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
+import config from "./config/config.js";
 
 const app = express();
-const port = 8080;
-const uri = "mongodb+srv://juanfreille:D0CF0ls7OTGY4XUW@codercluster.r4qv6gu.mongodb.net/";
+const port = config.PORT;
+const uri = config.MONGO_URL;
 
 // Middleware
 app.use(express.json());
@@ -30,7 +31,7 @@ app.use(
       mongoUrl: uri,
       ttl: 60, // 60 minutos
     }),
-    secret: "secretPhrase",
+    secret: config.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
     cookie: { maxAge: 3600000 }, // 60 minutos en milisegundos
