@@ -1,67 +1,31 @@
-import userModel from "../models/userModel.js";
-// import { isValidPassword } from "../utils/functionsUtil.js";
+import UserManager from "../dao/MongoDB/UserManagerDB.js";
 
-export const userService = {
-  async getAllUsers(filter) {
-    try {
-      const users = await userModel.find(filter).lean();
-      return users;
-    } catch (error) {
-      console.log(error.message);
-      throw new Error("Error al consultar los usuarios");
-    }
-  },
+const userManager = new UserManager();
 
-  async getUserById(id) {
-    try {
-      return await userModel.findById({ _id: id });
-    } catch (error) {
-      console.log(error.message);
-      throw new Error("Usuario no encontrado");
-    }
-  },
+const getAllUsers = async (filter) => {
+  return await userManager.getAllUsers(filter);
+};
 
-  async getUserByEmail(email) {
-    try {
-      return await userModel.findOne({ email });
-    } catch (error) {
-      console.log(error.message);
-      throw new Error("Usuario no encontrado");
-    }
-  },
+const getUserById = async (id) => {
+  return await userManager.getUserById(id);
+};
 
-  async createUser(user) {
-    try {
-      return await userModel.create(user);
-    } catch (error) {
-      console.log(error.message);
-      throw new Error("Error al registrar usuario");
-    }
-  },
+const getUserByEmail = async (email) => {
+  return await userManager.getUserByEmail(email);
+};
 
-  async updateUser(user) {
-    try {
-      await userModel.findByIdAndUpdate(user._id, user);
-      return user;
-    } catch (error) {
-      throw new Error("Error al actualizar el usuario en la base de datos");
-    }
-  },
-  // async loginUser(email, password) {
-  //   if (!email || !password) {
-  //     throw new Error("Faltan datos");
-  //   }
-  //   try {
-  //     const user = await userModel.findOne({ email });
-  //     if (!user) throw new Error("credenciales inválidas");
-  //     if (isValidPassword(user, password)) {
-  //       return user;
-  //     } else {
-  //       throw new Error("Credenciales inválidas");
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //     throw new Error("Error al iniciar sesión");
-  //   }
-  // },
+const createUser = async (user) => {
+  return await userManager.createUser(user);
+};
+
+const updateUser = async (user) => {
+  return await userManager.updateUser(user);
+};
+
+export default {
+  getAllUsers,
+  getUserById,
+  getUserByEmail,
+  createUser,
+  updateUser,
 };

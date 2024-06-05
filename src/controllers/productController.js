@@ -1,4 +1,5 @@
 import productService from "../services/productService.js";
+import productDTO from "../dto/productDTO.js";
 
 export const getPaginateProducts = async (req, res) => {
   try {
@@ -102,7 +103,9 @@ export const createProduct = async (req, res) => {
     });
   }
   try {
-    const result = await productService.createProduct(req.body);
+    const newProductDTO = new productDTO(req.body);
+
+    const result = await productService.createProduct(newProductDTO);
     res.send({
       status: "success",
       payload: result,

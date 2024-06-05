@@ -58,8 +58,12 @@
         </div>
       </div>
       <div class="iniciarCompra">
-        <a class="btn btn-effect btn-dark btn-jif bg-black px-5 uppercase">Iniciar Compra</a>
+                        <form action="{{user.cart._id}}/purchase" method="get">
+                    <button class='btn btn-effect btn-dark btn-jif bg-black px-5 uppercase'><i class="bi bi-cash-stack"></i> Confirmar Compra</button>
+                </form>
       </div>
+    </div>
+
     </div>
   </div>
 {{else}}

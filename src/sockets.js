@@ -1,11 +1,13 @@
 import { messageModel } from "./models/messageModel.js";
-import { productManagerDB } from "./dao/MongoDB/ProductManagerDB.js";
-import { messageService } from "./services/messageService.js";
-import { cartManagerDB } from "./dao/MongoDB/CartManagerDB.js";
+import ProductManager from "./dao/MongoDB/ProductManagerDB.js";
+import MessageManager from "./dao/MongoDB/MessageManagerDB.js";
+import { cartManager } from "./dao/MongoDB/CartManagerDB.js";
 import config from "./config/config.js";
 
-const ProductService = new productManagerDB();
-const CartService = new cartManagerDB();
+const ProductService = new ProductManager();
+const CartService = new cartManager();
+const messageService = new MessageManager();
+
 let users = [];
 
 export default (io) => {

@@ -1,4 +1,5 @@
 import sessionService from "../services/sessionService.js";
+import userDTO from "../dto/userDTO.js";
 
 export const loginJWT = (req, res) => {
   const token = sessionService.generateJWT(req.user);
@@ -33,7 +34,7 @@ export const handleLogin = (req, res, next) => {
 };
 
 export const getCurrentUser = (req, res) => {
-  const user = req.user;
+  const user = new userDTO(req.user);
   res.send({ status: "success", payload: user });
 };
 

@@ -1,23 +1,27 @@
-import { messageModel } from "../models/messageModel.js";
+import MessageManager from "../dao/MongoDB/MessageManagerDB.js";
 
-export const messageService = {
-  async getAllMessages() {
+class MessageService {
+  constructor() {
+    this.messageManager = new MessageManager();
+  }
+
+  async getMessages() {
     try {
-      const messages = await messageModel.find();
-      return messages;
+      return await this.messageManager.getMessages();
     } catch (error) {
       console.error("Error al obtener los mensajes:", error);
-      throw error;
+      throw new Error("Error al obtener los mensajes");
     }
-  },
+  }
 
-  async saveMessage(messageData) {
+  async addMessage(message) {
     try {
-      const message = new messageModel(messageData);
-      await message.save();
+      return await this.messageManager.addMessage(message);
     } catch (error) {
-      console.error("Error al guardar el mensaje en la base de datos:", error);
-      throw error;
+      console.error("Error al agregar el mensaje:", error);
+      throw new Error("Error al agregar el mensaje");
     }
-  },
-};
+  }
+}
+
+export default MessageService;

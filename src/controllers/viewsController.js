@@ -1,7 +1,9 @@
-import userModel from "../models/userModel.js";
+import { userModel } from "../models/userModel.js";
 import { productModel } from "../models/productModel.js";
 import productService from "../services/productService.js";
 import { cartModel } from "../models/cartModel.js";
+import cartService from "../services/cartService.js";
+import ticketRepository from "../repositories/tickets.repository.js";
 
 export const goHome = async (req, res) => {
   try {
@@ -268,4 +270,101 @@ export const verifyUserSession = (req, res, next) => {
     return res.redirect("/login");
   }
   next();
+};
+
+// Vista para purchase:
+export const purchaseView = async (req, res) => {
+  try {
+    // Verificar si el carrito existe
+    const cart = await cartService.getCartById(req.params.cid);
+    if (!cart) {
+      return res.status(404).json({ error: "El carrito no fue encontrado" });
+    }
+
+    const productsInCart = cart.products;
+    let purchaseSuccess = [];
+    let purchaseError = [];
+    let amount = 0;
+
+    try {
+      amount = await calculateTotalAmount(productsInCart);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+
+    for (let product of productsInCart) {
+      const idproduct = product._id;
+      const quantity = product.quantity;
+      const productInDB = await productService.getProductByID(idproduct);
+      if (!productInDB) {
+        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
+      }
+
+      if (quantity > productInDB.stock) {
+        purchaseError.push({ ...product, productData: productInDB });
+      } else {
+        purchaseSuccess.push({ ...product, productData: productInDB });
+      }
+    }
+
+    console.log(cart._id);
+
+    // Crear el ticket
+    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+
+    const purchaseData = {
+      ticketId: ticket._id,
+      amount: ticket.amount,
+      purchaser: ticket.purchaser,
+      productosProcesados: purchaseSuccess,
+      productosNoProcesados: purchaseError,
+      cartId: cart._id,
+    };
+
+    // Obtener productos que no pudieron procesarse
+    const notProcessed = purchaseError.map((product) => ({
+      _id: product._id,
+      quantity: product.quantity,
+      name: product.productData.title,
+    }));
+
+    const processed = purchaseSuccess.map((product) => ({
+      _id: product._id,
+      quantity: product.quantity,
+      name: product.productData.title,
+    }));
+
+    // Renderizar la vista del ticket
+    res.render("purchase", {
+      status: "success",
+      title: "Detalles del Producto",
+      style: "styles.css",
+      payload: purchaseData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      status: "error",
+      message: "Error interno del servidor",
+    });
+  }
+};
+
+const calculateTotalAmount = async (productsInCart) => {
+  let amount = 0;
+
+  for (let product of productsInCart) {
+    const idproduct = product._id;
+    const quantity = product.quantity;
+    const productInDB = await productService.getProductByID(idproduct);
+
+    if (!productInDB) {
+      throw new Error(`Producto con ID ${idproduct} no encontrado`);
+    }
+
+    const monto = productInDB.price * quantity;
+    amount += monto;
+  }
+
+  return amount;
 };

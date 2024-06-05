@@ -1,6 +1,6 @@
-import { productManagerDB } from "../dao/MongoDB/ProductManagerDB.js";
+import ProductManager from "../dao/MongoDB/ProductManagerDB.js";
 
-const ProductManger = new productManagerDB();
+const ProductManger = new ProductManager();
 
 const getAllProducts = async () => {
   return await ProductManger.getAllProducts();

@@ -1,4 +1,5 @@
 import cartService from "../services/cartService.js";
+import ticketRepository from "../repositories/tickets.repository.js";
 
 export const getAllCarts = async (req, res) => {
   try {
@@ -131,4 +132,74 @@ export const clearCart = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+export const purchase = async (req, res) => {
+  try {
+    const cart = await cartService.getCartById(req.params.cid);
+    if (!cart) {
+      return res.status(404).json({ error: "El carrito no fue encontrado" });
+    }
+
+    const productsInCart = cart.products;
+    let purchaseSuccess = [];
+    let purchaseError = [];
+    let amount = 0;
+
+    try {
+      amount = await calculateTotalAmount(productsInCart);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+
+    for (let product of productsInCart) {
+      const idproduct = product._id;
+      const quantity = product.quantity;
+      const productInDB = await productService.getProductByID(idproduct);
+      if (!productInDB) {
+        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
+      }
+
+      if (quantity > productInDB.stock) {
+        purchaseError.push({ ...product, productData: productInDB });
+      } else {
+        purchaseSuccess.push({ ...product, productData: productInDB });
+      }
+    }
+
+    // Crear el ticket
+    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+
+    const purchaseData = {
+      ticketId: ticket._id,
+      amount: ticket.amount,
+      purchaser: ticket.purchaser,
+      productosProcesados: purchaseSuccess,
+      productosNoProcesados: purchaseError,
+      cartId: cart._id,
+    };
+    res.status(200).send({ status: "success", payload: purchaseData });
+  } catch (error) {
+    console.error(error);
+    res.status(400).send({ error: error.message });
+  }
+};
+
+const calculateTotalAmount = async (productsInCart) => {
+  let amount = 0;
+
+  for (let product of productsInCart) {
+    const idproduct = product._id;
+    const quantity = product.quantity;
+    const productInDB = await productService.getProductByID(idproduct);
+
+    if (!productInDB) {
+      throw new Error(`Producto con ID ${idproduct} no encontrado`);
+    }
+
+    const monto = productInDB.price * quantity;
+    amount += monto;
+  }
+
+  return amount;
 };

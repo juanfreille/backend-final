@@ -1,0 +1,29 @@
+
+<div class="container">
+    {{#if payload}}
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fas fa-receipt"></i> Resumen de la compra:
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Ticket ID: {{payload.ticketId}}</li>
+                <li class="list-group-item">Monto total: {{payload.amount}}</li>
+                <li class="list-group-item">Usuario: {{payload.purchaser}}</li>
+            </ul>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <form action="/cart/{{payload.cartId}}" method="get">
+                <button class='btn btn-effect btn-dark btn-jif bg-black btn-detalles mt-2 mx-4'>Volver al carrito</button>
+            </form>
+            <form action="/products" method="get">
+                <button class="btn btn-effect btn-dark btn-jif bg-black btn-detalles mt-2 mx-4">Continuar Comprando</button>
+            </form>
+        </div>
+
+    {{else}}
+        <div class="card mt-4">
+            <div class="card-header">Productos no procesados</div>
+        </div>
+    {{/if}}
+</div>
