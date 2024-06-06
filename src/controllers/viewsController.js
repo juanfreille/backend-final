@@ -285,6 +285,8 @@ export const purchaseView = async (req, res) => {
     let purchaseSuccess = [];
     let purchaseError = [];
     let amount = 0;
+    let processedAmount = 0;
+    let notProcessedAmount = 0;
 
     try {
       amount = await calculateTotalAmount(productsInCart);
@@ -300,28 +302,17 @@ export const purchaseView = async (req, res) => {
         return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
       }
 
+      const monto = productInDB.price * quantity;
+
       if (quantity > productInDB.stock) {
+        notProcessedAmount += monto;
         purchaseError.push({ ...product, productData: productInDB });
       } else {
+        processedAmount += monto;
         purchaseSuccess.push({ ...product, productData: productInDB });
       }
     }
 
-    console.log(cart._id);
-
-    // Crear el ticket
-    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
-
-    const purchaseData = {
-      ticketId: ticket._id,
-      amount: ticket.amount,
-      purchaser: ticket.purchaser,
-      productosProcesados: purchaseSuccess,
-      productosNoProcesados: purchaseError,
-      cartId: cart._id,
-    };
-
-    // Obtener productos que no pudieron procesarse
     const notProcessed = purchaseError.map((product) => ({
       _id: product._id,
       quantity: product.quantity,
@@ -334,13 +325,35 @@ export const purchaseView = async (req, res) => {
       name: product.productData.title,
     }));
 
-    // Renderizar la vista del ticket
-    res.render("purchase", {
-      status: "success",
-      title: "Detalles del Producto",
-      style: "styles.css",
-      payload: purchaseData,
-    });
+    if (purchaseSuccess.length > 0) {
+      // Crear el ticket
+      const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+
+      const purchaseData = {
+        ticketId: ticket._id,
+        amount: ticket.amount,
+        purchaser: ticket.purchaser,
+        productosProcesados: processed,
+        productosNoProcesados: notProcessed,
+        cartId: cart._id,
+      };
+
+      // Renderizar la vista del ticket
+      res.render("purchase", {
+        status: "success",
+        title: "Detalles del Producto",
+        style: "styles.css",
+        payload: purchaseData,
+        processedAmount,
+        notProcessedAmount,
+      });
+    } else {
+      res.status(200).send("errorPurchase", {
+        status: "success",
+        message: "No se procesaron productos, por falta de stock.",
+        productosNoProcesados: notProcessed,
+      });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send({

@@ -5,7 +5,7 @@ class TicketController {
     const { limit, page, query, sort } = req.query;
     try {
       const result = await ticketRepository.getAllTickets(limit, page, query, sort);
-      res.send({ status: "success", payload: result });
+      res.status(200).send({ status: "success", payload: result });
     } catch (error) {
       console.error(error.message);
       res.status(500).send({ status: "error", message: "Error fetching tickets" });
@@ -17,7 +17,7 @@ class TicketController {
     try {
       const result = await ticketRepository.getTicketById(tid);
       if (!result) throw new Error(`Ticket with ID ${tid} does not exist!`);
-      res.send({ status: "success", payload: result });
+      res.status(200).send({ status: "success", payload: result });
     } catch (error) {
       console.error(error.message);
       res.status(400).send({ status: "error", message: error.message });
@@ -30,7 +30,7 @@ class TicketController {
       console.log(cart);
       const ticketData = { cart, amount, purchaser };
       const newTicket = await ticketRepository.createTicket(ticketData);
-      res.send({ status: "success", payload: newTicket });
+      res.status(201).send({ status: "success", payload: newTicket });
     } catch (error) {
       console.error(error.message);
       res.status(400).send({ status: "error", message: error.message });

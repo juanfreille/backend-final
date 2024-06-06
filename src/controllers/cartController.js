@@ -145,6 +145,8 @@ export const purchase = async (req, res) => {
     let purchaseSuccess = [];
     let purchaseError = [];
     let amount = 0;
+    let processedAmount = 0;
+    let notProcessedAmount = 0;
 
     try {
       amount = await calculateTotalAmount(productsInCart);
@@ -160,25 +162,48 @@ export const purchase = async (req, res) => {
         return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
       }
 
+      const monto = productInDB.price * quantity;
+
       if (quantity > productInDB.stock) {
+        notProcessedAmount += monto;
         purchaseError.push({ ...product, productData: productInDB });
       } else {
+        processedAmount += monto;
         purchaseSuccess.push({ ...product, productData: productInDB });
       }
     }
 
-    // Crear el ticket
-    const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+    const notProcessed = purchaseError.map((product) => ({
+      _id: product._id,
+      quantity: product.quantity,
+      name: product.productData.title,
+    }));
 
-    const purchaseData = {
-      ticketId: ticket._id,
-      amount: ticket.amount,
-      purchaser: ticket.purchaser,
-      productosProcesados: purchaseSuccess,
-      productosNoProcesados: purchaseError,
-      cartId: cart._id,
-    };
-    res.status(200).send({ status: "success", payload: purchaseData });
+    const processed = purchaseSuccess.map((product) => ({
+      _id: product._id,
+      quantity: product.quantity,
+      name: product.productData.title,
+    }));
+
+    if (purchaseSuccess.length > 0) {
+      const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
+
+      const purchaseData = {
+        ticketId: ticket._id,
+        amount: ticket.amount,
+        purchaser: ticket.purchaser,
+        productosProcesados: processed,
+        productosNoProcesados: notProcessed,
+        cartId: cart._id,
+      };
+      res.status(200).send({ status: "success", payload: purchaseData });
+    } else {
+      res.status(200).send({
+        status: "success",
+        message: "No se procesaron productos, por falta de stock.",
+        productosNoProcesados: notProcessed,
+      });
+    }
   } catch (error) {
     console.error(error);
     res.status(400).send({ error: error.message });
