@@ -32,6 +32,10 @@ const updateProductQuantity = async (cid, pid, quantity) => {
   return await CartManager.updateProductQuantity(cid, pid, quantity);
 };
 
+const insertArray = async (cid, arrayOfProducts) => {
+  return await CartManager.insertArray(cid, arrayOfProducts);
+};
+
 const clearCart = async (cid) => {
   return await CartManager.clearCart(cid);
 };
@@ -45,4 +49,5 @@ export default {
   updateCart,
   updateProductQuantity,
   clearCart,
+  insertArray,
 };

@@ -1,4 +1,4 @@
-export default class cartDTO {
+export default class cartsDTO {
   constructor(cart) {
     this.id = cart.id;
     if (Array.isArray(cart)) {

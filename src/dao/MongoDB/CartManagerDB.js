@@ -33,6 +33,10 @@ class cartManager {
     return await this.cartRepository.updateProductQuantity(cid, productId, quantity);
   }
 
+  async insertArray(cid, arrayOfProducts) {
+    return await this.cartRepository.insertArray(cid, arrayOfProducts);
+  }
+
   async clearCart(cid) {
     return await this.cartRepository.clearCart(cid);
   }

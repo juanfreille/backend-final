@@ -7,19 +7,6 @@ const ticketSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  products: {
-    type: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "products",
-        },
-        quantity: {
-          type: Number,
-        },
-      },
-    ],
-  },
   purchaseDateTime: {
     type: Date,
     default: Date.now,

@@ -27,7 +27,6 @@ class TicketController {
   async createTicket(req, res) {
     try {
       const { cart, amount, purchaser } = req.body;
-      console.log(cart);
       const ticketData = { cart, amount, purchaser };
       const newTicket = await ticketRepository.createTicket(ticketData);
       res.status(201).send({ status: "success", payload: newTicket });

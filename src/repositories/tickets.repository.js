@@ -23,7 +23,7 @@ class TicketRepository {
     }
   }
 
-  async createTicket(email, amount, cartId) {
+  async createTicket(email, amount) {
     try {
       const user = await userModel.findOne({ email });
       if (!user) {
@@ -35,7 +35,6 @@ class TicketRepository {
         code,
         purchaseDateTime: new Date(),
         amount,
-        products: cartId,
         purchaser: user._id,
       });
 

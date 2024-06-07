@@ -137,57 +137,53 @@ export const clearCart = async (req, res) => {
 export const purchase = async (req, res) => {
   try {
     const cart = await cartService.getCartById(req.params.cid);
-    if (!cart) {
-      return res.status(404).json({ error: "El carrito no fue encontrado" });
-    }
+    if (!cart) return res.status(404).json({ error: "El carrito no fue encontrado" });
 
     const productsInCart = cart.products;
-    let purchaseSuccess = [];
-    let purchaseError = [];
-    let amount = 0;
-    let processedAmount = 0;
-    let notProcessedAmount = 0;
-
-    try {
-      amount = await calculateTotalAmount(productsInCart);
-    } catch (error) {
-      return res.status(404).json({ error: error.message });
-    }
+    let purchaseSuccess = [],
+      purchaseError = [];
+    let processedAmount = 0,
+      notProcessedAmount = 0;
 
     for (let product of productsInCart) {
-      const idproduct = product._id;
-      const quantity = product.quantity;
+      const { _id: idproduct, quantity } = product;
       const productInDB = await productService.getProductByID(idproduct);
-      if (!productInDB) {
-        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
-      }
+      if (!productInDB) return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
 
       const monto = productInDB.price * quantity;
 
+      // Verificar si hay suficiente stock para procesar el pedido
       if (quantity > productInDB.stock) {
         notProcessedAmount += monto;
         purchaseError.push({ ...product, productData: productInDB });
       } else {
+        // Actualizar el stock del producto en la base de datos
+        const updatedStock = productInDB.stock - quantity;
+        await productService.updateProduct(idproduct, { stock: updatedStock });
+
         processedAmount += monto;
         purchaseSuccess.push({ ...product, productData: productInDB });
       }
     }
 
-    const notProcessed = purchaseError.map((product) => ({
-      _id: product._id,
-      quantity: product.quantity,
-      name: product.productData.title,
-    }));
+    const formatProducts = (products) =>
+      products.map(({ _id, quantity, productData }) => ({
+        _id,
+        quantity,
+        name: productData.title,
+      }));
 
-    const processed = purchaseSuccess.map((product) => ({
-      _id: product._id,
-      quantity: product.quantity,
-      name: product.productData.title,
-    }));
+    const notProcessed = formatProducts(purchaseError);
+    const processed = formatProducts(purchaseSuccess);
+
+    // Actualizar el carrito con los productos no procesados
+    await cartService.insertArray(cart._id, purchaseError);
+    const updatedCart = await cartModel.findOne({ _id: cart._id }).lean();
+    req.user.cart = updatedCart;
 
     if (purchaseSuccess.length > 0) {
-      const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
-
+      // Crear un ticket para la compra
+      const ticket = await ticketRepository.createTicket(req.user.email, processedAmount);
       const purchaseData = {
         ticketId: ticket._id,
         amount: ticket.amount,
@@ -196,35 +192,15 @@ export const purchase = async (req, res) => {
         productosNoProcesados: notProcessed,
         cartId: cart._id,
       };
-      res.status(200).send({ status: "success", payload: purchaseData });
-    } else {
-      res.status(200).send({
-        status: "success",
-        message: "No se procesaron productos, por falta de stock.",
-        productosNoProcesados: notProcessed,
-      });
+      return res.status(200).send({ status: "success", payload: purchaseData });
     }
+    return res.status(200).send({
+      status: "error",
+      message: "No se procesaron productos, por falta de stock.",
+      productosNoProcesados: notProcessed,
+    });
   } catch (error) {
     console.error(error);
     res.status(400).send({ error: error.message });
   }
-};
-
-const calculateTotalAmount = async (productsInCart) => {
-  let amount = 0;
-
-  for (let product of productsInCart) {
-    const idproduct = product._id;
-    const quantity = product.quantity;
-    const productInDB = await productService.getProductByID(idproduct);
-
-    if (!productInDB) {
-      throw new Error(`Producto con ID ${idproduct} no encontrado`);
-    }
-
-    const monto = productInDB.price * quantity;
-    amount += monto;
-  }
-
-  return amount;
 };

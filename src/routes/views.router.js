@@ -28,6 +28,6 @@ router.get("/realtimeproducts", passportCall("jwt"), authorization("admin"), isA
 router.get("/chat", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderChat);
 router.get("/cart/:cid", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderCart);
 router.get("/products/item/:pid", passportCall("jwt"), isAdmin, populateCart, verifyUserSession, renderProductDetails);
-router.get("/cart/:cid/purchase", passportCall("jwt"), purchaseView);
+router.get("/cart/:cid/purchase", passportCall("jwt"), populateCart, purchaseView);
 
 export default router;

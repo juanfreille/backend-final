@@ -156,6 +156,11 @@ export const renderCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({ error: "No se encontró el carrito" });
     }
+    console.log(cart.products);
+
+    const productsInCart = cart.products;
+    console.log(productsInCart);
+
     const products = await Promise.all(
       cart.products.map(async (product) => {
         const productData = await productModel.findOne({ _id: product._id }).lean();
@@ -163,7 +168,6 @@ export const renderCart = async (req, res) => {
       })
     );
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-
     res.render("cart", {
       title: "Backend / Final - cart",
       style: "styles.css",
@@ -185,7 +189,6 @@ export const renderProductDetails = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-
     res.render("product-details", {
       title: "Detalles del Producto",
       style: "styles.css",
@@ -272,63 +275,56 @@ export const verifyUserSession = (req, res, next) => {
   next();
 };
 
-// Vista para purchase:
 export const purchaseView = async (req, res) => {
   try {
-    // Verificar si el carrito existe
     const cart = await cartService.getCartById(req.params.cid);
-    if (!cart) {
-      return res.status(404).json({ error: "El carrito no fue encontrado" });
-    }
+    if (!cart) return res.status(404).json({ error: "El carrito no fue encontrado" });
 
     const productsInCart = cart.products;
-    let purchaseSuccess = [];
-    let purchaseError = [];
-    let amount = 0;
-    let processedAmount = 0;
-    let notProcessedAmount = 0;
-
-    try {
-      amount = await calculateTotalAmount(productsInCart);
-    } catch (error) {
-      return res.status(404).json({ error: error.message });
-    }
+    let purchaseSuccess = [],
+      purchaseError = [];
+    let processedAmount = 0,
+      notProcessedAmount = 0;
 
     for (let product of productsInCart) {
-      const idproduct = product._id;
-      const quantity = product.quantity;
+      const { _id: idproduct, quantity } = product;
       const productInDB = await productService.getProductByID(idproduct);
-      if (!productInDB) {
-        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
-      }
+      if (!productInDB) return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
 
       const monto = productInDB.price * quantity;
 
+      // Verificar si hay suficiente stock para procesar el pedido
       if (quantity > productInDB.stock) {
         notProcessedAmount += monto;
         purchaseError.push({ ...product, productData: productInDB });
       } else {
+        // Actualizar el stock del producto en la base de datos
+        const updatedStock = productInDB.stock - quantity;
+        await productService.updateProduct(idproduct, { stock: updatedStock });
+
         processedAmount += monto;
         purchaseSuccess.push({ ...product, productData: productInDB });
       }
     }
 
-    const notProcessed = purchaseError.map((product) => ({
-      _id: product._id,
-      quantity: product.quantity,
-      name: product.productData.title,
-    }));
+    const formatProducts = (products) =>
+      products.map(({ _id, quantity, productData }) => ({
+        _id,
+        quantity,
+        name: productData.title,
+      }));
 
-    const processed = purchaseSuccess.map((product) => ({
-      _id: product._id,
-      quantity: product.quantity,
-      name: product.productData.title,
-    }));
+    const notProcessed = formatProducts(purchaseError);
+    const processed = formatProducts(purchaseSuccess);
+
+    // Actualizar el carrito con los productos no procesados
+    await cartService.insertArray(cart._id, purchaseError);
+    const updatedCart = await cartModel.findOne({ _id: cart._id }).lean();
+    req.user.cart = updatedCart;
 
     if (purchaseSuccess.length > 0) {
-      // Crear el ticket
-      const ticket = await ticketRepository.createTicket(req.user.email, amount, cart);
-
+      // Crear un ticket para la compra
+      const ticket = await ticketRepository.createTicket(req.user.email, processedAmount);
       const purchaseData = {
         ticketId: ticket._id,
         amount: ticket.amount,
@@ -338,22 +334,32 @@ export const purchaseView = async (req, res) => {
         cartId: cart._id,
       };
 
-      // Renderizar la vista del ticket
-      res.render("purchase", {
+      // Renderizar la vista de compra exitosa
+      return res.render("purchase", {
         status: "success",
         title: "Detalles del Producto",
         style: "styles.css",
         payload: purchaseData,
         processedAmount,
         notProcessedAmount,
-      });
-    } else {
-      res.status(200).send("errorPurchase", {
-        status: "success",
-        message: "No se procesaron productos, por falta de stock.",
-        productosNoProcesados: notProcessed,
+        user: req.user,
+        userAdmin: req.isAdmin,
+        totalQuantityInCart: calculateTotalQuantityInCart(req.user),
       });
     }
+
+    // Si no se procesaron productos debido a la falta de stock
+    return res.render("purchase", {
+      status: "error",
+      title: "Detalles del Producto",
+      style: "styles.css",
+      processedAmount,
+      notProcessedAmount,
+      notProcessed,
+      user: req.user,
+      userAdmin: req.isAdmin,
+      totalQuantityInCart: calculateTotalQuantityInCart(req.user),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({
@@ -361,23 +367,4 @@ export const purchaseView = async (req, res) => {
       message: "Error interno del servidor",
     });
   }
-};
-
-const calculateTotalAmount = async (productsInCart) => {
-  let amount = 0;
-
-  for (let product of productsInCart) {
-    const idproduct = product._id;
-    const quantity = product.quantity;
-    const productInDB = await productService.getProductByID(idproduct);
-
-    if (!productInDB) {
-      throw new Error(`Producto con ID ${idproduct} no encontrado`);
-    }
-
-    const monto = productInDB.price * quantity;
-    amount += monto;
-  }
-
-  return amount;
 };
