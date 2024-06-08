@@ -4,5 +4,6 @@ export default class ticketDTO {
     this.purchaseDateTime = ticket.purchaseDateTime;
     this.amount = ticket.amount;
     this.purchaser = ticket.purchaser;
+    this.products = ticket.products;
   }
 }

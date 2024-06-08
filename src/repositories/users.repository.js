@@ -13,7 +13,8 @@ class UserRepository {
 
   async getUserById(id) {
     try {
-      return await userModel.findById({ _id: id });
+      const user = await userModel.findById(id).populate("cart").lean();
+      return user;
     } catch (error) {
       console.log(error.message);
       throw new Error("Usuario no encontrado");

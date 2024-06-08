@@ -1,8 +1,6 @@
-import { userModel } from "../models/userModel.js";
-import { productModel } from "../models/productModel.js";
 import productService from "../services/productService.js";
-import { cartModel } from "../models/cartModel.js";
 import cartService from "../services/cartService.js";
+import userService from "../services/userService.js";
 import ticketRepository from "../repositories/tickets.repository.js";
 
 export const goHome = async (req, res) => {
@@ -16,14 +14,12 @@ export const goHome = async (req, res) => {
 
 export const renderHome = async (req, res) => {
   try {
-    const limit = 5;
-    const products = await productModel.find().limit(limit).lean();
+    const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-
     res.render("home", {
       title: "Backend / Final - Home",
       style: "styles.css",
-      products: products,
+      products: products.docs,
       user: req.user,
       userAdmin: req.isAdmin,
       totalQuantityInCart,
@@ -88,7 +84,7 @@ export const getProducts = async (req, res) => {
 
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
-    const categories = await productModel.distinct("category");
+    const categories = await productService.getDistinctCategories();
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
     let requestedPage = parseInt(page);
@@ -151,19 +147,15 @@ export const renderChat = async (req, res) => {
 
 export const renderCart = async (req, res) => {
   try {
-    const { cid } = req.params;
-    const cart = await cartModel.findOne({ _id: cid }).lean();
+    const cart = await cartService.getCartById(req.params.cid);
+
     if (!cart) {
       return res.status(404).json({ error: "No se encontró el carrito" });
     }
-    console.log(cart.products);
-
     const productsInCart = cart.products;
-    console.log(productsInCart);
-
     const products = await Promise.all(
       cart.products.map(async (product) => {
-        const productData = await productModel.findOne({ _id: product._id }).lean();
+        const productData = await productService.getProductByID(product._id);
         return { ...product, product: productData };
       })
     );
@@ -184,7 +176,7 @@ export const renderCart = async (req, res) => {
 export const renderProductDetails = async (req, res) => {
   try {
     const { pid } = req.params;
-    const product = await productModel.findOne({ _id: pid }).lean();
+    const product = await productService.getProductByID(pid);
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -232,7 +224,7 @@ export const populateCart = async (req, res, next) => {
   try {
     const user = req.user;
     if (user && user.role !== "admin" && user.cart) {
-      req.user = await userModel.findOne({ _id: user._id }).populate("cart").lean();
+      req.user = await userService.getUserById(user._id);
     }
     next();
   } catch (error) {
@@ -319,12 +311,12 @@ export const purchaseView = async (req, res) => {
 
     // Actualizar el carrito con los productos no procesados
     await cartService.insertArray(cart._id, purchaseError);
-    const updatedCart = await cartModel.findOne({ _id: cart._id }).lean();
+    const updatedCart = await cartService.getCartById(cart._id);
     req.user.cart = updatedCart;
 
     if (purchaseSuccess.length > 0) {
       // Crear un ticket para la compra
-      const ticket = await ticketRepository.createTicket(req.user.email, processedAmount);
+      const ticket = await ticketRepository.createTicket(req.user.email, processedAmount, processed);
       const purchaseData = {
         ticketId: ticket._id,
         amount: ticket.amount,

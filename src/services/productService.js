@@ -1,30 +1,20 @@
-import ProductManager from "../dao/MongoDB/ProductManagerDB.js";
+import ProductManagerDB from "../dao/MongoDB/ProductManagerDB.js";
 
-const ProductManger = new ProductManager();
+const productManager = new ProductManagerDB();
 
-const getAllProducts = async () => {
-  return await ProductManger.getAllProducts();
-};
+const getAllProducts = async () => productManager.getAllProducts();
 
-const getPaginateProducts = async (searchQuery, options) => {
-  return await ProductManger.getPaginateProducts(searchQuery, options);
-};
+const getPaginateProducts = async (searchQuery, options) => productManager.getPaginateProducts(searchQuery, options);
 
-const getProductByID = async (pid) => {
-  return await ProductManger.getProductByID(pid);
-};
+const getProductByID = async (pid) => productManager.getProductByID(pid);
 
-const createProduct = async (productData) => {
-  return await ProductManger.createProduct(productData);
-};
+const createProduct = async (productData) => productManager.createProduct(productData);
 
-const updateProduct = async (pid, productData) => {
-  return await ProductManger.updateProduct(pid, productData);
-};
+const updateProduct = async (pid, productData) => productManager.updateProduct(pid, productData);
 
-const deleteProduct = async (pid) => {
-  return await ProductManger.deleteProduct(pid);
-};
+const deleteProduct = async (pid) => productManager.deleteProduct(pid);
+
+const getDistinctCategories = async () => productManager.getDistinctCategories();
 
 export default {
   getAllProducts,
@@ -33,4 +23,5 @@ export default {
   createProduct,
   updateProduct,
   deleteProduct,
+  getDistinctCategories,
 };

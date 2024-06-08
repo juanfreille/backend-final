@@ -5,28 +5,32 @@ class ProductManagerDB {
     this.productRepository = new ProductRepository();
   }
 
-  async getAllProducts() {
-    return await this.productRepository.getAllProducts();
+  getAllProducts() {
+    return this.productRepository.getAllProducts();
   }
 
-  async getPaginateProducts(filter, options) {
-    return await this.productRepository.getPaginateProducts(filter, options);
+  getPaginateProducts(filter, options) {
+    return this.productRepository.getPaginateProducts(filter, options);
   }
 
-  async getProductByID(pid) {
-    return await this.productRepository.getProductByID(pid);
+  getProductByID(pid) {
+    return this.productRepository.getProductByID(pid);
   }
 
-  async createProduct(product) {
-    return await this.productRepository.createProduct(product);
+  createProduct(product) {
+    return this.productRepository.createProduct(product);
   }
 
-  async updateProduct(pid, productUpdate) {
-    return await this.productRepository.updateProduct(pid, productUpdate);
+  updateProduct(pid, productUpdate) {
+    return this.productRepository.updateProduct(pid, productUpdate);
   }
 
-  async deleteProduct(pid) {
-    return await this.productRepository.deleteProduct(pid);
+  deleteProduct(pid) {
+    return this.productRepository.deleteProduct(pid);
+  }
+
+  getDistinctCategories() {
+    return this.productRepository.getDistinctCategories();
   }
 }
 

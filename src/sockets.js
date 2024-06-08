@@ -1,11 +1,11 @@
 import { messageModel } from "./models/messageModel.js";
 import ProductManager from "./dao/MongoDB/ProductManagerDB.js";
 import MessageManager from "./dao/MongoDB/MessageManagerDB.js";
-import { cartManager } from "./dao/MongoDB/CartManagerDB.js";
+import CartManager from "./dao/MongoDB/CartManagerDB.js";
 import config from "./config/config.js";
 
 const ProductService = new ProductManager();
-const CartService = new cartManager();
+const CartService = new CartManager();
 const messageService = new MessageManager();
 
 let users = [];

@@ -1,40 +1,31 @@
 import { cartModel } from "../models/cartModel.js";
 import { productModel } from "../models/productModel.js";
-import cartDTO from "../dto/cartDTO.js";
+import CartDTO from "../dto/cartDTO.js";
 
 class CartRepository {
   async getAllCarts() {
     try {
       return await cartModel.find().lean();
     } catch (error) {
-      console.error(error.message);
-      throw new Error("Error al buscar los carritos");
+      throw new Error("Error al buscar los carritos: " + error.message);
     }
   }
 
   async getCartById(cid) {
     try {
-      return await cartModel
-        .findOne({ _id: cid })
-        .populate({
-          path: "products.product",
-          model: "products",
-        })
-        .lean();
+      const cart = await cartModel.findById(cid).populate("products.product").lean();
+      return cart;
     } catch (error) {
-      console.error(error.message);
-      throw new Error("Error al obtener el carrito");
+      throw new Error("Error al obtener el carrito: " + error.message);
     }
   }
 
   async createCart(products) {
     try {
-      const newCartDTO = new cartDTO(products);
-      const cartCreated = await cartModel.create(newCartDTO);
-      return cartCreated;
+      const newCart = new cartModel({ products });
+      return await newCart.save();
     } catch (error) {
-      console.error(error.message);
-      throw new Error("Error al crear el carrito");
+      throw new Error("Error al crear el carrito: " + error.message);
     }
   }
 

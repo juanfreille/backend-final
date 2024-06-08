@@ -1,40 +1,45 @@
-import ticketRepository from "../repositories/tickets.repository.js";
+import TicketRepository from "../repositories/ticketRepository.js";
 
 class TicketController {
   async getAllTickets(req, res) {
-    const { limit, page, query, sort } = req.query;
     try {
-      const result = await ticketRepository.getAllTickets(limit, page, query, sort);
-      res.status(200).send({ status: "success", payload: result });
+      const { limit, page, query, sort } = req.query;
+      const tickets = await TicketRepository.getAllTickets(limit, page, query, sort);
+      res.json(tickets);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).send({ status: "error", message: "Error fetching tickets" });
+      res.status(500).json({ error: error.message });
     }
   }
 
   async getTicketById(req, res) {
-    const { tid } = req.params;
     try {
-      const result = await ticketRepository.getTicketById(tid);
-      if (!result) throw new Error(`Ticket with ID ${tid} does not exist!`);
-      res.status(200).send({ status: "success", payload: result });
+      const { id } = req.params;
+      const ticket = await TicketRepository.getTicketById(id);
+      res.json(ticket);
     } catch (error) {
-      console.error(error.message);
-      res.status(400).send({ status: "error", message: error.message });
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getTicketsByUserId(req, res) {
+    try {
+      const { userId } = req.params;
+      const tickets = await TicketRepository.getTicketsByUserId(userId);
+      res.json(tickets);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   }
 
   async createTicket(req, res) {
     try {
-      const { cart, amount, purchaser } = req.body;
-      const ticketData = { cart, amount, purchaser };
-      const newTicket = await ticketRepository.createTicket(ticketData);
-      res.status(201).send({ status: "success", payload: newTicket });
+      const { email, amount, products } = req.body;
+      const newTicket = await TicketRepository.createTicket(email, amount, products);
+      res.status(201).json(newTicket);
     } catch (error) {
-      console.error(error.message);
-      res.status(400).send({ status: "error", message: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 }
 
-export default TicketController;
+export default new TicketController();

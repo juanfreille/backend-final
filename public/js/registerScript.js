@@ -20,7 +20,6 @@ form.addEventListener("submit", (e) => {
       return result.json();
     })
     .then((json) => {
-      console.log(json);
       Swal.fire({
         icon: "success",
         title: "¡Registrado exitosamente!",

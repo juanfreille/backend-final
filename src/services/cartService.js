@@ -1,53 +1,48 @@
-import { cartManager } from "../dao/MongoDB/CartManagerDB.js";
-import ProductManager from "../dao/MongoDB/ProductManagerDB.js";
+import { CartRepository } from "../repositories/carts.repository.js";
 
-const ProductManger = new ProductManager();
-const CartManager = new cartManager(ProductManger);
+class CartService {
+  constructor() {
+    this.cartRepository = new CartRepository();
+  }
 
-const getAllCarts = async () => {
-  return await CartManager.getAllCarts();
-};
+  async getAllCarts() {
+    return await this.cartRepository.getAllCarts();
+  }
 
-const getCartById = async (cid) => {
-  return await CartManager.getCartById(cid);
-};
+  async getCartById(cid) {
+    return await this.cartRepository.getCartById(cid);
+  }
 
-const createCart = async (products) => {
-  return await CartManager.createCart(products);
-};
+  async createCart(products) {
+    return await this.cartRepository.createCart(products);
+  }
 
-const addProductByID = async (cid, pid) => {
-  return await CartManager.addProductByID(cid, pid);
-};
+  async addProductByID(cid, pid) {
+    return await this.cartRepository.addProductByID(cid, pid);
+  }
 
-const deleteProductInCart = async (cid, pid) => {
-  return await CartManager.deleteProductInCart(cid, pid);
-};
+  async deleteProductInCart(cid, pid) {
+    return await this.cartRepository.deleteProductInCart(cid, pid);
+  }
 
-const updateCart = async (cid, products) => {
-  return await CartManager.updateCart(cid, products);
-};
+  async updateCart(cid, products) {
+    return await this.cartRepository.updateCart(cid, products);
+  }
 
-const updateProductQuantity = async (cid, pid, quantity) => {
-  return await CartManager.updateProductQuantity(cid, pid, quantity);
-};
+  async updateProductQuantity(cid, pid, quantity) {
+    return await this.cartRepository.updateProductQuantity(cid, pid, quantity);
+  }
 
-const insertArray = async (cid, arrayOfProducts) => {
-  return await CartManager.insertArray(cid, arrayOfProducts);
-};
+  async clearCart(cid) {
+    return await this.cartRepository.clearCart(cid);
+  }
 
-const clearCart = async (cid) => {
-  return await CartManager.clearCart(cid);
-};
+  async getTotalQuantityInCart(cid) {
+    return await this.cartRepository.getTotalQuantityInCart(cid);
+  }
+  async insertArray(cartId, purchaseError) {
+    return await this.cartRepository.insertArray(cartId, purchaseError);
+  }
+}
 
-export default {
-  getAllCarts,
-  getCartById,
-  createCart,
-  addProductByID,
-  deleteProductInCart,
-  updateCart,
-  updateProductQuantity,
-  clearCart,
-  insertArray,
-};
+export default new CartService();

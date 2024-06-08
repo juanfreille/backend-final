@@ -1,6 +1,6 @@
 import { CartRepository } from "../../repositories/carts.repository.js";
 
-class cartManager {
+class CartManager {
   constructor() {
     this.cartRepository = new CartRepository();
   }
@@ -45,5 +45,4 @@ class cartManager {
     return await this.cartRepository.getTotalQuantityInCart(cid);
   }
 }
-
-export { cartManager };
+export default CartManager;

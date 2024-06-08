@@ -3,7 +3,7 @@ import local from "passport-local";
 import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtil.js";
-import { cartManager } from "../dao/MongoDB/CartManagerDB.js";
+import CartManager from "../dao/MongoDB/CartManagerDB.js";
 import config from "./config.js";
 import UserManager from "../dao/MongoDB/UserManagerDB.js";
 
@@ -12,7 +12,7 @@ const userService = new UserManager();
 const initializePassport = () => {
   const localStratergy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
-  const CartService = new cartManager();
+  const CartService = new CartManager();
 
   const admin = {
     first_name: "Coder",
