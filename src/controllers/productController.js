@@ -1,3 +1,6 @@
+import CustomError from "../services/errors/CustomError.js";
+import { generateProductsErrorInfo, generateNotFoundErrorInfo, generateDefaultErrorInfo } from "../services/errors/info.js";
+import { ErrorCodes } from "../services/errors/enums.js";
 import productService from "../services/productService.js";
 import ProductDTO from "../dto/productDTO.js";
 
@@ -31,16 +34,25 @@ const getPaginateProducts = async (req, res) => {
     res.status(200).json(response);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    const errorInfo = generateDefaultErrorInfo(error.message);
+    res.status(500).json(errorInfo);
   }
 };
 
 const getProductByID = async (req, res) => {
   try {
     const product = await productService.getProductByID(req.params.pid);
+    if (!product) {
+      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", req.params.pid).message);
+    }
     res.status(200).json({ status: "success", payload: product });
   } catch (error) {
-    res.status(400).json({ status: "error", message: error.message });
+    if (error instanceof CustomError) {
+      res.status(404).json({ code: error.code, message: error.message });
+    } else {
+      const errorInfo = generateDefaultErrorInfo(error.message);
+      res.status(500).json(errorInfo);
+    }
   }
 };
 
@@ -49,11 +61,25 @@ const createProduct = async (req, res) => {
     req.body.thumbnails = req.files.map((file) => file.filename);
   }
   try {
+    const { title, price, stock } = req.body;
+    if (!title || !price || !stock) {
+      const missingFields = [];
+      if (!title) missingFields.push("title");
+      if (!price) missingFields.push("price");
+      if (!stock) missingFields.push("stock");
+      const errorInfo = generateProductsErrorInfo(missingFields);
+      throw new CustomError(errorInfo.code, errorInfo.message);
+    }
     const productData = new ProductDTO(req.body);
     const product = await productService.createProduct(productData);
     res.status(201).json({ status: "success", payload: product });
   } catch (error) {
-    res.status(400).json({ status: "error", message: error.message });
+    if (error instanceof CustomError) {
+      res.status(400).json({ code: error.code, message: error.message });
+    } else {
+      const errorInfo = generateDefaultErrorInfo(error.message);
+      res.status(500).json(errorInfo);
+    }
   }
 };
 
@@ -63,18 +89,34 @@ const updateProduct = async (req, res) => {
   }
   try {
     const product = await productService.updateProduct(req.params.pid, req.body);
+    if (!product) {
+      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", req.params.pid).message);
+    }
     res.status(200).json({ status: "success", payload: product });
   } catch (error) {
-    res.status(400).json({ status: "error", message: error.message });
+    if (error instanceof CustomError) {
+      res.status(404).json({ code: error.code, message: error.message });
+    } else {
+      const errorInfo = generateDefaultErrorInfo(error.message);
+      res.status(500).json(errorInfo);
+    }
   }
 };
 
 const deleteProduct = async (req, res) => {
   try {
-    await productService.deleteProduct(req.params.pid);
+    const product = await productService.deleteProduct(req.params.pid);
+    if (!product) {
+      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", req.params.pid).message);
+    }
     res.status(200).json({ status: "success", message: "Product deleted successfully" });
   } catch (error) {
-    res.status(400).json({ status: "error", message: error.message });
+    if (error instanceof CustomError) {
+      res.status(404).json({ code: error.code, message: error.message });
+    } else {
+      const errorInfo = generateDefaultErrorInfo(error.message);
+      res.status(500).json(errorInfo);
+    }
   }
 };
 

@@ -5,6 +5,7 @@ import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
+import mockingRouter from "./routes/mocking.router.js";
 import handlebars from "express-handlebars";
 import __dirname from "./utils/constantsUtil.js";
 import { Server } from "socket.io";
@@ -47,6 +48,7 @@ app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/sessions", sessionsRouter);
+app.use("/api/mocking", mockingRouter);
 
 // Handlebars
 app.engine("handlebars", handlebars.engine());

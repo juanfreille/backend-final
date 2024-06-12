@@ -318,13 +318,14 @@ export const purchaseView = async (req, res) => {
       // Crear un ticket para la compra
       const ticket = await ticketRepository.createTicket(req.user.email, processedAmount, processed);
       const purchaseData = {
-        ticketId: ticket._id,
         amount: ticket.amount,
         purchaser: ticket.purchaser,
         productosProcesados: processed,
         productosNoProcesados: notProcessed,
         cartId: cart._id,
       };
+
+      console.log(purchaseData);
 
       // Renderizar la vista de compra exitosa
       return res.render("purchase", {
