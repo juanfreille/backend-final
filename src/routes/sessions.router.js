@@ -3,8 +3,10 @@ import passport from "passport";
 import { passportCall } from "../utils/authUtil.js";
 import { loginJWT, gitHubCallBackJWT, handleRegister, handleLogin, getCurrentUser, logOutSession } from "../controllers/sessionController.js";
 import { logOut } from "../controllers/viewsController.js";
+import { addLogger } from "../utils/logger.js";
 
 const router = Router();
+router.use(addLogger);
 
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }), (req, res) => {
   res.send({

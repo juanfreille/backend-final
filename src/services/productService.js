@@ -1,27 +1,37 @@
-import ProductManagerDB from "../dao/MongoDB/ProductManagerDB.js";
+import ProductManager from "../dao/MongoDB/ProductManagerDB.js";
 
-const productManager = new ProductManagerDB();
+class ProductService {
+  constructor() {
+    this.productManager = new ProductManager();
+  }
 
-const getAllProducts = async () => productManager.getAllProducts();
+  async getAllProducts() {
+    return await this.productManager.getAllProducts();
+  }
 
-const getPaginateProducts = async (searchQuery, options) => productManager.getPaginateProducts(searchQuery, options);
+  async getPaginateProducts(searchQuery, options) {
+    return await this.productManager.getPaginateProducts(searchQuery, options);
+  }
 
-const getProductByID = async (pid) => productManager.getProductByID(pid);
+  async getProductByID(pid) {
+    return await this.productManager.getProductByID(pid);
+  }
 
-const createProduct = async (productData) => productManager.createProduct(productData);
+  async createProduct(productData) {
+    return await this.productManager.createProduct(productData);
+  }
 
-const updateProduct = async (pid, productData) => productManager.updateProduct(pid, productData);
+  async updateProduct(pid, productData) {
+    return await this.productManager.updateProduct(pid, productData);
+  }
 
-const deleteProduct = async (pid) => productManager.deleteProduct(pid);
+  async deleteProduct(pid) {
+    return await this.productManager.deleteProduct(pid);
+  }
 
-const getDistinctCategories = async () => productManager.getDistinctCategories();
+  async getDistinctCategories() {
+    return await this.productManager.getDistinctCategories();
+  }
+}
 
-export default {
-  getAllProducts,
-  getPaginateProducts,
-  getProductByID,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getDistinctCategories,
-};
+export default new ProductService();

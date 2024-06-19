@@ -36,20 +36,15 @@ function createTableRow(product) {
     <td>${product.stock}</td>
     <td>${product.code}</td>
     <td><img src="${
-      product.thumbnails && product.thumbnails.length
-        ? "img/" + product.thumbnails[0]
-        : "img/noThumbnails.webp"
+      product.thumbnails && product.thumbnails.length ? "img/" + product.thumbnails[0] : "img/noThumbnails.webp"
     }" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
-    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${
-      product._id
-    }')">Eliminar</button></td>
+    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${product._id}')">Eliminar</button></td>
   `;
   return row;
 }
 
 function deleteProduct(productId) {
   const id = productId;
-  console.log("ID del producto a eliminar:", id);
   confirmarEliminacionProducto(productId);
 }
 
@@ -71,12 +66,9 @@ form.addEventListener("submit", async (event) => {
 
   try {
     const newProduct = product;
-    console.log(newProduct);
     socket.emit("createProduct", newProduct);
 
-    const cancelButtonContainer = document.getElementById(
-      "cancelButtonContainer"
-    );
+    const cancelButtonContainer = document.getElementById("cancelButtonContainer");
     cancelButtonContainer.style.display = "none";
 
     Toastify({
@@ -101,9 +93,7 @@ form.addEventListener("submit", async (event) => {
 function previewImage() {
   const fileInput = document.getElementById("thumbnails");
   const imagePreview = document.getElementById("imagePreview");
-  const cancelButtonContainer = document.getElementById(
-    "cancelButtonContainer"
-  );
+  const cancelButtonContainer = document.getElementById("cancelButtonContainer");
 
   if (fileInput.files && fileInput.files[0]) {
     const reader = new FileReader();
@@ -135,16 +125,12 @@ function cancelImageSelection() {
 }
 
 function hideCancelButton() {
-  const cancelButtonContainer = document.getElementById(
-    "cancelButtonContainer"
-  );
+  const cancelButtonContainer = document.getElementById("cancelButtonContainer");
   cancelButtonContainer.style.display = "none";
 }
 
 function showCancelButton() {
-  const cancelButtonContainer = document.getElementById(
-    "cancelButtonContainer"
-  );
+  const cancelButtonContainer = document.getElementById("cancelButtonContainer");
   cancelButtonContainer.style.display = "block";
 }
 
@@ -161,7 +147,6 @@ function confirmarEliminacionProducto(idProducto) {
   customSwalert.fire(customAlertConfig).then((result) => {
     if (result.isConfirmed) {
       const id = idProducto;
-      console.log("ID del producto a eliminar:", id);
       socket.emit("deleteProduct", id);
       emptyTable();
       Toastify({
@@ -182,8 +167,7 @@ function confirmarEliminacionProducto(idProducto) {
 const customSwalert = Swal.mixin({
   customClass: {
     cancelButton: "swal2-deny swal2-styled btn px-5 mt-3 mx-1 btn-secondary",
-    confirmButton:
-      "swal2-deny swal2-styled btn px-5 mt-3 mx-1 btn-danger btn-delete",
+    confirmButton: "swal2-deny swal2-styled btn px-5 mt-3 mx-1 btn-danger btn-delete",
   },
   buttonsStyling: false,
 });

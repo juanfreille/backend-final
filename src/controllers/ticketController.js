@@ -1,45 +1,49 @@
-import TicketRepository from "../repositories/ticketRepository.js";
+import ticketService from "../services/ticketService.js";
 
-class TicketController {
-  async getAllTickets(req, res) {
-    try {
-      const { limit, page, query, sort } = req.query;
-      const tickets = await TicketRepository.getAllTickets(limit, page, query, sort);
-      res.json(tickets);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+export const getAllTickets = async (req, res) => {
+  try {
+    const { limit, page, query, sort } = req.query;
+    const tickets = await ticketService.getAllTickets(limit, page, query, sort);
+    req.logger.info("Tickets found successfully.");
+    res.send({ status: "success", payload: tickets });
+  } catch (error) {
+    req.logger.error("Error fetching tickets:", error.message);
+    res.status(500).send({ status: "error", message: "Error fetching tickets." });
   }
+};
 
-  async getTicketById(req, res) {
-    try {
-      const { id } = req.params;
-      const ticket = await TicketRepository.getTicketById(id);
-      res.json(ticket);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+export const getTicketById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const ticket = await ticketService.getTicketById(id);
+    req.logger.info("Ticket found successfully.");
+    res.send({ status: "success", payload: ticket });
+  } catch (error) {
+    req.logger.error("Error fetching ticket:", error.message);
+    res.status(500).send({ status: "error", message: "Error fetching ticket." });
   }
+};
 
-  async getTicketsByUserId(req, res) {
-    try {
-      const { userId } = req.params;
-      const tickets = await TicketRepository.getTicketsByUserId(userId);
-      res.json(tickets);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+export const getTicketsByUserId = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const tickets = await ticketService.getTicketsByUserId(userId);
+    req.logger.info("Tickets found successfully.");
+    res.send({ status: "success", payload: tickets });
+  } catch (error) {
+    req.logger.error("Error fetching tickets:", error.message);
+    res.status(500).send({ status: "error", message: "Error fetching tickets." });
   }
+};
 
-  async createTicket(req, res) {
-    try {
-      const { email, amount, products } = req.body;
-      const newTicket = await TicketRepository.createTicket(email, amount, products);
-      res.status(201).json(newTicket);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+export const createTicket = async (req, res) => {
+  const { email, amount, products } = req.body;
+  try {
+    const newTicket = await ticketService.createTicket({ email, amount, products });
+    req.logger.info("Ticket created successfully.");
+    res.status(201).send({ status: "success", payload: newTicket });
+  } catch (error) {
+    req.logger.error("Error creating ticket:", error.message);
+    res.status(500).send({ status: "error", message: "Error creating ticket." });
   }
-}
-
-export default new TicketController();
+};

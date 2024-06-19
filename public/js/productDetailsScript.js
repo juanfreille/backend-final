@@ -26,7 +26,6 @@ function addToCart(event) {
   try {
     socket.emit("addToCart", { productId, userEmail, userCartID });
   } catch (error) {
-    console.error("Error al agregar producto al carrito:", error);
     showErrorMessage("Ocurrió un error al agregar el producto al carrito");
   }
 }
@@ -37,7 +36,6 @@ function updateCartQuantity(data) {
 }
 
 function showSuccessMessage(cartId) {
-  console.log("ID del carrito nuevo", cartId);
   Swal.fire({
     icon: "success",
     title: "¡Producto agregado al carrito!",

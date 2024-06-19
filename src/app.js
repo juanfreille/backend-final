@@ -6,6 +6,7 @@ import cartsRouter from "./routes/carts.router.js";
 import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
 import mockingRouter from "./routes/mocking.router.js";
+import loggerRouter from "./routes/logger.router.js";
 import handlebars from "express-handlebars";
 import __dirname from "./utils/constantsUtil.js";
 import { Server } from "socket.io";
@@ -49,6 +50,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/api/mocking", mockingRouter);
+app.use("/loggerTest", loggerRouter);
 
 // Handlebars
 app.engine("handlebars", handlebars.engine());
@@ -70,3 +72,5 @@ mongoose
     console.log("No se puede conectar con la DB: " + error);
     process.exit(1);
   });
+
+export default app;

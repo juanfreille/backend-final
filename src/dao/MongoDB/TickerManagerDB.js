@@ -1,21 +1,25 @@
-import ticketModel from "../../models/ticketModel.js";
+import { TicketRepository } from "../../repositories/tickets.repository.js";
 
 class TicketManager {
-  async getAllTickets() {
-    return await ticketModel.find().populate("purchaser").populate("products.product").lean();
+  constructor() {
+    this.ticketRepository = new TicketRepository();
+  }
+
+  async getAllTickets(limit, page, query, sort) {
+    return await this.ticketRepository.getAllTickets(limit, page, query, sort);
   }
 
   async getTicketById(ticketId) {
-    return await ticketModel.findById(ticketId).lean();
+    return await this.ticketRepository.getTicketById(ticketId);
   }
 
   async getTicketsByUserId(userId) {
-    return await ticketModel.find({ userId: userId }).lean();
+    return await this.ticketRepository.getTicketsByUserId(userId);
   }
 
-  async createTicket(ticket) {
-    return await ticketModel.create(ticket);
+  async createTicket(ticketData) {
+    return await this.ticketRepository.createTicket(ticketData);
   }
 }
 
-export default new TicketManager();
+export default TicketManager;

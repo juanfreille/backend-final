@@ -18,7 +18,7 @@
             </div>
             <ul class="list-group list-group-flush">
                 {{#each payload.productosProcesados}}
-                    <li class="list-group-item">ID del producto: {{this._id}}, Cantidad: {{this.quantity}}</li>
+                    <li class="list-group-item">ID del producto: {{this._id}}, Cantidad: {{this.quantity}} Nombre del producto: "{{this.name}}"</li>
                 {{/each}}
             </ul>
         </div>
@@ -31,7 +31,7 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     {{#each payload.productosNoProcesados}}
-                        <li class="list-group-item">ID del producto: {{this._id}}, Cantidad: {{this.quantity}}</li>
+                        <li class="list-group-item">ID del producto: {{this._id}}, Cantidad: {{this.quantity}} Nombre del producto: "{{this.name}}"</li>
                     {{/each}}
                 </ul>
             </div>

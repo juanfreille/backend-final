@@ -1,38 +1,26 @@
-import TicketService from "../services/ticketService.js";
-import { userModel } from "../models/userModel.js";
+import ticketModel from "../models/ticketModel.js";
 
-class TicketRepository {
+export class TicketRepository {
   async getAllTickets(limit, page, query, sort) {
-    return await TicketService.getAllTickets(limit, page, query, sort);
+    return await ticketModel
+      .find(query)
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort(sort)
+      .populate("purchaser")
+      .populate("products._id")
+      .lean();
   }
 
   async getTicketById(ticketId) {
-    return await TicketService.getTicketById(ticketId);
+    return await ticketModel.findById(ticketId).populate("purchaser").populate("products._id").lean();
   }
 
   async getTicketsByUserId(userId) {
-    return await TicketService.getTicketsByUserId(userId);
+    return await ticketModel.find({ purchaser: userId }).populate("purchaser").populate("products._id").lean();
   }
 
-  async createTicket(email, amount, products) {
-    const user = await userModel.findOne({ email });
-    if (!user) throw new Error("Purchaser not found");
-
-    const code = this.generateTicketCode();
-    const ticketData = {
-      code,
-      purchaseDateTime: new Date(),
-      amount,
-      purchaser: email,
-      products,
-    };
-
-    return await TicketService.createTicket(ticketData);
-  }
-
-  generateTicketCode() {
-    return Math.floor(Math.random() * 1000) + 1;
+  async createTicket(ticket) {
+    return await ticketModel.create(ticket);
   }
 }
-
-export default new TicketRepository();

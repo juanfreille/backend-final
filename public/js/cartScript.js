@@ -54,7 +54,6 @@ if (vaciarCarritoBtn) {
           if (response.ok) {
             window.location.reload();
           } else {
-            console.error("Error al vaciar el carrito:", response.statusText);
             Swal.fire({
               icon: "error",
               title: "¡Error!",
@@ -64,7 +63,6 @@ if (vaciarCarritoBtn) {
             });
           }
         } catch (error) {
-          console.error("Error al vaciar el carrito:", error);
           Swal.fire({
             icon: "error",
             title: "¡Error!",

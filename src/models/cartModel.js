@@ -7,7 +7,7 @@ const cartSchema = new mongoose.Schema({
   products: {
     type: [
       {
-        product: {
+        _id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "products",
         },
@@ -20,7 +20,9 @@ const cartSchema = new mongoose.Schema({
     default: [],
   },
 });
-
+cartSchema.pre("find", function () {
+  this.populate("products._id");
+});
 cartSchema.plugin(mongoosePaginate);
 
 export const cartModel = mongoose.model(cartCollection, cartSchema);

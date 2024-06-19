@@ -1,6 +1,6 @@
 import { ProductRepository } from "../../repositories/products.repository.js";
 
-class ProductManagerDB {
+class ProductManager {
   constructor() {
     this.productRepository = new ProductRepository();
   }
@@ -34,4 +34,4 @@ class ProductManagerDB {
   }
 }
 
-export default ProductManagerDB;
+export default ProductManager;

@@ -1,18 +1,20 @@
 import productService from "../services/productService.js";
 import cartService from "../services/cartService.js";
 import userService from "../services/userService.js";
-import ticketRepository from "../repositories/tickets.repository.js";
+import ticketService from "../services/ticketService.js";
 
 export const goHome = async (req, res) => {
+  req.logger.info("Redireccionar al home: Solicitud recibida.");
   try {
     res.status(200).redirect("/home");
   } catch (err) {
-    console.error(err);
+    req.logger.error(`goHome: ${err.message}`);
     res.status(400).send({ error: err.message });
   }
 };
 
 export const renderHome = async (req, res) => {
+  req.logger.info("renderHome: Solicitud recibida.");
   try {
     const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
@@ -25,11 +27,13 @@ export const renderHome = async (req, res) => {
       totalQuantityInCart,
     });
   } catch (error) {
+    req.logger.error(`renderHome: ${error.message}`);
     res.redirect("/login");
   }
 };
 
 export const renderLogin = (req, res) => {
+  req.logger.info("renderLogin: Solicitud recibida.");
   res.render("login", {
     title: "Backend / Final - Login",
     style: "styles.css",
@@ -42,6 +46,7 @@ export const renderLogin = (req, res) => {
 };
 
 export const renderRegister = (req, res) => {
+  req.logger.info("renderRegister: Solicitud recibida.");
   res.render("register", {
     title: "Backend / Final - Registro",
     style: "styles.css",
@@ -52,6 +57,7 @@ export const renderRegister = (req, res) => {
 };
 
 export const getProducts = async (req, res) => {
+  req.logger.info("getProducts: Solicitud recibida.");
   try {
     const { page = 1, limit = 8, sort } = req.query;
     //uso limit 8 solo por cuestiones esteticas para que funcione bien con mi frontEnd
@@ -93,6 +99,7 @@ export const getProducts = async (req, res) => {
     }
 
     if (requestedPage > products.totalPages) {
+      req.logger.warn("getProducts: La página solicitada no existe.");
       return res.render("error", {
         title: "Backend / Final - Products",
         style: "styles.css",
@@ -118,12 +125,13 @@ export const getProducts = async (req, res) => {
 
     return res.render("products", response);
   } catch (error) {
-    console.log(error);
+    req.logger.error(`getProducts: ${error.message}`);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
 export const renderRealTimeProducts = async (req, res) => {
+  req.logger.info("renderRealTimeProducts: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
   res.render("realTimeProducts", {
@@ -136,6 +144,7 @@ export const renderRealTimeProducts = async (req, res) => {
 };
 
 export const renderChat = async (req, res) => {
+  req.logger.info("renderChat: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
   res.render("chat", {
     style: "styles.css",
@@ -146,17 +155,18 @@ export const renderChat = async (req, res) => {
 };
 
 export const renderCart = async (req, res) => {
+  req.logger.info("renderCart: Solicitud recibida.");
   try {
     const cart = await cartService.getCartById(req.params.cid);
 
     if (!cart) {
+      req.logger.warn(`renderCart: Carrito con ID ${req.params.cid} no encontrado.`);
       return res.status(404).json({ error: "No se encontró el carrito" });
     }
-    const productsInCart = cart.products;
     const products = await Promise.all(
-      cart.products.map(async (product) => {
-        const productData = await productService.getProductByID(product._id);
-        return { ...product, product: productData };
+      cart.products.map(async (item) => {
+        const productData = await productService.getProductByID(item._id._id);
+        return { ...item, product: productData };
       })
     );
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
@@ -169,16 +179,19 @@ export const renderCart = async (req, res) => {
       totalQuantityInCart,
     });
   } catch (error) {
+    req.logger.error(`renderCart: ${error.message}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 export const renderProductDetails = async (req, res) => {
+  req.logger.info("renderProductDetails: Solicitud recibida.");
   try {
     const { pid } = req.params;
     const product = await productService.getProductByID(pid);
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      req.logger.warn(`renderProductDetails: Producto con ID ${pid} no encontrado.`);
+      return res.status(404).json({ error: "Producto no encontrado" });
     }
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
     res.render("product-details", {
@@ -190,28 +203,34 @@ export const renderProductDetails = async (req, res) => {
       totalQuantityInCart,
     });
   } catch (error) {
+    req.logger.error(`renderProductDetails: ${error.message}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 export const redirectIfLoggedIn = (req, res, next) => {
+  req.logger.info("redirectIfLoggedIn: Solicitud recibida.");
   if (req.user) {
+    req.logger.info("redirectIfLoggedIn: El usuario está conectado, redirigiendo a /home.");
     return res.redirect("/home");
   }
   next();
 };
 
 export const logOut = async (req, res) => {
+  req.logger.info("logOut: Solicitud recibida.");
   try {
     res.clearCookie("coderCookieToken");
     res.redirect("/login");
     return;
   } catch (error) {
+    req.logger.error(`logOut: ${error.message}`);
     return res.status(500).json({ status: "error", error: "Internal Server Error" });
   }
 };
 
 export const isAdmin = (req, res, next) => {
+  req.logger.info("isAdmin: Verificando si el usuario es administrador.");
   if (req.user && req.user.role === "admin") {
     req.isAdmin = true;
   } else {
@@ -221,6 +240,7 @@ export const isAdmin = (req, res, next) => {
 };
 
 export const populateCart = async (req, res, next) => {
+  req.logger.info("populateCart: Solicitud recibida.");
   try {
     const user = req.user;
     if (user && user.role !== "admin" && user.cart) {
@@ -228,7 +248,7 @@ export const populateCart = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    console.error("Error populating user cart:", error);
+    req.logger.error(`populateCart: ${error.message}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -260,6 +280,7 @@ export const buildPaginationLinks = (req, products) => {
 };
 
 export const verifyUserSession = (req, res, next) => {
+  req.logger.info("verifyUserSession: Solicitud recibida.");
   if (!req.user) {
     res.clearCookie("connect.sid");
     return res.redirect("/login");
@@ -268,10 +289,13 @@ export const verifyUserSession = (req, res, next) => {
 };
 
 export const purchaseView = async (req, res) => {
+  req.logger.info("purchaseView: Solicitud recibida.");
   try {
     const cart = await cartService.getCartById(req.params.cid);
-    if (!cart) return res.status(404).json({ error: "El carrito no fue encontrado" });
-
+    if (!cart) {
+      req.logger.warn(`purchaseView: Carrito con ID ${req.params.cid} no encontrado.`);
+      return res.status(404).json({ error: "El carrito no fue encontrado" });
+    }
     const productsInCart = cart.products;
     let purchaseSuccess = [],
       purchaseError = [];
@@ -281,43 +305,41 @@ export const purchaseView = async (req, res) => {
     for (let product of productsInCart) {
       const { _id: idproduct, quantity } = product;
       const productInDB = await productService.getProductByID(idproduct);
-      if (!productInDB) return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
-
+      if (!productInDB) {
+        req.logger.warn(`purchaseView: Producto con ID ${idproduct} no encontrado.`);
+        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
+      }
       const monto = productInDB.price * quantity;
 
-      // Verificar si hay suficiente stock para procesar el pedido
       if (quantity > productInDB.stock) {
         notProcessedAmount += monto;
-        purchaseError.push({ ...product, productData: productInDB });
+        purchaseError.push(product);
       } else {
-        // Actualizar el stock del producto en la base de datos
         const updatedStock = productInDB.stock - quantity;
         await productService.updateProduct(idproduct, { stock: updatedStock });
 
         processedAmount += monto;
-        purchaseSuccess.push({ ...product, productData: productInDB });
+        purchaseSuccess.push(product);
       }
     }
 
     const formatProducts = (products) =>
-      products.map(({ _id, quantity, productData }) => ({
-        _id,
+      products.map(({ _id, quantity }) => ({
+        _id: _id._id,
         quantity,
-        name: productData.title,
+        name: _id.title,
       }));
 
     const notProcessed = formatProducts(purchaseError);
     const processed = formatProducts(purchaseSuccess);
-
-    // Actualizar el carrito con los productos no procesados
     await cartService.insertArray(cart._id, purchaseError);
     const updatedCart = await cartService.getCartById(cart._id);
     req.user.cart = updatedCart;
 
     if (purchaseSuccess.length > 0) {
-      // Crear un ticket para la compra
-      const ticket = await ticketRepository.createTicket(req.user.email, processedAmount, processed);
+      const ticket = await ticketService.createTicket(req.user.email, processedAmount, processed);
       const purchaseData = {
+        ticketId: ticket._id,
         amount: ticket.amount,
         purchaser: ticket.purchaser,
         productosProcesados: processed,
@@ -325,9 +347,6 @@ export const purchaseView = async (req, res) => {
         cartId: cart._id,
       };
 
-      console.log(purchaseData);
-
-      // Renderizar la vista de compra exitosa
       return res.render("purchase", {
         status: "success",
         title: "Detalles del Producto",
@@ -341,7 +360,6 @@ export const purchaseView = async (req, res) => {
       });
     }
 
-    // Si no se procesaron productos debido a la falta de stock
     return res.render("purchase", {
       status: "error",
       title: "Detalles del Producto",
@@ -354,7 +372,7 @@ export const purchaseView = async (req, res) => {
       totalQuantityInCart: calculateTotalQuantityInCart(req.user),
     });
   } catch (error) {
-    console.error(error);
+    req.logger.error(`purchaseView: ${error.message}`);
     res.status(500).send({
       status: "error",
       message: "Error interno del servidor",

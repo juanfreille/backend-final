@@ -14,12 +14,12 @@
         <ul id="cartItemList">
           {{#each payload}}
             <li class="d-flex border-bottom py-3">
-              <a href="../products/item/{{product._id}}">
-                <img class="carrito21BoxCol1" src="../../img/{{product.thumbnails}}" alt="{{product.title}}">
+              <a href="../products/item/{{_id._id}}">
+                <img class="carrito21BoxCol1" src="../../img/{{_id.thumbnails}}" alt="{{_id.title}}">
               </a>
               <div class="carrito21BoxCol2">
-                <h4 class="tituloNombreCart">{{product.title}}</h4>
-                <h5 class="texto-s mt-2">Precio x unidad:&nbsp; $<strong class="price">{{product.price}}</strong></h5>
+                <h4 class="tituloNombreCart">{{_id.title}}</h4>
+                <h5 class="texto-s mt-2">Precio x unidad:&nbsp; $<strong class="price">{{_id.price}}</strong></h5>
                 <h5 class="texto-s mt-5">Unidades:&nbsp;&nbsp;<strong class="quantity">{{quantity}}</strong></h5>
                 <h5 class="texto-s mt-3">Precio x lote ({{quantity}}):&nbsp; $<strong class="totalPrice"></strong></h5>
               </div>

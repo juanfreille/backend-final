@@ -3,24 +3,26 @@ import {
   getAllCarts,
   getCartById,
   createCart,
-  addProductByID,
+  addProductToCart,
   deleteProductInCart,
   updateCart,
   updateProductQuantity,
   clearCart,
-  purchase,
+  purchaseCart,
 } from "../controllers/cartController.js";
+import { addLogger } from "../utils/logger.js";
 
 const router = express.Router();
 
+router.use(addLogger);
 router.get("/", getAllCarts);
 router.get("/:cid", getCartById);
 router.post("/", createCart);
-router.post("/:cid/product/:pid", addProductByID);
-router.delete("/:cid/product/:pid", deleteProductInCart);
+router.post("/:cid/products/:pid", addProductToCart);
+router.delete("/:cid/products/:pid", deleteProductInCart);
 router.put("/:cid", updateCart);
-router.put("/:cid/product/:pid", updateProductQuantity);
+router.put("/:cid/products/:pid", updateProductQuantity);
 router.delete("/:cid", clearCart);
-router.get("/:cid/purchase", purchase);
+router.get("/:cid/purchase", purchaseCart);
 
 export default router;

@@ -21,7 +21,7 @@ const ticketSchema = new mongoose.Schema({
   },
   products: [
     {
-      product: {
+      _id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "products",
       },

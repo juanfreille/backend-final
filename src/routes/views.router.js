@@ -16,9 +16,11 @@ import {
   verifyUserSession,
   purchaseView,
 } from "../controllers/viewsController.js";
+import { addLogger } from "../utils/logger.js";
 
 const router = Router();
 
+router.use(addLogger);
 router.get("/", goHome);
 router.get("/home", passportCall("jwt"), isAdmin, populateCart, renderHome);
 router.get("/login", passportCall("jwt"), redirectIfLoggedIn, renderLogin);
