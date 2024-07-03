@@ -18,8 +18,12 @@ const createUser = async (user) => {
   return await userManager.createUser(user);
 };
 
-const updateUser = async (user) => {
-  return await userManager.updateUser(user);
+const updateUser = async (uid, user) => {
+  return await userManager.updateUser(uid, user);
+};
+
+const updateUserByEmail = async (userEmail, user) => {
+  return await userManager.updateUserByEmail(userEmail, user);
 };
 
 export default {
@@ -28,4 +32,5 @@ export default {
   getUserByEmail,
   createUser,
   updateUser,
+  updateUserByEmail,
 };

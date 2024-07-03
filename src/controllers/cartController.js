@@ -42,11 +42,18 @@ export const createCart = async (req, res) => {
 
 export const addProductToCart = async (req, res) => {
   const { cid, pid } = req.params;
+  const userId = req.user._id;
   req.logger.info(`Solicitud para agregar producto (ID: ${pid}) al carrito (ID: ${cid}) recibida.`);
   try {
-    const updatedCart = await cartService.addProductByID(cid, pid);
-    req.logger.info(`Producto (ID: ${pid}) agregado al carrito (ID: ${cid}) exitosamente.`);
-    res.send({ status: "success", payload: updatedCart });
+    const product = await productService.getProductByID(pid);
+    if (product.owner == userId && req.user.role == "premium") {
+      req.logger.info(`El usuario premium ${userId} intentó agregar su propio producto ${pid} al carrito ${cid}`);
+      res.status(400).json({ status: "error: un usuario premium no puede agregar su propio producto al carrito" });
+    } else {
+      const updatedCart = await cartService.addProductByID(cid, pid);
+      req.logger.info(`Producto (ID: ${pid}) agregado al carrito (ID: ${cid}) exitosamente.`);
+      res.send({ status: "success", payload: updatedCart });
+    }
   } catch (error) {
     req.logger.error(`Error al agregar producto (ID: ${pid}) al carrito (ID: ${cid})`);
     res.status(500).send({ status: "error", message: `Error al agregar producto (ID: ${pid}) al carrito (ID: ${cid})` });

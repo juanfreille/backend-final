@@ -3,6 +3,7 @@ import { generateProductsErrorInfo, generateNotFoundErrorInfo, generateDefaultEr
 import { ErrorCodes } from "../services/errors/enums.js";
 import productService from "../services/productService.js";
 import ProductDTO from "../dto/ProductDTO.js";
+import userService from "../services/userService.js";
 
 export const getPaginateProducts = async (req, res) => {
   req.logger.info("Solicitud para obtener productos paginados recibida.");
@@ -77,6 +78,19 @@ export const createProduct = async (req, res) => {
       throw new CustomError(errorInfo.code, errorInfo.message);
     }
     const productData = new ProductDTO(req.body);
+
+    const userId = req.user._id;
+    const userRole = req.user.role;
+
+    if (!userId && userRole === "admin") {
+      const result = await productService.createProduct(productData);
+      res.status(201).send({ status: "Sucess: Producto agregado", payload: result });
+      return;
+    }
+
+    const user = await userService.getUserById(userId);
+    if (user) productData.owner = user._id;
+
     const product = await productService.createProduct(productData);
     req.logger.info(`Producto creado con éxito. ID del producto: ${product._id}`);
     res.status(201).json({ status: "success", payload: product });
@@ -93,20 +107,33 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   req.logger.info(`Solicitud para actualizar el producto con ID: ${req.params.pid}`);
+  const productID = req.params.pid;
   if (req.files) {
     req.body.thumbnails = req.files.map((file) => file.filename);
     req.logger.info(`Archivos subidos: ${req.body.thumbnails.join(", ")}`);
   }
   try {
-    const product = await productService.updateProduct(req.params.pid, req.body);
+    const product = await productService.getProductByID(productID);
     if (!product) {
-      req.logger.warning(`Producto con ID: ${req.params.pid} no encontrado para actualizar.`);
-      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", req.params.pid).message);
+      req.logger.warning(`Producto con ID: ${productID} no encontrado para actualizar.`);
+      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
-    req.logger.info(`Producto (ID: ${req.params.pid}) actualizado con éxito.`);
-    res.status(200).json({ status: "success", payload: product });
+    if (req.user.role == "admin") {
+      await productService.updateProduct(productID, req.body);
+      const productUpdated = await productService.getProductByID(productID);
+      req.logger.info(`Producto actualizado: ${productUpdated.title}`);
+      return res.status(200).json({ status: "success", payload: productUpdated });
+    }
+    const user = await userService.getUserById(product.owner);
+    if (product.owner != user._id) {
+      return res.status(403).send("No tienes permiso para actualizar este producto");
+    }
+    await productService.updateProduct(productID, req.body);
+    const productUpdated = await productService.getProductByID(productID);
+    req.logger.info(`Producto actualizado: ${productUpdated.title}`);
+    res.status(200).json({ status: "success", payload: productUpdated });
   } catch (error) {
-    req.logger.error(`Error al actualizar el producto con ID ${req.params.pid}: ${error.message}`);
+    req.logger.error(`Error al actualizar el producto con ID ${productID}: ${error.message}`);
     if (error instanceof CustomError) {
       res.status(404).json({ code: error.code, message: error.message });
     } else {
@@ -118,16 +145,26 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   req.logger.info(`Solicitud para eliminar el producto con ID: ${req.params.pid}`);
+  const productID = req.params.pid;
+
   try {
-    const product = await productService.deleteProduct(req.params.pid);
+    const product = await productService.getProductByID(productID);
+
     if (!product) {
-      req.logger.warning(`Producto con ID: ${req.params.pid} no encontrado para eliminar.`);
-      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", req.params.pid).message);
+      req.logger.warning(`Producto con ID: ${productID} no encontrado para eliminar.`);
+      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
-    req.logger.info(`Producto (ID: ${req.params.pid}) eliminado con éxito.`);
-    res.status(200).json({ status: "success", message: "Product deleted successfully" });
+
+    if (req.user.role === "admin" || product.owner.toString() === req.user._id.toString()) {
+      await productService.deleteProduct(productID);
+      req.logger.info(`Producto (ID: ${productID}) eliminado con éxito.`);
+      return res.status(200).json({ status: "success", message: "Product deleted successfully" });
+    } else {
+      req.logger.warning(`Usuario ${req.user.email} no tiene permiso para eliminar el producto con ID: ${productID}`);
+      return res.status(403).send("No tienes permiso para eliminar este producto");
+    }
   } catch (error) {
-    req.logger.error(`Error al eliminar el producto con ID ${req.params.pid}: ${error.message}`);
+    req.logger.error(`Error al eliminar el producto con ID ${productID}: ${error.message}`);
     if (error instanceof CustomError) {
       res.status(404).json({ code: error.code, message: error.message });
     } else {

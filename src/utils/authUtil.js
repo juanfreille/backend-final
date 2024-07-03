@@ -31,11 +31,11 @@ export const authorization = (role) => {
 };
 
 //este lo vimos con el profe, quizas lo utilizo mas adelante
-export const handlePolicies = (policies) => {
+export const handlePolicies = (roles) => {
   return (req, res, next) => {
-    if (policies[0].toUpperCase() === "PUBLIC") return next();
+    if (roles[0].toUpperCase() === "PUBLIC") return next();
     if (!req.user) return res.status(401).send({ status: "error", error: "No autenticado" });
-    if (!policies.includes(req.user.role.toUpperCase())) return res.status(403).send({ status: "error", error: "No autorizado" });
+    if (!roles.includes(req.user.role.toUpperCase())) return res.status(403).send({ status: "error", error: "No autorizado" });
     next();
   };
 };

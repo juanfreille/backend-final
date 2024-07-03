@@ -1,7 +1,16 @@
 import { Router } from "express";
 import passport from "passport";
 import { passportCall } from "../utils/authUtil.js";
-import { loginJWT, gitHubCallBackJWT, handleRegister, handleLogin, getCurrentUser, logOutSession } from "../controllers/sessionController.js";
+import {
+  loginJWT,
+  gitHubCallBackJWT,
+  handleRegister,
+  handleLogin,
+  getCurrentUser,
+  logOutSession,
+  resetPassword,
+  newPassword,
+} from "../controllers/sessionController.js";
 import { logOut } from "../controllers/viewsController.js";
 import { addLogger } from "../utils/logger.js";
 
@@ -47,5 +56,7 @@ router.post(
 
 router.get("/current", passportCall("jwt"), getCurrentUser);
 router.post("/logout", passportCall("jwt"), logOut, logOutSession);
+router.post("/resetpassword", resetPassword);
+router.put("/newpassword", newPassword);
 
 export default router;

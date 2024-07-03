@@ -14,6 +14,8 @@ export default {
   JWT_SECRET: process.env.JWT_SECRET,
   ADMIN_EMAIL: process.env.ADMIN_EMAIL,
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   PERSISTENCE: process.env.PERSISTENCE,
   NODE_ENV: process.env.ENVIRONMENT,
 };

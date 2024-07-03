@@ -6,7 +6,6 @@ class UserRepository {
       const users = await userModel.find(filter).lean();
       return users;
     } catch (error) {
-      console.log(error.message);
       throw new Error("Error al consultar los usuarios");
     }
   }
@@ -16,7 +15,6 @@ class UserRepository {
       const user = await userModel.findById(id).populate("cart").lean();
       return user;
     } catch (error) {
-      console.log(error.message);
       throw new Error("Usuario no encontrado");
     }
   }
@@ -25,7 +23,6 @@ class UserRepository {
     try {
       return await userModel.findOne({ email });
     } catch (error) {
-      console.log(error.message);
       throw new Error("Usuario no encontrado");
     }
   }
@@ -34,15 +31,21 @@ class UserRepository {
     try {
       return await userModel.create(user);
     } catch (error) {
-      console.log(error.message);
       throw new Error("Error al registrar usuario");
     }
   }
 
-  async updateUser(user) {
+  async updateUser(uid, user) {
     try {
-      await userModel.findByIdAndUpdate(user._id, user);
-      return user;
+      return await userModel.updateOne({ _id: uid }, user);
+    } catch (error) {
+      throw new Error("Error al actualizar el usuario en la base de datos");
+    }
+  }
+
+  async updateUserByEmail(userEmail, user) {
+    try {
+      return await userModel.updateOne({ email: userEmail }, user);
     } catch (error) {
       throw new Error("Error al actualizar el usuario en la base de datos");
     }

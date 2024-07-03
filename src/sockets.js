@@ -29,10 +29,15 @@ export default (io) => {
       }
     };
 
-    const deleteProduct = async (pid) => {
+    const deleteProduct = async (pid, userRole, userId) => {
       try {
-        await ProductService.deleteProduct(pid);
-        await emitProducts();
+        const product = await ProductService.getProductByID(pid);
+        if (userRole === "admin" || product.owner === userId) {
+          await ProductService.deleteProduct(pid);
+          await emitProducts();
+        } else {
+          console.log("error", "No tienes permiso para eliminar este producto");
+        }
       } catch (error) {
         console.error("Error al eliminar producto:", error);
       }

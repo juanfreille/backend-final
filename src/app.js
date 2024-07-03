@@ -7,6 +7,8 @@ import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
 import mockingRouter from "./routes/mocking.router.js";
 import loggerRouter from "./routes/logger.router.js";
+import mailRouter from "./routes/mail.router.js";
+import usersRouter from "./routes/users.router.js";
 import handlebars from "express-handlebars";
 import __dirname from "./utils/constantsUtil.js";
 import { Server } from "socket.io";
@@ -51,6 +53,8 @@ app.use("/api/carts", cartsRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/api/mocking", mockingRouter);
 app.use("/loggerTest", loggerRouter);
+app.use("/mail", mailRouter);
+app.use("/api/users", usersRouter);
 
 // Handlebars
 app.engine("handlebars", handlebars.engine());
@@ -64,7 +68,7 @@ mongoose
     console.log("Conexión exitosa a la base de datos");
     const server = app.listen(port, () => console.log(`Servidor corriendo en http://localhost:${port}`));
 
-    // Set up WebSocket server
+    // WebSocket
     const io = new Server(server);
     Sockets(io);
   })

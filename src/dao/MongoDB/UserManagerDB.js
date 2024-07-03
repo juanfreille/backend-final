@@ -21,8 +21,12 @@ class UserManager {
     return await this.userRepository.createUser(user);
   }
 
-  async updateUser(user) {
-    return await this.userRepository.updateUser(user);
+  async updateUser(uid, user) {
+    return await this.userRepository.updateUser(uid, user);
+  }
+
+  async updateUserByEmail(userEmail, user) {
+    return await this.userRepository.updateUserByEmail(userEmail, user);
   }
 }
 

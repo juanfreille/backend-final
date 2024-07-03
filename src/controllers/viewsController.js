@@ -24,6 +24,8 @@ export const renderHome = async (req, res) => {
       products: products.docs,
       user: req.user,
       userAdmin: req.isAdmin,
+      userPremium: req.isPremium,
+      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
   } catch (error) {
@@ -120,6 +122,8 @@ export const getProducts = async (req, res) => {
       categories: categories,
       user: req.user,
       userAdmin: req.isAdmin,
+      userPremium: req.isPremium,
+      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     };
 
@@ -139,6 +143,8 @@ export const renderRealTimeProducts = async (req, res) => {
     style: "styles.css",
     user: req.user,
     userAdmin: req.isAdmin,
+    userPremium: req.isPremium,
+    userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
@@ -150,6 +156,8 @@ export const renderChat = async (req, res) => {
     style: "styles.css",
     user: req.user,
     userAdmin: req.isAdmin,
+    userPremium: req.isPremium,
+    userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
@@ -176,6 +184,8 @@ export const renderCart = async (req, res) => {
       payload: products,
       user: req.user,
       userAdmin: req.isAdmin,
+      userPremium: req.isPremium,
+      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
   } catch (error) {
@@ -200,6 +210,8 @@ export const renderProductDetails = async (req, res) => {
       product: product,
       user: req.user,
       userAdmin: req.isAdmin,
+      userPremium: req.isPremium,
+      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
   } catch (error) {
@@ -229,12 +241,16 @@ export const logOut = async (req, res) => {
   }
 };
 
-export const isAdmin = (req, res, next) => {
-  req.logger.info("isAdmin: Verificando si el usuario es administrador.");
-  if (req.user && req.user.role === "admin") {
-    req.isAdmin = true;
+export const isAdminOrPremium = (req, res, next) => {
+  req.logger.info("isAdminOrPremium: Verificando si el usuario es administrador o premium.");
+  if (req.user) {
+    req.isAdmin = req.user.role === "admin";
+    req.isPremium = req.user.role === "premium";
+    req.isAdminOrPremium = req.isAdmin || req.isPremium;
   } else {
     req.isAdmin = false;
+    req.isPremium = false;
+    req.isAdminOrPremium = false;
   }
   next();
 };
@@ -356,6 +372,8 @@ export const purchaseView = async (req, res) => {
         notProcessedAmount,
         user: req.user,
         userAdmin: req.isAdmin,
+        userPremium: req.isPremium,
+        userAdminOrPremium: req.isAdminOrPremium,
         totalQuantityInCart: calculateTotalQuantityInCart(req.user),
       });
     }
@@ -369,6 +387,8 @@ export const purchaseView = async (req, res) => {
       notProcessed,
       user: req.user,
       userAdmin: req.isAdmin,
+      userPremium: req.isPremium,
+      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart: calculateTotalQuantityInCart(req.user),
     });
   } catch (error) {
@@ -378,4 +398,12 @@ export const purchaseView = async (req, res) => {
       message: "Error interno del servidor",
     });
   }
+};
+
+export const resetPasswordView = (req, res) => {
+  res.render("resetPassword", { style: "styles.css" });
+};
+
+export const newPasswordView = (req, res) => {
+  res.render("newPassword", { style: "styles.css" });
 };

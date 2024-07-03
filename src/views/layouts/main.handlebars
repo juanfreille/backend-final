@@ -20,7 +20,7 @@
         <div class="uppercase letterspace-1 col-11 justify-content-center navbar-nav">
           <a class="nav-link" href="/home">Home</a>
           <a class="nav-link" href="/products?page=1">Productos</a>
-          {{#if userAdmin}}
+          {{#if userAdminOrPremium}}
           <a class="nav-link" href="/realtimeproducts">Productos en tiempo real</a>
           {{/if}}
           <a class="nav-link" href="/chat">Chat</a>
@@ -40,7 +40,8 @@
             {{else}}
             <p class="user-data" style="visibility: hidden;"></p>
             {{/if}}
-            <p class="user-data">Cuenta: {{user.role}}</p>
+            <p hidden class="user-data">Id: <span id="user-id">{{user._id}}</span></p>
+            <p class="user-data">Cuenta: <span id="user-role">{{user.role}}</span></p>
           </div>
         </div>
         {{else}}

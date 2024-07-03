@@ -351,7 +351,7 @@ table td {
 table td:last-child {
   font-size: 0.95em;
   line-height: 1.4;
-  text-align: right;
+  text-align: left;
   width: 5%;
 }
 table th {
@@ -388,7 +388,7 @@ table tr:nth-child(2n + 1) {
 .table-items {
   border: 3px solid #caa573;
   padding: 40px;
-  display: inline-block;
+  /* display: inline-block; */
   min-width: 540px;
   border-radius: 10px;
   text-align: left;

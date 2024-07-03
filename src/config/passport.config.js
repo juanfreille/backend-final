@@ -121,11 +121,6 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // if (!profile || !profile._json || !profile._json.email) {
-          //   const errorMessage =
-          //     "No se encontró un email asignado en github, por lo tanto no se podrá loguear\n Por favor, actualice su perfil de github con un email e intenta nuevamente.";
-          //   return done(null, false, errorMessage);
-          // }
           const email = profile._json.email;
 
           let user = await userService.getUserByEmail(email);
@@ -170,6 +165,18 @@ const initializePassport = () => {
             const adminUser = admin;
             return done(null, adminUser);
           }
+
+          //en caso de que no se encuentre un carrito creado en el usuario registrado
+          let user = await userService.getUserById(jwt_payload._id);
+          if (!user) {
+            return done(null, false);
+          }
+
+          if (!user.cart) {
+            user.cart = await CartService.createCart();
+            await userService.updateUser(user._id, user);
+          }
+
           return done(null, jwt_payload);
         } catch (error) {
           return done(error);

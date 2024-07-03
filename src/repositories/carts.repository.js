@@ -28,7 +28,7 @@ export class CartRepository {
     try {
       const newCart = new cartModel({ products });
       const savedCart = await newCart.save();
-      return new CartDTO(savedCart);
+      return savedCart._id;
     } catch (error) {
       throw new CustomError(ErrorCodes.DATABASE_ERROR, "Error al crear el carrito", generateDatabaseErrorInfo(error.message));
     }

@@ -1,7 +1,8 @@
 const socket = io();
 const form = document.getElementById("formulario");
 const tableBody = document.getElementById("table-body");
-
+let userRole = document.getElementById("user-role").textContent;
+let userId = document.getElementById("user-id").textContent;
 function getProducts() {
   socket.emit("getProducts", (products) => {
     emptyTable();
@@ -38,14 +39,27 @@ function createTableRow(product) {
     <td><img src="${
       product.thumbnails && product.thumbnails.length ? "img/" + product.thumbnails[0] : "img/noThumbnails.webp"
     }" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
-    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${product._id}')">Eliminar</button></td>
+    <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${product._id}', '${product.owner}')">Eliminar</button></td>
+    <td>${product.owner}</td>
   `;
   return row;
 }
 
-function deleteProduct(productId) {
-  const id = productId;
-  confirmarEliminacionProducto(productId);
+function deleteProduct(productId, productOwner) {
+  if (userRole === "admin" || userId === productOwner) {
+    confirmarEliminacionProducto(productId, userRole, userId);
+  } else {
+    Toastify({
+      text: "No tienes permiso para eliminar este producto",
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      style: {
+        background: "#d9534f",
+      },
+      stopOnFocus: true,
+    }).showToast();
+  }
 }
 
 form.addEventListener("submit", async (event) => {
@@ -62,6 +76,7 @@ form.addEventListener("submit", async (event) => {
     code: document.getElementById("code").value,
     stock: parseInt(document.getElementById("stock").value),
     thumbnail: file,
+    owner: userId,
   };
 
   try {
@@ -134,7 +149,7 @@ function showCancelButton() {
   cancelButtonContainer.style.display = "block";
 }
 
-function confirmarEliminacionProducto(idProducto) {
+function confirmarEliminacionProducto(idProducto, userRole, userId) {
   const customAlertConfig = {
     title: "Eliminar producto",
     reverseButtons: true,
@@ -147,7 +162,7 @@ function confirmarEliminacionProducto(idProducto) {
   customSwalert.fire(customAlertConfig).then((result) => {
     if (result.isConfirmed) {
       const id = idProducto;
-      socket.emit("deleteProduct", id);
+      socket.emit("deleteProduct", id, userRole, userId);
       emptyTable();
       Toastify({
         text: "Producto eliminado exitosamente",
