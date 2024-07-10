@@ -15,20 +15,36 @@ import { Server } from "socket.io";
 import Sockets from "./sockets.js";
 import mongoose from "mongoose";
 import passport from "passport";
-import initializatePassport from "./config/passport.config.js";
+import initializePassport from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
 import config from "./config/config.js";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 
 const app = express();
 const port = config.PORT;
 const uri = config.MONGO_URL;
 
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "Documentacion JIF Style Ecommerce",
+      description: "API pensada para aplicacion de un Marketplace",
+    },
+  },
+  apis: [`${__dirname}/../docs/**/*.yaml`],
+};
+
+const specs = swaggerJsdoc(swaggerOptions);
+app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(cookieParser());
 
+app.use(cookieParser());
 app.use(
   session({
     store: mongoStore.create({
@@ -42,7 +58,7 @@ app.use(
   })
 );
 
-initializatePassport();
+initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 

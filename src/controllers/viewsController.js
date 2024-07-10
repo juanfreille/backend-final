@@ -14,7 +14,6 @@ export const goHome = async (req, res) => {
 };
 
 export const renderHome = async (req, res) => {
-  req.logger.info("renderHome: Solicitud recibida.");
   try {
     const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
@@ -23,8 +22,6 @@ export const renderHome = async (req, res) => {
       style: "styles.css",
       products: products.docs,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -93,7 +90,7 @@ export const getProducts = async (req, res) => {
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productService.getDistinctCategories();
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
 
     let requestedPage = parseInt(page);
     if (isNaN(requestedPage) || requestedPage < 1) {
@@ -121,8 +118,6 @@ export const getProducts = async (req, res) => {
       ...paginationLinks,
       categories: categories,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     };
@@ -135,28 +130,22 @@ export const getProducts = async (req, res) => {
 };
 
 export const renderRealTimeProducts = async (req, res) => {
-  req.logger.info("renderRealTimeProducts: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
   res.render("realTimeProducts", {
     products: productService.getAllProducts,
     style: "styles.css",
     user: req.user,
-    userAdmin: req.isAdmin,
-    userPremium: req.isPremium,
     userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
 
 export const renderChat = async (req, res) => {
-  req.logger.info("renderChat: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
   res.render("chat", {
     style: "styles.css",
     user: req.user,
-    userAdmin: req.isAdmin,
-    userPremium: req.isPremium,
     userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
@@ -183,8 +172,6 @@ export const renderCart = async (req, res) => {
       style: "styles.css",
       payload: products,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -209,8 +196,6 @@ export const renderProductDetails = async (req, res) => {
       style: "styles.css",
       product: product,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -256,7 +241,6 @@ export const isAdminOrPremium = (req, res, next) => {
 };
 
 export const populateCart = async (req, res, next) => {
-  req.logger.info("populateCart: Solicitud recibida.");
   try {
     const user = req.user;
     if (user && user.role !== "admin" && user.cart) {
@@ -371,8 +355,6 @@ export const purchaseView = async (req, res) => {
         processedAmount,
         notProcessedAmount,
         user: req.user,
-        userAdmin: req.isAdmin,
-        userPremium: req.isPremium,
         userAdminOrPremium: req.isAdminOrPremium,
         totalQuantityInCart: calculateTotalQuantityInCart(req.user),
       });
@@ -386,8 +368,6 @@ export const purchaseView = async (req, res) => {
       notProcessedAmount,
       notProcessed,
       user: req.user,
-      userAdmin: req.isAdmin,
-      userPremium: req.isPremium,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart: calculateTotalQuantityInCart(req.user),
     });

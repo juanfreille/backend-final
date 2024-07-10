@@ -47,12 +47,15 @@ export const getProductByID = async (req, res) => {
   req.logger.info(`Solicitud para obtener el producto con ID: ${req.params.pid}`);
   try {
     const product = await productService.getProductByID(req.params.pid);
+    if (!product) {
+      return res.status(404).send("Producto no encontrado");
+    }
     req.logger.info(`Producto encontrado (ID: ${req.params.pid}, Nombre de producto: ${product.title})`);
     res.status(200).json({ status: "success", payload: product });
   } catch (error) {
     req.logger.error(`${error.message}`);
     if (error instanceof CustomError) {
-      res.status(404).json({ code: error.code, message: error.message });
+      res.status(400).json({ code: error.code, message: error.message });
     } else {
       const errorInfo = generateNotFoundErrorInfo("El producto", req.params.pid);
       res.status(500).json(errorInfo);
@@ -116,7 +119,8 @@ export const updateProduct = async (req, res) => {
     const product = await productService.getProductByID(productID);
     if (!product) {
       req.logger.warning(`Producto con ID: ${productID} no encontrado para actualizar.`);
-      throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
+      return res.status(404).json({ code: "NOT_FOUND_ERROR", message: `Producto con ID ${productID} no encontrado` });
+      // throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
     if (req.user.role == "admin") {
       await productService.updateProduct(productID, req.body);
@@ -135,7 +139,7 @@ export const updateProduct = async (req, res) => {
   } catch (error) {
     req.logger.error(`Error al actualizar el producto con ID ${productID}: ${error.message}`);
     if (error instanceof CustomError) {
-      res.status(404).json({ code: error.code, message: error.message });
+      res.status(400).json({ code: error.code, message: error.message });
     } else {
       const errorInfo = generateDefaultErrorInfo(error.message);
       res.status(500).json(errorInfo);
@@ -154,11 +158,13 @@ export const deleteProduct = async (req, res) => {
       req.logger.warning(`Producto con ID: ${productID} no encontrado para eliminar.`);
       throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
+    console.log("product owner", product.owner);
+    console.log("req.user.id", req.user._id);
 
     if (req.user.role === "admin" || product.owner.toString() === req.user._id.toString()) {
       await productService.deleteProduct(productID);
       req.logger.info(`Producto (ID: ${productID}) eliminado con éxito.`);
-      return res.status(200).json({ status: "success", message: "Product deleted successfully" });
+      return res.status(200).json({ status: "success", message: "Product eliminado con éxito" });
     } else {
       req.logger.warning(`Usuario ${req.user.email} no tiene permiso para eliminar el producto con ID: ${productID}`);
       return res.status(403).send("No tienes permiso para eliminar este producto");

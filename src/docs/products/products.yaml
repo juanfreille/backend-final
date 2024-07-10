@@ -1,0 +1,352 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtener todos los productos
+      description: Se obtienen todos los productos disponibles.
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductDetails"
+        "500":
+          description: Error interno del servidor.
+        "400":
+          description: Error al obtener productos.
+    post:
+      summary: Agregar un nuevo producto
+      description: Se agrega un nuevo producto a la base de datos.
+      security:
+        - cookieAuth: []
+      tags:
+        - Products
+      requestBody:
+        description: Objeto del producto que necesita ser agregado a la base de datos.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - price
+                - thumbnails
+                - code
+                - stock
+                - category
+              properties:
+                title:
+                  type: string
+                  description: El título del producto.
+                description:
+                  type: string
+                  description: La descripción del producto.
+                price:
+                  type: number
+                  description: El precio del producto.
+                thumbnails:
+                  type: array
+                  items:
+                    type: string
+                    description: La URL del producto.
+                code:
+                  type: string
+                  description: El código del producto.
+                stock:
+                  type: number
+                  description: El stock del producto.
+                category:
+                  type: string
+                  description: La categoría del producto.
+      responses:
+        "201":
+          description: Producto agregado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success: Producto agregado"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No auth token"
+                  details:
+                    type: string
+                    example: "Error: No auth token"
+        "400":
+          description: Ocurrió un error al agregar el producto.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error al agregar el producto"
+                  details:
+                    type: string
+                    example: "El campo 'precio' es obligatorio."
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un solo producto a partir de su Id
+      description: Este endpoint te permite obtener un producto específico a partir de su ID.
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto que se desea solicitar.
+          schema:
+            type: string
+            example: "660725f2d49ab55bf9c00d9b"
+      responses:
+        "200":
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetails"
+        "400":
+          description: Error al obtener el producto.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error interno del servidor
+    put:
+      summary: Actualizar un producto a partir de su id
+      description: Este endpoint te permite actualizar un producto existente en la base de datos.
+      security:
+        - cookieAuth: []
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto que se desea actualizar.
+          schema:
+            type: string
+            example: "660725f2d49ab55bf9c00d9b"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateProduct"
+      responses:
+        "200":
+          description: Producto actualizado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetails"
+        "400":
+          description: El id o alguna propiedad especificada no son válidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "BAD_REQUEST_ERROR"
+                  message:
+                    type: string
+                    example: "El id o alguna propiedad especificada no son válidos"
+        "401":
+          description: No se pudo autenticar el usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "UNAUTHORIZED_ERROR"
+                  message:
+                    type: string
+                    example: "No se pudo autenticar el usuario"
+        "403":
+          description: El usuario no tiene los permisos necesarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "FORBIDDEN_ERROR"
+                  message:
+                    type: string
+                    example: "No tienes permiso para actualizar este producto"
+        "404":
+          description: El producto no fue encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "NOT_FOUND_ERROR"
+                  message:
+                    type: string
+                    example: "Producto con ID {productID} no encontrado"
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "INTERNAL_SERVER_ERROR"
+                  message:
+                    type: string
+                    example: "Error interno del servidor"
+
+    delete:
+      summary: Elimina un producto
+      description: Esta ruta permite eliminar un producto por su ID.
+      security:
+        - cookieAuth: []
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a eliminar.
+          schema:
+            type: string
+            example: "660725f2d49ab55bf9c00d9b"
+      responses:
+        "200":
+          description: El producto fue eliminado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetails"
+        "401":
+          description: No se pudo autenticar el usuario
+        "403":
+          description: El usuario no tiene los permisos necesarios
+        "404":
+          description: El producto no fue encontrado
+        "500":
+          description: Error interno del servidor
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: coderCookieToken
+  schemas:
+    ProductDetails:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID de MongoDB
+        title:
+          type: string
+          description: Título del producto
+        description:
+          type: string
+          description: Descripción del producto
+        category:
+          type: string
+          description: Categoría del producto
+        price:
+          type: number
+          description: Precio del producto
+        code:
+          type: string
+          description: Código del producto
+        stock:
+          type: integer
+          description: Stock del producto
+        thumbnails:
+          type: array
+          items:
+            type: string
+          description: URLs de las imágenes del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Propietario del producto
+        __v:
+          type: integer
+          description: Versión del documento en MongoDB
+      example:
+        _id: "660725f2d49ab55bf9c00da3"
+        title: "Campera chopera"
+        description: "Es una prenda de estilo robusto y urbano que evoca una sensación de aventura y exploración. Inspirada en la moda motociclista, esta campera se caracteriza por su diseño resistente y su aspecto desgastado."
+        category: "camperas"
+        price: 35000
+        code: "JJJ123"
+        stock: 0
+        thumbnails: ["chopera.webp"]
+        status: true
+        owner: "admin"
+        __v: 0
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Título del producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        thumbnails:
+          type: array
+          items:
+            type: string
+          description: URLs de las imágenes del producto
+        code:
+          type: string
+          description: Código del producto
+        stock:
+          type: number
+          description: Stock del producto
+        category:
+          type: string
+          description: Categoría del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Propietario del producto
+      example:
+        title: "Pantalon Jeans"
+        description: "Los jeans son un clásico atemporal en el mundo de la moda, conocidos por su durabilidad y versatilidad. Este icónico pantalón ofrece un estilo casual y elegante que se adapta a una amplia gama de ocasiones, desde un día relajado en casa hasta una salida informal con amigos."
+        price: 30000
+        thumbnails: ["jeans.webp"]
+        code: "BBB123"
+        stock: 20
+        category: "pantalones"

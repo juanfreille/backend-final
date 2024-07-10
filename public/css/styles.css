@@ -1077,6 +1077,7 @@ aside li h2 {
   letter-spacing: 1px;
   text-transform: uppercase;
   font-size: var(--bs-nav-link-font-size);
+  align-self: center;
 }
 
 .imagen-carrito {

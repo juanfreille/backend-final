@@ -19,11 +19,11 @@ export const getCartById = async (req, res) => {
   req.logger.info(`Solicitud para obtener el carrito con ID: ${cid}`);
   try {
     const cart = await cartService.getCartById(cid);
-    req.logger.info(`Carrito encontrado (${cart.id})`);
-    res.send({ status: "success", payload: cart });
+    req.logger.info(`Carrito encontrado (${cart._id})`);
+    res.status(200).send({ status: "success", payload: cart });
   } catch (error) {
     req.logger.error(`Carrito con ID: ${cid} no encontrado.`);
-    res.status(500).send({ status: "error", message: `Carrito con ID: ${cid} no encontrado.` });
+    res.status(400).send({ status: "error", message: `Carrito con ID: ${cid} no encontrado.` });
   }
 };
 
@@ -94,7 +94,7 @@ export const updateProductQuantity = async (req, res) => {
   try {
     const updatedCart = await cartService.updateProductQuantity(cid, pid, quantity);
     req.logger.info(`Cantidad del producto (ID: ${pid}) en el carrito (ID: ${cid}) actualizada exitosamente.`);
-    res.send({ status: "success", payload: updatedCart });
+    res.status(200).send({ status: "success", payload: updatedCart });
   } catch (error) {
     req.logger.error(`Error al actualizar la cantidad del producto (ID: ${pid}) en el carrito (ID: ${cid})`);
     res.status(500).send({ status: "error", message: `Error al actualizar la cantidad del producto (ID: ${pid}) en el carrito (ID: ${cid})` });

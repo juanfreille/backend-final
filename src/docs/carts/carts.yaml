@@ -1,0 +1,366 @@
+paths:
+  /api/carts/:
+    get:
+      summary: Obtener los carritos
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: Carritos obtenidos con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cart"
+        "500":
+          description: Error interno del servidor
+
+    post:
+      summary: Crear un carrito
+      security:
+        - cookieAuth: []
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: El carrito fue creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/Cart"
+        "500":
+          description: Error interno del servidor
+
+  /api/carts/{cid}/:
+    get:
+      summary: Obtener un carrito por ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Carrito obtenido satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Carrito no encontrado
+        "500":
+          description: Error interno del servidor
+
+    delete:
+      summary: Eliminar todos los productos de un carrito por ID
+      security:
+        - cookieAuth: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Carrito limpiado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Carrito no encontrado
+        "500":
+          description: Error interno del servidor
+
+  /api/carts/{cid}/products/{pid}/:
+    post:
+      summary: Agregar un producto al carrito
+      security:
+        - cookieAuth: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      requestBody:
+        description: Cantidad de producto a agregar
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        "200":
+          description: Producto agregado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Carrito o producto no encontrado
+        "500":
+          description: Error interno del servidor
+
+    put:
+      summary: Modificar la cantidad de un producto en el carrito
+      security:
+        - cookieAuth: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+        - name: quantity
+          in: body
+          required: true
+          description: Cantidad del producto
+          schema:
+            type: integer
+      requestBody:
+        description: Nueva cantidad del producto
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        "200":
+          description: Cantidad modificada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "500":
+          description: Error interno del servidor
+
+    delete:
+      summary: Eliminar un producto del carrito
+      security:
+        - cookieAuth: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Producto eliminado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "500":
+          description: Error interno del servidor
+
+  /api/carts/{cid}/purchase/:
+    get:
+      summary: Generar la orden de compra
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Orden generada con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  payload:
+                    type: object
+                    properties:
+                      ticket:
+                        $ref: "#/components/schemas/tickets"
+        "400":
+          description: Error en la orden
+        "500":
+          description: Error interno del servidor
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: coderCookieToken
+  schemas:
+    ProductDetails:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID de MongoDB
+        title:
+          type: string
+          description: Título del producto
+        description:
+          type: string
+          description: Descripción del producto
+        category:
+          type: string
+          description: Categoría del producto
+        price:
+          type: number
+          description: Precio del producto
+        code:
+          type: string
+          description: Código del producto
+        stock:
+          type: integer
+          description: Stock del producto
+        thumbnails:
+          type: array
+          items:
+            type: string
+          description: URLs de las imágenes del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Propietario del producto
+        __v:
+          type: integer
+          description: Versión del documento en MongoDB
+
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID de MongoDB
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartProducts"
+        __v:
+          type: integer
+          description: Versión del documento en MongoDB
+      example:
+        _id: "663969750977eb229f2a40b2"
+        products:
+          - _id:
+              _id: "660725f2d49ab55bf9c00da3"
+              title: "Campera chopera"
+              description: "Es una prenda de estilo robusto y urbano que evoca una sensación de aventura y exploración. Inspirada en la moda motociclista, esta campera se caracteriza por su diseño resistente y su aspecto desgastado."
+              category: "camperas"
+              price: 35000
+              code: "JJJ123"
+              stock: 0
+              thumbnails: ["chopera.webp"]
+              status: true
+              owner: "admin"
+              __v: 0
+            quantity: 1
+        __v: 0
+
+    CartProducts:
+      type: object
+      properties:
+        _id:
+          $ref: "#/components/schemas/ProductDetails"
+        quantity:
+          type: integer
+          description: Unidades del producto en el carrito
+
+    Ticket:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID de MongoDB
+        code:
+          type: string
+          description: Código de la orden
+        purchaseDateTime:
+          type: string
+          description: Fecha de la orden
+          format: date-time
+        amount:
+          type: number
+          description: Monto de la orden
+        purchaser:
+          type: string
+          description: Email del comprador
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/TicketProducts"
+      example:
+        _id: "6568e173b6116d550105e0bc"
+        code: "ORDER34534534"
+        purchaseDateTime: "2024-06-10T02:54:10.103+00:00"
+        amount: 31000
+        purchaser: "jfrei@gmail.com"
+        products:
+          - _id: "660725f2d49ab55bf9c00da3"
+            quantity: 2
+            name: "Campera chopera"
+
+    TicketProducts:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID de MongoDB
+        quantity:
+          type: integer
+          description: Unidades del producto en el ticket
+        name:
+          type: string
+          description: Nombre del producto en el ticket

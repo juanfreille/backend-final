@@ -5,6 +5,34 @@ export const passportCall = (strategy) => {
     passport.authenticate(strategy, function (error, user, info) {
       if (error) return next(error);
       if (!user) {
+        // req.session.errorMessage = info.messages ? info.messages : info.toString();
+        return res.status(401).send({ error: info.messages ? info.messages : info.toString() });
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  };
+};
+
+export const passportCallRedirect = (strategy) => {
+  return async (req, res, next) => {
+    passport.authenticate(strategy, function (error, user, info) {
+      if (error) return next(error);
+      if (!user) {
+        req.session.errorMessage = info ? info.messages || info.toString() : "No auth token";
+        return res.redirect("/login");
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  };
+};
+
+export const passportCallHome = (strategy) => {
+  return async (req, res, next) => {
+    passport.authenticate(strategy, function (error, user, info) {
+      if (error) return next(error);
+      if (!user) {
         req.session.errorMessage = info.messages ? info.messages : info.toString();
       }
       req.user = user;

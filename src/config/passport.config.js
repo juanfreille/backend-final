@@ -9,7 +9,7 @@ import UserManager from "../dao/MongoDB/UserManagerDB.js";
 
 const userService = new UserManager();
 
-const initializePassport = () => {
+const initializePassport = async () => {
   const localStratergy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
   const CartService = new CartManager();

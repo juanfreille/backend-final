@@ -12,6 +12,12 @@ Tecnologías utilizadas:
 - Socket.io
 - JWT
 - Passport
+- Faker
+- Bcrypt
+- Dotenv
+- Nodemailer
+- Swagger
+- Winston
 
 ### Clonar el repositorio:
 
