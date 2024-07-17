@@ -6,13 +6,13 @@ import {
   gitHubCallBackJWT,
   handleRegister,
   handleLogin,
-  getCurrentUser,
   logOutSession,
   resetPassword,
   newPassword,
 } from "../controllers/sessionController.js";
 import { logOut } from "../controllers/viewsController.js";
 import { addLogger } from "../utils/logger.js";
+import userDTO from "../dto/userDTO.js";
 
 const router = Router();
 router.use(addLogger);
@@ -54,7 +54,11 @@ router.post(
   loginJWT
 );
 
-router.get("/current", passportCall("jwt"), getCurrentUser);
+router.get("/current", passportCall("jwt"), (req, res) => {
+  console.log(req.user);
+  const user = new userDTO(req.user);
+  res.send({ status: "success", payload: user });
+});
 router.post("/logout", passportCall("jwt"), logOut, logOutSession);
 router.post("/resetpassword", resetPassword);
 router.put("/newpassword", newPassword);

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon src/app.js",
-    "test": "mocha './src/test/*.test.js'"
+    "test": "set NODE_ENV=test&&mocha './src/test/*.test.js'"
   },
   "author": "",
   "type": "module",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "chai": "^5.1.1",
-    "mocha": "^10.6.0"
+    "mocha": "^10.6.0",
+    "supertest": "^7.0.0"
   }
 }

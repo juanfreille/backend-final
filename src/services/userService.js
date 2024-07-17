@@ -26,6 +26,10 @@ const updateUserByEmail = async (userEmail, user) => {
   return await userManager.updateUserByEmail(userEmail, user);
 };
 
+const deleteUserByEmail = async (userEmail) => {
+  return await userManager.deleteUserByEmail(userEmail);
+};
+
 export default {
   getAllUsers,
   getUserById,
@@ -33,4 +37,5 @@ export default {
   createUser,
   updateUser,
   updateUserByEmail,
+  deleteUserByEmail,
 };

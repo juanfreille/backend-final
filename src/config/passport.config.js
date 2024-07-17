@@ -27,9 +27,9 @@ const initializePassport = async () => {
   const githubCallbackURL = config.GITHUB_CALLBACK_URL;
 
   const cookieExtractor = (req) => {
-    let token = null;
+    let token;
     if (req && req.cookies) {
-      token = req.cookies.coderCookieToken ?? null;
+      token = req.cookies["coderCookieToken"];
     }
 
     return token;

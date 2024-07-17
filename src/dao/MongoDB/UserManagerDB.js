@@ -28,6 +28,10 @@ class UserManager {
   async updateUserByEmail(userEmail, user) {
     return await this.userRepository.updateUserByEmail(userEmail, user);
   }
+
+  async deleteUserByEmail(userEmail) {
+    return await this.userRepository.deleteUserByEmail(userEmail);
+  }
 }
 
 export default UserManager;

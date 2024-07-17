@@ -6,13 +6,26 @@ import ResetPasswordService from "../services/resetPasswordService.js";
 import crypto from "crypto";
 import { createHash } from "../utils/functionsUtil.js";
 import config from "../config/config.js";
+import jwt from "jsonwebtoken";
 
 const resetPasswordService = new ResetPasswordService();
 
 export const loginJWT = (req, res) => {
+  const jwtPayload = {
+    _id: req.user._id,
+    first_name: req.user.first_name,
+    last_name: req.user.last_name,
+    age: req.user.age,
+    role: req.user.role,
+    email: req.user.email,
+    cart: req.user.cart,
+  };
+
   req.logger.info(`Intento de inicio de sesión para el usuario: ${req.user.email}`);
-  const token = sessionService.generateJWT(req.user);
-  sessionService.setTokenCookie(res, token);
+  //  const token = sessionService.generateJWT(req.user);
+  //  sessionService.setTokenCookie(res, token);
+  const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  res.cookie("coderCookieToken", token, { maxAge: 3600000, httpOnly: true, secure: true });
 
   if (req.user) {
     req.logger.info(`Usuario ${req.user.email} se ha logueado con JWT exitosamente.`);
@@ -49,12 +62,6 @@ export const handleLogin = (req, res, next) => {
     role: req.user.role,
   };
   next();
-};
-
-export const getCurrentUser = (req, res) => {
-  req.logger.info(`Solicitud para obtener el usuario actual: ${req.user.email}`);
-  const user = new userDTO(req.user);
-  res.send({ status: "success", payload: user });
 };
 
 export const logOutSession = (req, res) => {

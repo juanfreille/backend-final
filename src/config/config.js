@@ -1,12 +1,15 @@
 import dotenv from "dotenv";
 
-const environment = "DEVELOPMENT";
-
 dotenv.config();
+
+const environment = process.env.NODE_ENV || "DEVELOPMENT";
+
+const MONGO_URL = environment === "test" ? process.env.MONGO_TEST_URL : process.env.MONGO_URL;
 
 export default {
   PORT: process.env.PORT,
-  MONGO_URL: process.env.MONGO_URL,
+  MONGO_URL,
+  MONGO_TEST_URL: process.env.MONGO_TEST_URL,
   SESSION_SECRET: process.env.SESSION_SECRET,
   CLIENT_ID: process.env.CLIENT_ID,
   SECRET_ID: process.env.SECRET_ID,
@@ -16,6 +19,5 @@ export default {
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
-  PERSISTENCE: process.env.PERSISTENCE,
-  NODE_ENV: process.env.ENVIRONMENT,
+  NODE_ENV: environment,
 };

@@ -23,7 +23,8 @@ import swaggerUiExpress from "swagger-ui-express";
 
 const app = express();
 const port = config.PORT;
-const uri = config.MONGO_URL;
+// const uri = config.MONGO_URL;
+const uri = config.NODE_ENV === "test" ? config.MONGO_TEST_URL : config.MONGO_URL;
 
 const swaggerOptions = {
   definition: {
@@ -44,7 +45,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.use(cookieParser());
 app.use(
   session({
     store: mongoStore.create({
@@ -52,15 +52,15 @@ app.use(
       ttl: 60, // 60 minutos
     }),
     secret: config.SESSION_SECRET,
-    resave: true,
-    saveUninitialized: true,
-    cookie: { maxAge: 3600000 }, // 60 minutos en milisegundos
+    resave: false,
+    saveUninitialized: false,
   })
 );
 
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cookieParser());
 
 // Routes
 app.use("/", viewsRouter);
@@ -79,7 +79,7 @@ app.set("views", __dirname + "/../views");
 
 // Mongoose
 mongoose
-  .connect(uri, { dbName: "ecommerce" })
+  .connect(uri, { dbName: config.NODE_ENV === "test" ? "test" : "ecommerce" })
   .then(() => {
     console.log("Conexión exitosa a la base de datos");
     const server = app.listen(port, () => console.log(`Servidor corriendo en http://localhost:${port}`));

@@ -50,6 +50,14 @@ class UserRepository {
       throw new Error("Error al actualizar el usuario en la base de datos");
     }
   }
+
+  async deleteUserByEmail(userEmail) {
+    try {
+      return await userModel.deleteOne({ email: userEmail });
+    } catch (error) {
+      throw new Error("Error al eliminar usuario");
+    }
+  }
 }
 
 export { UserRepository };
