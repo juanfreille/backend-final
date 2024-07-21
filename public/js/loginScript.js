@@ -16,4 +16,69 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     }).showToast();
   }
+
+  document.getElementById("loginForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const data = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    try {
+      const response = await fetch("/api/sessions/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      console.log("Result from API:", result);
+
+      if (response.ok) {
+        Toastify({
+          text: result.message || "Logueo exitoso!",
+          duration: 1000,
+          gravity: "bottom",
+          position: "right",
+          close: false,
+          style: {
+            textAlign: "center",
+            background: "#68d391",
+          },
+        }).showToast();
+
+        setTimeout(() => {
+          window.location.replace("/home");
+        }, 1300);
+      } else {
+        Toastify({
+          text: result.error || "Ocurrió un error al loguearse, verifique sus datos",
+          duration: 3200,
+          gravity: "bottom",
+          position: "right",
+          close: false,
+          style: {
+            textAlign: "center",
+            background: "#b14040",
+          },
+        }).showToast();
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      Toastify({
+        text: "Ocurrió un error al loguearse, verifique sus datos",
+        duration: 3200,
+        gravity: "bottom",
+        position: "right",
+        close: false,
+        style: {
+          textAlign: "center",
+          background: "#b14040",
+        },
+      }).showToast();
+    }
+  });
 });

@@ -3,18 +3,11 @@ import mongoose from "mongoose";
 import config from "../config/config.js";
 import CartService from "../services/cartService.js";
 import ProductService from "../services/productService.js";
+import { generateProduct } from "../utils/mockingGenerate.js";
 
 describe("Pruebas de carts", () => {
   let testProduct;
-  const productMock = {
-    title: "Camiseta de Futbol",
-    description: "Ultima camiseta de futbol de Argentina",
-    price: 90000,
-    thumbnail: [""],
-    code: "PPP123",
-    stock: 25,
-    category: "remeras",
-  };
+  const productMock = generateProduct();
   let cartId;
 
   // Antes de ejecutar

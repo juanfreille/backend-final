@@ -15,6 +15,9 @@ export const goHome = async (req, res) => {
 
 export const renderHome = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.redirect("/login");
+    }
     const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
     res.render("home", {
@@ -36,11 +39,8 @@ export const renderLogin = (req, res) => {
   res.render("login", {
     title: "Backend / Final - Login",
     style: "styles.css",
-    message: req.session.messages ?? "",
+    message: "",
   });
-  delete req.session.errorMessage;
-  delete req.session.messages;
-  req.session.save();
   return;
 };
 
@@ -49,10 +49,8 @@ export const renderRegister = (req, res) => {
   res.render("register", {
     title: "Backend / Final - Registro",
     style: "styles.css",
-    message: req.session.messages ?? "",
+    message: "",
   });
-  delete req.session.messages;
-  req.session.save();
 };
 
 export const getProducts = async (req, res) => {
@@ -90,7 +88,7 @@ export const getProducts = async (req, res) => {
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productService.getDistinctCategories();
-    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
+    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
 
     let requestedPage = parseInt(page);
     if (isNaN(requestedPage) || requestedPage < 1) {

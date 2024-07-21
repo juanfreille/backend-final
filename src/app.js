@@ -1,6 +1,14 @@
 import express from "express";
-import session from "express-session";
-import mongoStore from "connect-mongo";
+import mongoose from "mongoose";
+import passport from "passport";
+import initializePassport from "./config/passport.config.js";
+import config from "./config/config.js";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
+import handlebars from "express-handlebars";
+import __dirname from "./utils/constantsUtil.js";
+import { Server } from "socket.io";
+import Sockets from "./sockets.js";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import sessionsRouter from "./routes/sessions.router.js";
@@ -9,21 +17,10 @@ import mockingRouter from "./routes/mocking.router.js";
 import loggerRouter from "./routes/logger.router.js";
 import mailRouter from "./routes/mail.router.js";
 import usersRouter from "./routes/users.router.js";
-import handlebars from "express-handlebars";
-import __dirname from "./utils/constantsUtil.js";
-import { Server } from "socket.io";
-import Sockets from "./sockets.js";
-import mongoose from "mongoose";
-import passport from "passport";
-import initializePassport from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
-import config from "./config/config.js";
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUiExpress from "swagger-ui-express";
 
 const app = express();
 const port = config.PORT;
-// const uri = config.MONGO_URL;
 const uri = config.NODE_ENV === "test" ? config.MONGO_TEST_URL : config.MONGO_URL;
 
 const swaggerOptions = {
@@ -45,21 +42,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.use(
-  session({
-    store: mongoStore.create({
-      mongoUrl: uri,
-      ttl: 60, // 60 minutos
-    }),
-    secret: config.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
 app.use(cookieParser());
 
 // Routes

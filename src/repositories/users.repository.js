@@ -31,7 +31,7 @@ class UserRepository {
     try {
       return await userModel.create(user);
     } catch (error) {
-      throw new Error("Error al registrar usuario");
+      throw error;
     }
   }
 

@@ -12,3 +12,16 @@ export const generateProduct = () => {
     category: faker.commerce.productMaterial(),
   };
 };
+
+export const generateUser = () => {
+  let email = faker.internet.email();
+
+  return {
+    // _id: faker.database.mongodbObjectId(),
+    first_name: faker.person.firstName(),
+    last_name: faker.person.lastName(),
+    email: email,
+    age: 30,
+    password: "123456",
+  };
+};

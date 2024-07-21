@@ -2,19 +2,11 @@ import { expect } from "chai";
 import mongoose from "mongoose";
 import config from "../config/config.js";
 import ProductService from "../services/productService.js";
+import { generateProduct } from "../utils/mockingGenerate.js";
 
 describe("Pruebas de products", () => {
   let testProduct;
-
-  const productMock = {
-    title: "Camiseta de Futbol",
-    description: "Ultima camiseta de futbol de Argentina",
-    price: 90000,
-    thumbnail: [""],
-    code: "PPP123",
-    stock: 25,
-    category: "remeras",
-  };
+  let productMock = generateProduct();
 
   // Antes de cada prueba
   beforeEach(async () => {

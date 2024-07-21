@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { passportCall, authorization, handlePolicies, passportCallHome, passportCallRedirect } from "../utils/authUtil.js";
+import { passportCall, handlePolicies, passportCallHome, passportCallRedirect } from "../utils/authUtil.js";
 import {
   renderLogin,
   redirectIfLoggedIn,
@@ -27,7 +27,7 @@ router.get("/", passportCallHome("jwt"), goHome);
 router.get("/home", passportCallHome("jwt"), isAdminOrPremium, populateCart, renderHome);
 router.get("/login", passportCallHome("jwt"), redirectIfLoggedIn, renderLogin);
 router.get("/register", passportCallHome("jwt"), redirectIfLoggedIn, renderRegister);
-router.get("/products", isAdminOrPremium, populateCart, getProducts);
+router.get("/products", passportCall("jwt"), isAdminOrPremium, populateCart, getProducts);
 router.get("/realtimeproducts", passportCall("jwt"), handlePolicies(["ADMIN", "PREMIUM"]), isAdminOrPremium, populateCart, renderRealTimeProducts);
 router.get("/chat", passportCallRedirect("jwt"), isAdminOrPremium, populateCart, verifyUserSession, renderChat);
 router.get("/cart/:cid", passportCall("jwt"), isAdminOrPremium, populateCart, verifyUserSession, renderCart);

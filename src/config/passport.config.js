@@ -10,7 +10,7 @@ import UserManager from "../dao/MongoDB/UserManagerDB.js";
 const userService = new UserManager();
 
 const initializePassport = async () => {
-  const localStratergy = local.Strategy;
+  const localStrategy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
   const CartService = new CartManager();
 
@@ -38,46 +38,45 @@ const initializePassport = async () => {
   //Registro
   passport.use(
     "register",
-    new localStratergy(
-      {
-        passReqToCallback: true,
-        usernameField: "email",
-      },
-      async (req, username, password, done) => {
-        const { first_name, last_name, email, age, role } = req.body;
-
-        try {
-          let user = await userService.getUserByEmail(username);
-          if (user) {
-            const errorMessage = "¡Registro fallido! El usuario ya existe en la base de datos\n Por favor, ingresá otro correo electrónico.";
-            return done(null, false, errorMessage);
-          }
-
-          const newUser = {
-            first_name,
-            last_name,
-            email,
-            age,
-            cart: await CartService.createCart(),
-            password: createHash(password),
-            role: role || "user",
-          };
-          const result = await userService.createUser(newUser);
-
-          return done(null, result);
-        } catch (error) {
-          return done(error.message);
+    new localStrategy({ passReqToCallback: true, usernameField: "email", session: false }, async (req, username, password, done) => {
+      const { first_name, last_name, email, age } = req.body;
+      try {
+        if (!first_name || !last_name || !email || !age) {
+          return done(null, false, { message: "Faltan campos por completar" });
         }
+
+        let exist = await userService.getUserByEmail(username);
+        if (exist) {
+          return done(null, false, { message: "El email ya está registrado" });
+        }
+
+        const newUser = {
+          first_name,
+          last_name,
+          email,
+          age,
+          cart: await CartService.createCart(),
+          password: createHash(password),
+        };
+
+        let result = await userService.createUser(newUser);
+
+        // Devolver el usuario creado
+        return done(null, result);
+      } catch (error) {
+        console.error("Error en la estrategia de Passport:", error);
+        return done(error);
       }
-    )
+    })
   );
 
   //Login
   passport.use(
     "login",
-    new localStratergy(
+    new localStrategy(
       {
         usernameField: "email",
+        session: false,
       },
       async (username, password, done) => {
         try {
@@ -89,12 +88,12 @@ const initializePassport = async () => {
           const user = await userService.getUserByEmail(username);
           if (!user) {
             const errorMessage = "¡Inicio de sesión fallido! El usuario no existe\n Por favor, verifica tu correo electrónico e intenta nuevamente.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: errorMessage });
           }
 
           if (!isValidPassword(user, password)) {
             const errorMessage = "¡Inicio de sesión fallido! La contraseña es incorrecta\n Por favor, verifica tu contraseña e intenta nuevamente.";
-            return done(null, false, errorMessage);
+            return done(null, false, { message: errorMessage });
           }
 
           if (!user.cart) {
@@ -104,7 +103,7 @@ const initializePassport = async () => {
 
           return done(null, user);
         } catch (error) {
-          return done(error.message);
+          return done(error);
         }
       }
     )
@@ -177,7 +176,7 @@ const initializePassport = async () => {
             await userService.updateUser(user._id, user);
           }
 
-          return done(null, jwt_payload);
+          return done(null, user);
         } catch (error) {
           return done(error);
         }

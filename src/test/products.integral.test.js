@@ -2,6 +2,7 @@ import { expect } from "chai";
 import mongoose from "mongoose";
 import config from "../config/config.js";
 import ProductService from "../services/productService.js";
+import { generateProduct } from "../utils/mockingGenerate.js";
 
 describe("Pruebas integrales del módulo de productos", () => {
   before(async () => {
@@ -14,15 +15,9 @@ describe("Pruebas integrales del módulo de productos", () => {
 
   it("Prueba de operaciones CRUD de productos", async () => {
     // Crear producto
-    const productMock = {
-      title: "Camiseta de Futbol",
-      description: "Ultima camiseta de futbol de Argentina",
-      price: 90000,
-      thumbnail: [""],
-      code: "PPP123",
-      stock: 25,
-      category: "remeras",
-    };
+
+    let productMock = generateProduct();
+
     const createdProduct = await ProductService.createProduct(productMock);
     expect(createdProduct).to.have.property("_id").and.not.null;
 
