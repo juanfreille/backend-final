@@ -41,7 +41,7 @@ app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(`${__dirname}/../../public`));
 
 initializePassport();
 app.use(passport.initialize());
