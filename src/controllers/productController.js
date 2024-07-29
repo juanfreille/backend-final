@@ -2,7 +2,7 @@ import CustomError from "../services/errors/CustomError.js";
 import { generateProductsErrorInfo, generateNotFoundErrorInfo, generateDefaultErrorInfo } from "../services/errors/info.js";
 import { ErrorCodes } from "../services/errors/enums.js";
 import productService from "../services/productService.js";
-import ProductDTO from "../dto/ProductDTO.js";
+import ProductDTO from "../dto/productDTO.js";
 import userService from "../services/userService.js";
 
 export const getPaginateProducts = async (req, res) => {
