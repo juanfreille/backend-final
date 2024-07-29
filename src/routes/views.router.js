@@ -17,14 +17,11 @@ import {
   newPasswordView,
   profileView,
 } from "../controllers/viewsController.js";
-import { addLogger } from "../utils/logger.js";
 
 const router = Router();
 
 const passportHome = passportCallHome("jwt"); //para rutas donde se permite el acceso a usuarios no autenticados, pero igual manejar el caso donde el usuario esté autenticado.
 const passportRedirect = passportCallRedirect("jwt"); //es para rutas que requieren autenticación y redirige a /login si el usuario no está autenticado.
-
-router.use(addLogger);
 
 // Rutas de vistas, no se necesitan permisos especiales para verlas, aun asi verifican autenticación
 router.get("/", passportHome, goHome);
