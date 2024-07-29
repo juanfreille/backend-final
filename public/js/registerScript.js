@@ -37,7 +37,7 @@ form.addEventListener("submit", (e) => {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: error.message, // Muestra el mensaje de error específico
+        text: error.message,
       });
       console.error("Error:", error);
     });

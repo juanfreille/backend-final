@@ -35,18 +35,17 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       const result = await response.json();
-      console.log("Result from API:", result);
 
       if (response.ok) {
         Toastify({
           text: result.message || "Logueo exitoso!",
-          duration: 1000,
+          duration: 1200,
           gravity: "bottom",
           position: "right",
           close: false,
           style: {
             textAlign: "center",
-            background: "#68d391",
+            background: "#96c93d",
           },
         }).showToast();
 

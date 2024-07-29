@@ -37,10 +37,10 @@ function createTableRow(product) {
     <td>${product.stock}</td>
     <td>${product.code}</td>
     <td><img src="${
-      product.thumbnails && product.thumbnails.length ? "img/" + product.thumbnails[0] : "img/noThumbnails.webp"
+      product.thumbnails && product.thumbnails.length ? "img/products/" + product.thumbnails[0] : "img/products/noThumbnails.webp"
     }" alt="Thumbnail" class="thumbnail" style="width: 75px;"></td>
+    <td style="text-align: center">${product.ownerName}</td>
     <td><button class="btn btn-effect btn-dark btn-jif bg-black" onClick="deleteProduct('${product._id}', '${product.owner}')">Eliminar</button></td>
-    <td>${product.owner}</td>
   `;
   return row;
 }
@@ -65,27 +65,20 @@ function deleteProduct(productId, productOwner) {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const fileInput = document.getElementById("thumbnails");
-  const file = fileInput.files[0];
-
-  product = {
-    title: document.getElementById("title").value,
-    description: document.getElementById("description").value,
-    category: document.getElementById("category").value,
-    price: parseInt(document.getElementById("price").value),
-    code: document.getElementById("code").value,
-    stock: parseInt(document.getElementById("stock").value),
-    thumbnail: file,
-    owner: userId,
-  };
+  let formData = new FormData(form);
 
   try {
-    const newProduct = product;
-    socket.emit("createProduct", newProduct);
+    const response = await fetch("/api/products", {
+      method: "POST",
+      body: formData,
+    });
 
+    if (!response.ok) throw new Error("Error en la carga del producto");
+
+    const newProduct = await response.json();
+    socket.emit("createProduct", newProduct);
     const cancelButtonContainer = document.getElementById("cancelButtonContainer");
     cancelButtonContainer.style.display = "none";
-
     Toastify({
       text: `Producto agregado exitosamente`,
       duration: 3000,

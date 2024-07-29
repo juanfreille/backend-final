@@ -3,6 +3,55 @@ import cartService from "../services/cartService.js";
 import userService from "../services/userService.js";
 import ticketService from "../services/ticketService.js";
 
+//Funciones de ayuda
+export const calculateTotalQuantityInCart = (user) => {
+  if (!user.cart) return 0;
+  return user.cart.products.reduce((total, { quantity }) => total + quantity, 0);
+};
+
+const formatProducts = (products) =>
+  products.map(({ _id, quantity }) => ({
+    _id: _id._id,
+    quantity,
+    name: _id.title,
+  }));
+
+const buildPaginationLinks = (req, products) => {
+  const { prevPage, nextPage } = products;
+  const baseUrl = req.originalUrl.split("?")[0];
+  const sortParam = req.query.sort ? `&sort=${req.query.sort}` : "";
+
+  const prevLink = prevPage ? `${baseUrl}?page=${prevPage}${sortParam}` : null;
+  const nextLink = nextPage ? `${baseUrl}?page=${nextPage}${sortParam}` : null;
+
+  return {
+    prevPage: prevPage ? parseInt(prevPage) : null,
+    nextPage: nextPage ? parseInt(nextPage) : null,
+    prevLink,
+    nextLink,
+  };
+};
+
+export const getAvatarPath = async (userId) => {
+  try {
+    if (!userId) {
+      return `/img/profiles/defaultProfilePic.jpg`;
+    }
+
+    const user = await userService.getUserById(userId);
+    if (!user || !user.documents) {
+      return `/img/profiles/defaultProfilePic.jpg`;
+    }
+
+    const avatarDoc = user.documents.find((doc) => doc.docType === "avatar");
+    return avatarDoc ? `/img/profiles/${userId}/ProfilePic` : `/img/profiles/defaultProfilePic.jpg`;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error al obtener la ruta del avatar");
+  }
+};
+
+//Controllers
 export const goHome = async (req, res) => {
   req.logger.info("Redireccionar al home: Solicitud recibida.");
   try {
@@ -15,16 +64,16 @@ export const goHome = async (req, res) => {
 
 export const renderHome = async (req, res) => {
   try {
-    if (!req.user) {
-      return res.redirect("/login");
-    }
     const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
+    const avatar = await getAvatarPath(req.user ? req.user._id : null);
+
     res.render("home", {
-      title: "Backend / Final - Home",
+      title: "JIF STYLE STORE - Home",
       style: "styles.css",
       products: products.docs,
       user: req.user,
+      avatar,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -37,7 +86,7 @@ export const renderHome = async (req, res) => {
 export const renderLogin = (req, res) => {
   req.logger.info("renderLogin: Solicitud recibida.");
   res.render("login", {
-    title: "Backend / Final - Login",
+    title: "JIF STYLE STORE - Login",
     style: "styles.css",
     message: "",
   });
@@ -47,7 +96,7 @@ export const renderLogin = (req, res) => {
 export const renderRegister = (req, res) => {
   req.logger.info("renderRegister: Solicitud recibida.");
   res.render("register", {
-    title: "Backend / Final - Registro",
+    title: "JIF STYLE STORE - Registro",
     style: "styles.css",
     message: "",
   });
@@ -55,6 +104,7 @@ export const renderRegister = (req, res) => {
 
 export const getProducts = async (req, res) => {
   req.logger.info("getProducts: Solicitud recibida.");
+  const avatar = await getAvatarPath(req.user ? req.user._id : null);
   try {
     const { page = 1, limit = 8, sort } = req.query;
     //uso limit 8 solo por cuestiones esteticas para que funcione bien con mi frontEnd
@@ -88,25 +138,11 @@ export const getProducts = async (req, res) => {
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productService.getDistinctCategories();
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-
-    let requestedPage = parseInt(page);
-    if (isNaN(requestedPage) || requestedPage < 1) {
-      requestedPage = 1;
-    }
-
-    if (requestedPage > products.totalPages) {
-      req.logger.warn("getProducts: La página solicitada no existe.");
-      return res.render("error", {
-        title: "Backend / Final - Products",
-        style: "styles.css",
-        message: "La página solicitada no existe",
-        redirect: "/products",
-      });
-    }
+    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
+    const avatar = await getAvatarPath(req.user ? req.user._id : null);
 
     const response = {
-      title: "Backend / Final - Products",
+      title: "JIF STYLE STORE - Productos",
       style: "styles.css",
       payload: products.docs,
       totalPages: products.totalPages,
@@ -115,6 +151,7 @@ export const getProducts = async (req, res) => {
       hasNextPage: products.hasNextPage,
       ...paginationLinks,
       categories: categories,
+      avatar,
       user: req.user,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
@@ -128,12 +165,16 @@ export const getProducts = async (req, res) => {
 };
 
 export const renderRealTimeProducts = async (req, res) => {
+  req.logger.info("renderRealTimeProducts: Solicitud recibida.");
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+  const avatar = await getAvatarPath(req.user ? req.user._id : null);
 
   res.render("realTimeProducts", {
+    title: "JIF STYLE STORE - Gestión de productos",
     products: productService.getAllProducts,
     style: "styles.css",
     user: req.user,
+    avatar,
     userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
@@ -141,9 +182,12 @@ export const renderRealTimeProducts = async (req, res) => {
 
 export const renderChat = async (req, res) => {
   const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+  const avatar = await getAvatarPath(req.user ? req.user._id : null);
   res.render("chat", {
+    title: "JIF STYLE STORE - Chat",
     style: "styles.css",
     user: req.user,
+    avatar,
     userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
@@ -165,11 +209,13 @@ export const renderCart = async (req, res) => {
       })
     );
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const avatar = await getAvatarPath(req.user ? req.user._id : null);
     res.render("cart", {
-      title: "Backend / Final - cart",
+      title: "JIF STYLE STORE - Carrito",
       style: "styles.css",
       payload: products,
       user: req.user,
+      avatar,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
@@ -189,10 +235,12 @@ export const renderProductDetails = async (req, res) => {
       return res.status(404).json({ error: "Producto no encontrado" });
     }
     const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
+    const avatar = await getAvatarPath(req.user ? req.user._id : null);
     res.render("product-details", {
-      title: "Detalles del Producto",
+      title: "JIF STYLE STORE - Detalles del Producto",
       style: "styles.css",
       product: product,
+      avatar,
       user: req.user,
       userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
@@ -212,20 +260,7 @@ export const redirectIfLoggedIn = (req, res, next) => {
   next();
 };
 
-export const logOut = async (req, res) => {
-  req.logger.info("logOut: Solicitud recibida.");
-  try {
-    res.clearCookie("coderCookieToken");
-    res.redirect("/login");
-    return;
-  } catch (error) {
-    req.logger.error(`logOut: ${error.message}`);
-    return res.status(500).json({ status: "error", error: "Internal Server Error" });
-  }
-};
-
 export const isAdminOrPremium = (req, res, next) => {
-  req.logger.info("isAdminOrPremium: Verificando si el usuario es administrador o premium.");
   if (req.user) {
     req.isAdmin = req.user.role === "admin";
     req.isPremium = req.user.role === "premium";
@@ -238,56 +273,9 @@ export const isAdminOrPremium = (req, res, next) => {
   next();
 };
 
-export const populateCart = async (req, res, next) => {
-  try {
-    const user = req.user;
-    if (user && user.role !== "admin" && user.cart) {
-      req.user = await userService.getUserById(user._id);
-    }
-    next();
-  } catch (error) {
-    req.logger.error(`populateCart: ${error.message}`);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-export const calculateTotalQuantityInCart = (user) => {
-  let totalQuantityInCart = 0;
-  if (user.cart) {
-    totalQuantityInCart = user.cart.products.reduce((total, productInCart) => {
-      return total + productInCart.quantity;
-    }, 0);
-  }
-  return totalQuantityInCart;
-};
-
-export const buildPaginationLinks = (req, products) => {
-  const { prevPage, nextPage } = products;
-  const baseUrl = req.originalUrl.split("?")[0];
-  const sortParam = req.query.sort ? `&sort=${req.query.sort}` : "";
-
-  const prevLink = prevPage ? `${baseUrl}?page=${prevPage}${sortParam}` : null;
-  const nextLink = nextPage ? `${baseUrl}?page=${nextPage}${sortParam}` : null;
-
-  return {
-    prevPage: prevPage ? parseInt(prevPage) : null,
-    nextPage: nextPage ? parseInt(nextPage) : null,
-    prevLink,
-    nextLink,
-  };
-};
-
-export const verifyUserSession = (req, res, next) => {
-  req.logger.info("verifyUserSession: Solicitud recibida.");
-  if (!req.user) {
-    res.clearCookie("connect.sid");
-    return res.redirect("/login");
-  }
-  next();
-};
-
 export const purchaseView = async (req, res) => {
   req.logger.info("purchaseView: Solicitud recibida.");
+  const avatar = await getAvatarPath(req.user ? req.user._id : null);
   try {
     const cart = await cartService.getCartById(req.params.cid);
     if (!cart) {
@@ -321,13 +309,6 @@ export const purchaseView = async (req, res) => {
       }
     }
 
-    const formatProducts = (products) =>
-      products.map(({ _id, quantity }) => ({
-        _id: _id._id,
-        quantity,
-        name: _id.title,
-      }));
-
     const notProcessed = formatProducts(purchaseError);
     const processed = formatProducts(purchaseSuccess);
     await cartService.insertArray(cart._id, purchaseError);
@@ -347,10 +328,11 @@ export const purchaseView = async (req, res) => {
 
       return res.render("purchase", {
         status: "success",
-        title: "Detalles del Producto",
+        title: "JIF STYLE STORE - Comprar",
         style: "styles.css",
         payload: purchaseData,
         processedAmount,
+        avatar,
         notProcessedAmount,
         user: req.user,
         userAdminOrPremium: req.isAdminOrPremium,
@@ -360,10 +342,11 @@ export const purchaseView = async (req, res) => {
 
     return res.render("purchase", {
       status: "error",
-      title: "Detalles del Producto",
+      title: "JIF STYLE STORE - Comprar",
       style: "styles.css",
       processedAmount,
       notProcessedAmount,
+      avatar,
       notProcessed,
       user: req.user,
       userAdminOrPremium: req.isAdminOrPremium,
@@ -379,9 +362,33 @@ export const purchaseView = async (req, res) => {
 };
 
 export const resetPasswordView = (req, res) => {
-  res.render("resetPassword", { style: "styles.css" });
+  res.render("resetPassword", { style: "styles.css", title: "JIF STYLE STORE - Restablecer contraseña" });
 };
 
 export const newPasswordView = (req, res) => {
-  res.render("newPassword", { style: "styles.css" });
+  res.render("newPassword", { style: "styles.css", title: "JIF STYLE STORE - Nueva contraseña" });
+};
+
+export const profileView = async (req, res) => {
+  try {
+    const avatar = await getAvatarPath(req.user ? req.user._id : null);
+    const userId = req.user._id;
+    const user = await userService.getUserById(userId);
+    const documentsJson = JSON.stringify(user);
+    const cartId = user.cart._id;
+    res.render("profile", {
+      user,
+      cartId,
+      title: "JIF STYLE STORE - Mi Perfil",
+      style: "styles.css",
+      user: req.user,
+      avatar,
+      documentsJson,
+      userAdminOrPremium: req.isAdminOrPremium,
+      totalQuantityInCart: calculateTotalQuantityInCart(req.user),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: error.message });
+  }
 };

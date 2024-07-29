@@ -120,7 +120,6 @@ export const updateProduct = async (req, res) => {
     if (!product) {
       req.logger.warning(`Producto con ID: ${productID} no encontrado para actualizar.`);
       return res.status(404).json({ code: "NOT_FOUND_ERROR", message: `Producto con ID ${productID} no encontrado` });
-      // throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
     if (req.user.role == "admin") {
       await productService.updateProduct(productID, req.body);

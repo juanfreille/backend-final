@@ -11,7 +11,7 @@ import {
   purchaseCart,
 } from "../controllers/cartController.js";
 import { addLogger } from "../utils/logger.js";
-import { passportCall, handlePolicies } from "../utils/authUtil.js";
+import { passportCall } from "../utils/authUtil.js";
 
 const router = express.Router();
 

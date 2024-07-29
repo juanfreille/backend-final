@@ -19,6 +19,16 @@ class MessageRepository {
       throw new Error("Error al guardar el mensaje en la base de datos");
     }
   }
+
+  async saveMessage(messageData) {
+    try {
+      const message = new messageModel(messageData);
+      await message.save();
+    } catch (error) {
+      console.error("Error al guardar el mensaje en la base de datos:", error);
+      throw error;
+    }
+  }
 }
 
 export default MessageRepository;

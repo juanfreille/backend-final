@@ -16,7 +16,7 @@ const generateJWT = (user) => {
 
 const setTokenCookie = (res, token) => {
   res.cookie("coderCookieToken", token, {
-    maxAge: 3600000, // 1 hour
+    maxAge: 3600000,
     httpOnly: true,
     secure: true,
   });

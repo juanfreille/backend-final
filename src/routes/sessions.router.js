@@ -2,10 +2,10 @@ import { Router } from "express";
 import passport from "passport";
 import { passportCall } from "../utils/authUtil.js";
 import { gitHubCallBackJWT, failRegister, logOutJwt, resetPassword, newPassword } from "../controllers/sessionController.js";
-import { logOut } from "../controllers/viewsController.js";
 import { addLogger } from "../utils/logger.js";
 import userDTO from "../dto/userDTO.js";
 import jwt from "jsonwebtoken";
+import userService from "../services/userService.js";
 
 const router = Router();
 router.use(addLogger);
@@ -39,6 +39,7 @@ router.post("/register", (req, res, next) => {
 });
 
 router.get("/failregister", failRegister);
+
 router.post("/login", (req, res, next) => {
   passport.authenticate("login", (err, user, info) => {
     if (err) {
@@ -47,7 +48,7 @@ router.post("/login", (req, res, next) => {
     if (!user) {
       return res.status(400).send({ status: "error", message: info.message });
     }
-    req.login(user, { session: false }, (err) => {
+    req.login(user, { session: false }, async (err) => {
       if (err) {
         return res.status(500).send({ status: "error", message: err.message });
       }
@@ -60,6 +61,8 @@ router.post("/login", (req, res, next) => {
         email: req.user.email,
         cart: req.user.cart,
       };
+      req.user.last_connection = Date.now();
+      await userService.updateUserByEmail(req.user.email, req.user);
       const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: "1h" });
       res.cookie("coderCookieToken", token, { maxAge: 3600000, httpOnly: true, secure: true });
       res.status(200).send({ status: "success", token });
@@ -71,7 +74,7 @@ router.get("/current", passportCall("jwt"), (req, res) => {
   const user = new userDTO(req.user);
   res.send({ status: "success", payload: user });
 });
-router.post("/logout", passportCall("jwt"), logOut, logOutJwt);
+router.post("/logout", passportCall("jwt"), logOutJwt);
 router.post("/resetpassword", resetPassword);
 router.put("/newpassword", newPassword);
 

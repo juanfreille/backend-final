@@ -1,0 +1,211 @@
+<div class="container mx-auto px-4">
+  <div class="my-2 text-center border-2 text-uppercase">
+    <h1><i class="fas fa-user-circle me-2"></i> Mi Perfil</h1>
+  </div>
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header antiquewhite">
+              <strong><i class="fas fa-id-card me-2"></i> Datos de perfil</strong>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-user me-2" style="width: 20px;"></i>
+                <strong>Nombre: </strong> <span class="variable-text">{{user.first_name}} {{user.last_name}}</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-envelope me-2" style="width: 20px;"></i>
+                <strong>Correo Electrónico: </strong> <span class="variable-text">{{user.email}}</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-id-badge me-2" style="width: 20px;"></i>
+                <strong>ID de Usuario: </strong> <span class="variable-text" id="ID">{{user._id}}</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-birthday-cake me-2" style="width: 20px;"></i>
+                <strong>Edad: </strong> <span class="variable-text">{{user.age}}</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-user-tag me-2" style="width: 20px;"></i>
+                <strong>Tipo de Usuario: </strong> <span id="userRole" class="variable-text">{{user.role}}</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-shopping-cart me-2" style="width: 20px;"></i>
+                <strong>ID de Carrito: </strong> <span class="variable-text">{{cartId}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header antiquewhite">
+              <strong><i class="fas fa-camera me-2"></i> Subir tu Foto de Perfil</strong>
+            </div>
+            <div class="row align-items-center">
+              <!-- Imagen de perfil actual -->
+              <div class="col-md-3 d-flex justify-content-center">
+                <div class="card border-0">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Foto Actual</h5>
+                    <img id="currentProfilePic" src="{{avatar}}" alt="Foto de perfil actual" class="img-fluid rounded-circle" style="max-width: 150px;">
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-1 d-flex align-items-left justify-content-left" style="width: 2.333333%;">
+                <div class="separator"></div>
+              </div>
+
+              <!-- Formulario para subir nueva foto -->
+              <div class="col-md-5 text-center" style="width: 46.666667%;">
+                <div class="mt-4 mb-4">
+                  <input type="file" id="profilePictureInput" class="form-control" name="documents" accept="image/*" onchange="previewImage()" />
+                  <button class="btn btn-effect btn-dark btn-jif px-5 mt-3 uppercase mb-4 ms-4" id="btn-upload-profile-pic">Subir Foto de Perfil</button>
+                </div>
+              </div>
+
+
+              <!-- Imagen de perfil actual -->
+              <div class="col-md-3 d-flex justify-content-center">
+                <div class="card border-0">
+                  <div class="card-body text-center">
+                  <div class="position-relative" style="width: fit-content; margin: 0 auto;">
+                    <div id="imagePreview" class="text-center"><i class="fa-regular fa-image" style="font-size:100px"></i></div>
+                    <div id="cancelButtonContainer" class="position-absolute top-0 end-0"></div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mx-auto px-4">
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header antiquewhite">
+              <strong><i class="fas fa-crown me-2"></i> Actualización a Usuario Premium</strong>
+            </div>
+            <p class="ms-3 mt-4 mb-4" style="width: 90%; align-self: center">
+              Para avanzar con la actualización a la categoría de usuario premium, le solicitamos que proporcione los documentos requeridos a continuación
+            </p>
+
+<!-- Card para Documento de Identificacion -->
+<div class="mx-4">
+  <div class="card mb-4">
+    <div class="card-body text-center">
+      <h5 class="card-title mb-4">Documento de identificación</h5>
+      <div class="d-flex justify-content-center align-items-center">
+        <input type="file" id="identificationInput" class="form-control" name="documents" style="width: auto;" />
+        <button class="btn btn-effect btn-dark btn-jif ms-3" id="btn-upload-identification"><i class="fas fa-upload me-2"></i>Subir archivo</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Card para Documento de Domicilio -->
+<div class="mx-4">
+  <div class="card mb-4">
+    <div class="card-body text-center">
+      <h5 class="card-title mb-4">Documento de domicilio</h5>
+      <div class="d-flex justify-content-center align-items-center">
+        <input type="file" id="upload-addressInput" class="form-control" name="documents" style="width: auto;"/>
+        <button class="btn btn-effect btn-dark btn-jif ms-3" id="btn-upload-address"><i class="fas fa-upload me-2"></i>Subir archivo</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Card para Documento de Estado de Cuenta -->
+<div class="mx-4">
+  <div class="card mb-4">
+    <div class="card-body text-center">
+      <h5 class="card-title mb-4">Documento de estado de cuenta</h5>
+      <div class="d-flex justify-content-center align-items-center">
+        <input type="file" id="accountStatementInput" class="form-control" name="documents" style="width: auto;"/>
+        <button class="btn btn-effect btn-dark btn-jif ms-3" id="btn-upload-account-statement"><i class="fas fa-upload me-2"></i>Subir archivo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-around my-3" >
+    <button id="btn-premium" class="btn btn-effect btn-dark btn-jif px-5 uppercase mb-1 ms-4" data-user-id="{{user._id}}">
+        <i class="fas fa-star"></i> Actualizar Rol
+    </button>
+</div>
+
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header antiquewhite">
+              <strong><i class="fas fa-file-alt me-2"></i> Documentos</strong>
+              <p hidden id="documents" data-documents='{{documentsJson}}'></p>
+
+
+            </div>
+            <ol class="list-group">
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-id-card me-2" style="width: 20px;"></i> <strong>1- Identificación</strong>
+                <span class="badge bg-danger ms-auto" id="status-dni">Faltante</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-home me-2" style="width: 20px;"></i> <strong>2- Comprobante de domicilio</strong>
+                <span class="badge bg-danger ms-auto" id="status-domicilio">Faltante</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-file-invoice me-2" style="width: 20px;"></i> <strong>3- Comprobante de estado de cuenta</strong>
+                <span class="badge bg-danger ms-auto" id="status-estado">Faltante</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/profileScript.js"></script>
+
+<style>
+  .card-body img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .file-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .profile-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .separator {  border-left: 2px solid #4f4f4f;
+  height: 150px;
+  width: 2px;
+  margin: 0;
+
+  }
+
+
+</style>

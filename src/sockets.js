@@ -3,12 +3,28 @@ import ProductManager from "./dao/MongoDB/ProductManagerDB.js";
 import MessageManager from "./dao/MongoDB/MessageManagerDB.js";
 import CartManager from "./dao/MongoDB/CartManagerDB.js";
 import config from "./config/config.js";
+import { userModel } from "./models/userModel.js";
+import fs from "fs";
+import path from "path";
+import __dirname from "./utils/constantsUtil.js";
 
 const ProductService = new ProductManager();
 const CartService = new CartManager();
 const messageService = new MessageManager();
 
 let users = [];
+const getDocumentsByUserId = async (uid) => {
+  try {
+    const user = await userModel.findById(uid).lean();
+    if (!user) {
+      throw new Error("Usuario no encontrado");
+    }
+    return user.documents || [];
+  } catch (error) {
+    console.error("Error al obtener documentos:", error);
+    throw error;
+  }
+};
 
 export default (io) => {
   io.on("connection", async (socket) => {
@@ -16,13 +32,34 @@ export default (io) => {
 
     // Manejo de productos
     const emitProducts = async () => {
-      const products = await ProductService.getAllProducts();
-      socket.emit("products", products);
+      try {
+        const products = await ProductService.getAllProducts();
+
+        const productsWithOwnerNames = await Promise.all(
+          products.map(async (product) => {
+            if (product.owner === "admin") {
+              return {
+                ...product.toObject(),
+                ownerName: "admin",
+              };
+            } else {
+              const user = await userModel.findById(product.owner).lean();
+              return {
+                ...product.toObject(),
+                ownerName: user ? user.email : "Usuario no encontrado",
+              };
+            }
+          })
+        );
+
+        socket.emit("products", productsWithOwnerNames);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
     };
 
     const addProduct = async (product) => {
       try {
-        await ProductService.createProduct(product);
         await emitProducts();
       } catch (error) {
         console.error("Error al crear producto:", error);
@@ -34,6 +71,13 @@ export default (io) => {
         const product = await ProductService.getProductByID(pid);
         if (userRole === "admin" || product.owner === userId) {
           await ProductService.deleteProduct(pid);
+          if (product.thumbnails && product.thumbnails.length > 0) {
+            const imagePath = path.join(__dirname, "../../public/img/products", product.thumbnails[0]);
+            deleteImage(imagePath);
+          } else {
+            console.log("No se encontraron imágenes para eliminar.");
+          }
+
           await emitProducts();
         } else {
           console.log("error", "No tienes permiso para eliminar este producto");
@@ -42,6 +86,20 @@ export default (io) => {
         console.error("Error al eliminar producto:", error);
       }
     };
+
+    function deleteImage(imagePath) {
+      if (imagePath) {
+        fs.unlink(imagePath, (err) => {
+          if (err) {
+            console.error(`Error al eliminar la imagen: ${err.message}`);
+          } else {
+            console.log(`Imagen eliminada correctamente: ${imagePath}`);
+          }
+        });
+      } else {
+        console.log("Ruta de imagen no proporcionada.");
+      }
+    }
 
     // Manejar eventos del socket relacionados con productos
     socket.on("createProduct", addProduct);
@@ -83,6 +141,11 @@ export default (io) => {
       io.emit("updateUserList", users);
     });
 
+    socket.on("documentUploadSuccess", async ({ userId, documentType }) => {
+      const documents = await getDocumentsByUserId(userId);
+      io.emit("documentsUpdated", { userId, documents });
+    });
+
     socket.on("disconnect", () => {
       const user = users.find((user) => user.id === socket.id);
       if (user) {
@@ -92,6 +155,6 @@ export default (io) => {
       }
     });
 
-    await emitProducts(); // Emitir productos al conectar el socket
+    await emitProducts();
   });
 };

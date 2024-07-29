@@ -26,7 +26,7 @@ describe("Pruebas integrales del módulo de Sessions", function () {
 
   // Generar un nuevo usuario para las pruebas
   let newUser = generateUser();
-  console.log("Usuario para registro:", newUser);
+  // console.log("Usuario para registro:", newUser);
 
   describe("Pruebas de endpoints de Sessions", () => {
     // Limpiar el usuario creado después de cada prueba

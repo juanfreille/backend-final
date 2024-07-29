@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css2?family=Asap+Condensed:wght@300&family=Barlow+Condensed:wght@200&display=swap);
+@import url("https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Open+Sans&family=Poppins&display=swap");
 * {
   margin: 0;
   padding: 0;
@@ -6,6 +7,7 @@
   font-weight: 600;
   user-select: none;
 }
+
 body {
   background-color: #f4f4f4 !important;
 }
@@ -337,7 +339,7 @@ p {
   font-size: 44px;
 }
 table {
-  width: 70%;
+  width: 80%;
 }
 table td,
 table th {
@@ -1043,8 +1045,8 @@ aside li h2 {
 
 .numeroCarrito {
   position: absolute !important;
-  top: 13% !important;
-  left: 20% !important;
+  top: 10% !important;
+  left: 55% !important;
   background: #cf3010 !important;
   width: 20px !important;
   height: 20px !important;
@@ -1324,4 +1326,9 @@ aside li h2 {
     zoom: 53%;
     display: inline-table;
   }
+}
+
+.variable-text {
+  color: #b57524;
+  margin-left: 0.5rem;
 }

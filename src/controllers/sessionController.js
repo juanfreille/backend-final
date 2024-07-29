@@ -9,8 +9,10 @@ import config from "../config/config.js";
 
 const resetPasswordService = new ResetPasswordService();
 
-export const gitHubCallBackJWT = (req, res) => {
+export const gitHubCallBackJWT = async (req, res) => {
   req.logger.info(`Callback de GitHub para el usuario: ${req.user.email}`);
+  req.user.last_connection = Date.now();
+  await userService.updateUserByEmail(req.user.email, req.user);
   const token = sessionService.generateJWT(req.user);
   sessionService.setTokenCookie(res, token);
   req.logger.info(`Usuario ${req.user.email} ha iniciado sesión exitosamente a través de GitHub.`);
@@ -28,6 +30,8 @@ export const logOutSession = (req, res) => {
 
 export const logOutJwt = async (req, res) => {
   try {
+    req.user.last_connection = Date.now();
+    await userService.updateUserByEmail(req.user.email, req.user);
     res.clearCookie("coderCookieToken");
     req.logger.info("Session controller - JWT logout exitoso");
     res.redirect("/");

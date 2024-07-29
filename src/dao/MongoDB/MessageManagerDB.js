@@ -12,6 +12,10 @@ class MessageManager {
   async addMessage(message) {
     return await this.messageRepository.addMessage(message);
   }
+
+  async saveMessage(message) {
+    return await this.messageRepository.saveMessage(message);
+  }
 }
 
 export default MessageManager;
