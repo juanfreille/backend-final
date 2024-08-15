@@ -1,0 +1,19 @@
+The MIT License (MIT)
+
+Copyright (c) 2024 Juan Ignacio Freille
+
+Se otorga permiso, de forma gratuita, a cualquier persona que obtenga una copia
+del software y los archivos de documentación asociados (el "Software"), para
+utilizar el Software sin restricciones, incluyendo sin limitación los derechos
+de usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o
+vender copias del Software, siempre que se incluya el aviso de copyright
+anterior y esta lista de condiciones en todas las copias o partes sustanciales
+del Software.
+
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO, EXPRESAS
+O IMPLÍCITAS, INCLUYENDO, PERO NO LIMITADO A, LAS GARANTÍAS IMPLÍCITAS DE
+COMERCIALIZACIÓN, APTITUD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN
+CASO LOS AUTORES O TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE CUALQUIER RECLAMO,
+DAÑO O OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO
+TIPO, QUE SURJA DE O EN RELACIÓN CON EL SOFTWARE O EL USO O OTROS TRATOS EN EL
+SOFTWARE.

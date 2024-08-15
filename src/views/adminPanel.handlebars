@@ -1,0 +1,50 @@
+<div class="mx-auto my-2 text-center border-2 text-uppercase">
+  <h1>Panel de administración</h1>
+</div>
+<div class="container" style="width:75%">
+
+  <div class="d-flex justify-content-between mb-3">
+    <input 
+      class="form-control" 
+      id="searchInput" 
+      type="text" 
+      placeholder="Filtrar por email o ID..."
+      style="flex-grow: 1; margin-right: 15px;width: auto;"
+    >
+    <button 
+      class="btn btn-danger" 
+      id="deleteInactiveUsers"
+    >
+      Eliminar usuarios inactivos
+    </button>
+  </div>
+
+  <div class="d-flex justify-content-center mb-3">
+    <table class="table-items" style="width: 100%;">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Email</th>
+          <th scope="col">ID de usuario</th>
+          <th scope="col">Rol</th>
+          <th scope="col">Última Conexión</th>
+          <th style="text-align: center;" scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<div id="loadingSpinner" class="spinner" style="display: none;">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<!-- Scripts necesarios -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/admin-panelScript.js"></script>

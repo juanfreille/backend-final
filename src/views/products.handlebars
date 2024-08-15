@@ -9,17 +9,16 @@
         <input type="text" id="txtSearch" name="title" placeholder="Buscar producto..." />
       </form>
 
-      <h3 class="mobile">Categoría</h3>
-      <ul class="category-list text-capitalize mobile">
-        <li><a href="/products">Todos</a></li>
+      <h3 class="d-none d-sm-block">Categoría</h3>
+      <ul class="category-list text-capitalize d-none d-sm-block">
+        <li id="allCategory"><a href="/products">Todos</a></li>
         {{#each categories}}
-          <li><a href="/products?category={{this}}">{{this}}</a></li>
+          <li id="category_{{this}}"><a href="/products?category={{this}}">{{this}}</a></li>
         {{/each}}
       </ul>
     </div>
 
-
-    <div class="row centrar no-selection">
+    <div class="row text-center no-selection">
       <div class="d-flex justify-content-end mb-3">
         <select id="sortSelect" class="form-select anchoAuto">
           <option selected disabled>Ordenar</option>
@@ -28,82 +27,45 @@
         </select>
       </div>
       {{#if payload}}
-      {{#each payload}}
-      <article class="col-6 col-xl-3 col-lg-4">
-        <div class="tarjeta thumb-wrapper">
-          <figure>
-            <div class="image-container">
-              {{#if thumbnails}}
-              <img class="card-img" src="img/products/{{thumbnails}}" alt="{{title}}" />
-              {{else}}
-              <img class="card-img" src="img/products/noThumbnails.webp" alt="{{title}}" />
-              {{/if}}
-              <div class="mask"></div>
-              <figcaption>
-                <a href="/products/item/{{_id}}" class="btn btn-effect btn-dark btn-jif bg-black btn-detalles">Ver Detalles</a>
-              </figcaption>
+        {{#each payload}}
+          <article class="col-6 col-xl-3 col-lg-4">
+            <div class="tarjeta thumb-wrapper">
+              <figure>
+                <div class="image-container">
+                  {{#if thumbnails}}
+                    <img class="card-img" src="img/products/{{thumbnails}}" alt="{{title}}" />
+                  {{else}}
+                    <img class="card-img" src="img/products/noThumbnails.webp" alt="{{title}}" />
+                  {{/if}}
+                  <div class="mask"></div>
+                  <figcaption>
+                    <a href="/products/item/{{_id}}" class="btn btn-effect btn-dark btn-jif bg-black btn-detalles">Ver Detalles</a>
+                  </figcaption>
+                </div>
+              </figure>
+              <p>{{title}}</p>
+              <p>${{price}}</p>
             </div>
-          </figure>
-          <p>{{title}}</p>
-          <p>${{price}}</p>
-        </div>
-      </article>
-      {{/each}}
+          </article>
+        {{/each}}
       {{else}}
-      <h1 class="text-center md:mt-12 text-lg">No hay productos</h1>
+        <h1 class="text-center md:mt-12 text-lg">No hay productos</h1>
       {{/if}}
     </div>
   </div>
 
   <div style="position:relative" class="container d-flex justify-content-center align-items-center gap-4 p-4">
     {{#if hasPrevPage}}
-    <a style="position:relative" class="btn button-black prev px-5" href="{{prevLink}}">
-      <div class="arrow"><span></span><span></span></div>Atrás
-    </a>
+      <a style="position:relative" class="btn button-black prev px-5" href="{{prevLink}}">
+        <div class="arrow"><span></span><span></span></div>Atrás
+      </a>
     {{/if}}
     {{#if hasNextPage}}
-    <a class="btn button-black next px-5" href="{{nextLink}}">Siguiente</a>
+      <a class="btn button-black next px-5" href="{{nextLink}}">Siguiente</a>
     {{/if}}
     <h3>Página: {{page}}/{{totalPages}}</h3>
   </div>
 </div>
-</div>
-
 
 <!-- Scripts necesarios -->
-<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  initializePage();
-  initializeSortSelect();
-});
-
-function initializePage() {
-  initializeActiveCategory();
-}
-
-function initializeActiveCategory() {
-  const currentCategory = new URLSearchParams(window.location.search).get('category');
-  const currentCategoryLink = document.getElementById(`category_${currentCategory}`);
-  if (currentCategoryLink) {
-    currentCategoryLink.classList.add('active');
-  } else {
-    const allCategoryLink = document.getElementById('allCategory');
-    if (allCategoryLink) {
-      allCategoryLink.classList.add('active');
-    }
-  }
-}
-
-function initializeSortSelect() {
-  const sortSelect = document.getElementById('sortSelect');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function(event) {
-      const selectedOption = event.target.value;
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('sort', selectedOption);
-      window.location.href = currentUrl.toString();
-    });
-  }
-}
-</script>
+<script src="/js/productScript.js"></script>

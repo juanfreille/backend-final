@@ -1,0 +1,92 @@
+[
+	{
+		"_id": "66b796144ff5da7321c303e9",
+		"code": 744,
+		"purchaseDateTime": "2024-08-10T16:32:20.493Z",
+		"amount": 33000,
+		"purchaser": "juanfreilleeee@gmail.com",
+		"products": [
+			{
+				"_id": "660725f2d49ab55bf9c00d9f",
+				"quantity": 1,
+				"name": "Buzo escoces"
+			},
+			{
+				"_id": "660725f2d49ab55bf9c00d9a",
+				"quantity": 1,
+				"name": "Pantalon Babucha"
+			}
+		]
+	},
+	{
+		"_id": "66b79717411b8e86abcf83a3",
+		"code": 23,
+		"purchaseDateTime": "2024-08-10T16:36:39.330Z",
+		"amount": 33000,
+		"purchaser": "juanfreilleeee@gmail.com",
+		"products": [
+			{
+				"_id": "660725f2d49ab55bf9c00d9f",
+				"quantity": 1,
+				"name": "Buzo escoces"
+			},
+			{
+				"_id": "660725f2d49ab55bf9c00d9a",
+				"quantity": 1,
+				"name": "Pantalon Babucha"
+			}
+		]
+	},
+	{
+		"_id": "66b7982b63ada5e5364b7c92",
+		"code": 712,
+		"purchaseDateTime": "2024-08-10T16:41:15.022Z",
+		"amount": 33000,
+		"purchaser": "juanfreilleeee@gmail.com",
+		"products": [
+			{
+				"_id": "660725f2d49ab55bf9c00d9f",
+				"quantity": 1,
+				"name": "Buzo escoces"
+			},
+			{
+				"_id": "660725f2d49ab55bf9c00d9a",
+				"quantity": 1,
+				"name": "Pantalon Babucha"
+			}
+		]
+	},
+	{
+		"_id": "66b799425617cde2673db440",
+		"code": 414,
+		"purchaseDateTime": "2024-08-10T16:45:54.201Z",
+		"amount": 33000,
+		"purchaser": "juanfreilleeee@gmail.com",
+		"products": [
+			{
+				"_id": "660725f2d49ab55bf9c00d9f",
+				"quantity": 1,
+				"name": "Buzo escoces"
+			},
+			{
+				"_id": "660725f2d49ab55bf9c00d9a",
+				"quantity": 1,
+				"name": "Pantalon Babucha"
+			}
+		]
+	},
+	{
+		"_id": "66b79b3edc1570d518bbedae",
+		"code": 715,
+		"purchaseDateTime": "2024-08-10T16:54:22.948Z",
+		"amount": 16500,
+		"purchaser": "juanfreilleeee@gmail.com",
+		"products": [
+			{
+				"_id": "660725f2d49ab55bf9c00d9a",
+				"quantity": 1,
+				"name": "Pantalon Babucha"
+			}
+		]
+	}
+]

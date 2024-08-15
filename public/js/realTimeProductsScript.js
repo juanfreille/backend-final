@@ -152,22 +152,46 @@ function confirmarEliminacionProducto(idProducto, userRole, userId) {
     cancelButtonText: "Cancelar",
     confirmButtonText: "Sí, eliminar producto",
   };
-  customSwalert.fire(customAlertConfig).then((result) => {
+  customSwalert.fire(customAlertConfig).then(async (result) => {
     if (result.isConfirmed) {
-      const id = idProducto;
-      socket.emit("deleteProduct", id, userRole, userId);
-      emptyTable();
-      Toastify({
-        text: "Producto eliminado exitosamente",
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        avatar: "../img/check-mark.png",
-        style: {
-          background: "#96c93d",
-        },
-        stopOnFocus: true,
-      }).showToast();
+      try {
+        const response = await fetch(`/api/products/${idProducto}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al eliminar el producto");
+        }
+        Toastify({
+          text: "Producto eliminado exitosamente",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          avatar: "../img/check-mark.png",
+          style: {
+            background: "#96c93d",
+          },
+          stopOnFocus: true,
+        }).showToast();
+
+        // Actualizar la tabla de productos
+        getProducts();
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+        Toastify({
+          text: "Error al eliminar el producto",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "#d9534f",
+          },
+          stopOnFocus: true,
+        }).showToast();
+      }
     }
   });
 }

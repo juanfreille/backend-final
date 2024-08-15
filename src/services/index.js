@@ -1,16 +1,15 @@
-import CartManager from "../DAO/mongo/managers/carts.js";
-import CartService from "./cart.service.js";
+import { carts, products, users, tickets, resetPasswordCodes, messages } from "../dao/factory.js";
 
-import ProductManager from "../DAO/mongo/managers/products.js";
-import ProductService from "./product.service.js";
+import CartsRepository from "./cartService.js";
+import ProductsRepository from "./productService.js";
+import UsersRepository from "./userService.js";
+import TicketsRepository from "./ticketService.js";
+import ResetPasswordRepository from "./resetPasswordService.js";
+import MessagesRepository from "./messageService.js";
 
-import UserManager from "../DAO/mongo/managers/users.js";
-import UserService from "./user.service.js";
-
-import TicketManager from "../DAO/mongo/managers/tickets.js";
-import TicketService from "./ticket.service.js";
-
-export const userService = new UserService(new UserManager());
-export const productService = new ProductService(new ProductManager());
-export const cartService = new CartService(new CartManager());
-export const ticketsService = new TicketService(new TicketManager());
+export const cartService = new CartsRepository(new carts());
+export const productService = new ProductsRepository(new products());
+export const userService = new UsersRepository(new users());
+export const ticketService = new TicketsRepository(new tickets());
+export const resetPasswordService = new ResetPasswordRepository(new resetPasswordCodes());
+export const messageService = new MessagesRepository(new messages());

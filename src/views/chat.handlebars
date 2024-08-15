@@ -2,8 +2,14 @@
 <div class="mx-auto my-2 text-center border-2 text-uppercase">
   <h1>Chat de la tienda</h1>
 </div>
+      <div class="d-block d-sm-none d-flex mb-3 justify-content-between mx-3">
+      <button class="btn btn-effect btn-dark btn-jif bg-black btn-detalles" onclick="joinChat()">Ingresar al Chat</button>
+      <button class="btn btn-effect btn-dark btn-jif bg-black btn-detalles" onclick="leaveChat()">Salir del Chat</button>
+    </div>
 <div class="container-mio">
-  <aside class="py-3 aside-mio">
+
+
+  <aside class="d-none d-sm-block" style="width: 20%;">
     <h3 class="m-2 text-center text-white">Usuarios online</h3>
     <hr />
     <ul class="m-2" id="usersDB"></ul>

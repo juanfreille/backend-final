@@ -1,13 +1,11 @@
 import sessionService from "../services/sessionService.js";
 import userDTO from "../dto/userDTO.js";
 import nodemailer from "nodemailer";
-import userService from "../services/userService.js";
-import ResetPasswordService from "../services/resetPasswordService.js";
+import { userService } from "../services/index.js";
+import { resetPasswordService } from "../services/index.js";
 import crypto from "crypto";
 import { createHash } from "../utils/functionsUtil.js";
 import config from "../config/config.js";
-
-const resetPasswordService = new ResetPasswordService();
 
 export const gitHubCallBackJWT = async (req, res) => {
   req.logger.info(`Callback de GitHub para el usuario: ${req.user.email}`);
@@ -17,15 +15,6 @@ export const gitHubCallBackJWT = async (req, res) => {
   sessionService.setTokenCookie(res, token);
   req.logger.info(`Usuario ${req.user.email} ha iniciado sesión exitosamente a través de GitHub.`);
   res.redirect("/home");
-};
-
-export const failRegister = async (req, res) => {
-  req.logger.error("Failed Strategy");
-  res.status(400).json({ error: "Failed" });
-};
-
-export const logOutSession = (req, res) => {
-  req.logger.info(`Cierre de sesión solicitado por el usuario: ${req.user.email}`);
 };
 
 export const logOutJwt = async (req, res) => {
@@ -48,15 +37,11 @@ export const resetPassword = async (req, res, next) => {
   try {
     const user = await userService.getUserByEmail(email);
     if (!user) {
-      req.logger.warn("El correo electrónico no está registrado");
+      req.logger.warning("El correo electrónico no está registrado");
       return res.status(400).json({ message: "El correo electrónico no está registrado" });
     }
 
-    const generateRandomCode = () => {
-      return crypto.randomBytes(4).toString("hex");
-    };
-
-    const code = generateRandomCode();
+    const code = crypto.randomBytes(4).toString("hex");
     req.logger.info(`Código generado: ${code}`);
     const newCode = await resetPasswordService.saveCode(email, code);
     req.logger.info(`Código guardado: ${newCode}`);
@@ -72,24 +57,23 @@ export const resetPassword = async (req, res, next) => {
 
     try {
       let result = await transport.sendMail({
-        from: "JIF Style Store - Recuperación de contraseña <" + config.EMAIL_USER + ">",
+        from: `JIF Style Store - Recuperación de Contraseña <${config.EMAIL_USER}>`,
         to: email,
-        subject: "Código de recuperación de tu contraseña",
+        subject: "Recupera tu Contraseña",
         html: `
-              <div>
-                <p>Por favor, haz clic en el siguiente enlace para restablecer tu contraseña:<br><a href="http://localhost:8080/newpassword/${code}">http://localhost:8080/newpassword/${code}</a></p>
-                <p>El código para recuperar tu contraseña es: ${code}<br>Si no fuiste tú quién lo solicitó, ignora este mensaje.</p>
-              </div>
-              `,
+        <div>
+          <p>Hola,<br>Para restablecer tu contraseña, por favor haz clic en el siguiente enlace:<br><a href="http://localhost:8080/newpassword/${code}">Restablecer mi Contraseña</a></p>
+          <p>Tu código de recuperación es: <strong>${code}</strong><br>Si no solicitaste este cambio, por favor ignora este mensaje.</p>
+        </div>
+      `,
         attachments: [],
       });
-      req.logger.info(`Correo de inicio de sesión enviado al usuario ${email}`);
+      req.logger.info(`Correo de recuperación enviado al usuario ${email}`);
+      res.status(200).json({ status: "success", message: "Código de recuperación enviado exitosamente" });
     } catch (error) {
       req.logger.error(`Error enviando correo electrónico: ${error.message}`);
       return res.status(500).json({ message: "Error enviando correo electrónico" });
     }
-
-    res.status(200).json({ status: "success", message: "Código de recuperación enviado exitosamente" });
   } catch (error) {
     req.logger.error(error.message);
     next(error);
@@ -102,7 +86,7 @@ export const newPassword = async (req, res) => {
     const { code, password } = req.body;
     const resetCode = await resetPasswordService.getCode(code);
     if (!resetCode) {
-      req.logger.warn("Código de recuperación inválido");
+      req.logger.warning("Código de recuperación inválido");
       return res.status(400).json({ status: "error", message: "Código de recuperación inválido" });
     }
 

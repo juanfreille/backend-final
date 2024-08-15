@@ -3,16 +3,13 @@ import local from "passport-local";
 import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
 import { createHash, isValidPassword } from "../utils/functionsUtil.js";
-import CartManager from "../dao/MongoDB/CartManagerDB.js";
+import { cartService } from "../services/index.js";
 import config from "./config.js";
-import UserManager from "../dao/MongoDB/UserManagerDB.js";
-
-const userService = new UserManager();
+import { userService } from "../services/index.js";
 
 const initializePassport = async () => {
   const localStrategy = local.Strategy;
   const JWTStrategy = jwt.Strategy;
-  const CartService = new CartManager();
 
   const admin = {
     first_name: "Coder",
@@ -55,7 +52,7 @@ const initializePassport = async () => {
           last_name,
           email,
           age,
-          cart: await CartService.createCart(),
+          cart: await cartService.createCart(),
           password: createHash(password),
         };
 
@@ -97,7 +94,7 @@ const initializePassport = async () => {
           }
 
           if (!user.cart) {
-            user.cart = await CartService.createCart();
+            user.cart = await cartService.createCart();
             await userService.updateUser(user);
           }
 
@@ -120,24 +117,24 @@ const initializePassport = async () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const email = profile._json.email;
+          const email = profile._json.email || `${profile._json.login}@github.com`;
 
           let user = await userService.getUserByEmail(email);
           if (!user) {
             let newUser = {
               first_name: profile._json.login,
               last_name: " ",
-              email: email || `${profile._json.login}@github.com`,
+              email: email,
               password: "",
               age: 0,
               role: "user",
-              cart: await CartService.createCart(),
+              cart: await cartService.createCart(),
             };
             let result = await userService.createUser(newUser);
             done(null, result);
           } else {
             if (!user.cart) {
-              user.cart = await CartService.createCart();
+              user.cart = await cartService.createCart();
               await userService.updateUser(user);
             }
 
@@ -172,7 +169,7 @@ const initializePassport = async () => {
           }
 
           if (!user.cart) {
-            user.cart = await CartService.createCart();
+            user.cart = await cartService.createCart();
             await userService.updateUser(user._id, user);
           }
 

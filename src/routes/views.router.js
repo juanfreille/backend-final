@@ -3,7 +3,6 @@ import { handlePolicies, passportCallHome, passportCallRedirect, handlePoliciesV
 import {
   renderLogin,
   redirectIfLoggedIn,
-  isAdminOrPremium,
   getProducts,
   goHome,
   renderHome,
@@ -16,7 +15,9 @@ import {
   resetPasswordView,
   newPasswordView,
   profileView,
+  adminPanel,
 } from "../controllers/viewsController.js";
+import { logOutJwt } from "../controllers/sessionController.js";
 
 const router = Router();
 
@@ -25,18 +26,20 @@ const passportRedirect = passportCallRedirect("jwt"); //es para rutas que requie
 
 // Rutas de vistas, no se necesitan permisos especiales para verlas, aun asi verifican autenticación
 router.get("/", passportHome, goHome);
-router.get("/home", passportHome, isAdminOrPremium, renderHome);
+router.get("/home", passportHome, renderHome);
 router.get("/login", passportHome, redirectIfLoggedIn, renderLogin);
 router.get("/register", passportHome, redirectIfLoggedIn, renderRegister);
-router.get("/products", passportHome, isAdminOrPremium, getProducts);
+router.get("/products", passportHome, getProducts);
 
 // Rutas que redirigen al login si no están autenticadas
-router.get("/realtimeproducts", passportRedirect, handlePoliciesViews(["ADMIN", "PREMIUM"]), isAdminOrPremium, renderRealTimeProducts);
-router.get("/chat", passportRedirect, isAdminOrPremium, renderChat);
-router.get("/cart/:cid", passportRedirect, isAdminOrPremium, renderCart);
-router.get("/products/item/:pid", passportRedirect, isAdminOrPremium, renderProductDetails);
-router.get("/cart/:cid/purchase", passportRedirect, isAdminOrPremium, purchaseView);
-router.get("/profile", passportRedirect, handlePoliciesViews(["USER", "PREMIUM"]), isAdminOrPremium, profileView);
+router.post("/logout", passportRedirect, logOutJwt);
+router.get("/realtimeproducts", passportRedirect, handlePoliciesViews(["ADMIN", "PREMIUM"]), renderRealTimeProducts);
+router.get("/chat", passportRedirect, renderChat);
+router.get("/cart/:cid", passportRedirect, renderCart);
+router.get("/products/item/:pid", passportRedirect, renderProductDetails);
+router.get("/cart/:cid/purchase", passportRedirect, purchaseView);
+router.get("/profile", passportRedirect, handlePoliciesViews(["USER", "PREMIUM"]), profileView);
+router.get("/adminpanel", passportRedirect, handlePoliciesViews(["ADMIN"]), adminPanel);
 
 // Otras rutas
 router.get("/resetpassword", resetPasswordView);

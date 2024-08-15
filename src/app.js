@@ -22,7 +22,7 @@ import { addLogger } from "./utils/logger.js";
 
 const app = express();
 const port = config.PORT;
-const uri = config.NODE_ENV === "test" ? config.MONGO_TEST_URL : config.MONGO_URL;
+const uri = config.NODE_ENV === "TEST" ? config.MONGO_TEST_URL : config.MONGO_URL;
 
 const swaggerOptions = {
   definition: {
@@ -65,7 +65,7 @@ app.set("views", __dirname + "/../views");
 
 // Mongoose
 mongoose
-  .connect(uri, { dbName: config.NODE_ENV === "test" ? "test" : "ecommerce" })
+  .connect(uri, { dbName: config.NODE_ENV === "TEST" ? "test" : "ecommerce" })
   .then(() => {
     console.log("Conexión exitosa a la base de datos");
     const server = app.listen(port, () => console.log(`Servidor corriendo en http://localhost:${port}`));

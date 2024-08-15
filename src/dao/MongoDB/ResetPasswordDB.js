@@ -1,16 +1,13 @@
-import { resetPasswordCodeModel } from "../../models/resetPasswordCode.model.js";
+import { resetPasswordModel } from "../../models/resetPasswordModel.js";
 
-class resetPasswordManager {
-  constructor() {}
-  getCode = async (code) => {
-    const resetCode = await resetPasswordCodeModel.findOne({ code }).lean();
+export default class resetPasswordManager {
+  async getCode(code) {
+    const resetCode = await resetPasswordModel.findOne({ code }).lean();
     return resetCode;
-  };
+  }
 
-  saveCode = async (email, code) => {
-    const newCode = await resetPasswordCodeModel.create({ email, code });
+  async saveCode(email, code) {
+    const newCode = await resetPasswordModel.create({ email, code });
     return newCode;
-  };
+  }
 }
-
-export default resetPasswordManager;

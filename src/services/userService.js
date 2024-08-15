@@ -1,41 +1,41 @@
-import UserManager from "../dao/MongoDB/UserManagerDB.js";
+export default class UsersRepository {
+  constructor(dao) {
+    this.dao = dao;
+  }
 
-const userManager = new UserManager();
+  getAllUsers = async (filter) => {
+    return await this.dao.getAllUsers(filter);
+  };
 
-const getAllUsers = async (filter) => {
-  return await userManager.getAllUsers(filter);
-};
+  getUserById = async (id) => {
+    return await this.dao.getUserById(id);
+  };
 
-const getUserById = async (id) => {
-  return await userManager.getUserById(id);
-};
+  getUserByEmail = async (email) => {
+    return await this.dao.getUserByEmail(email);
+  };
 
-const getUserByEmail = async (email) => {
-  return await userManager.getUserByEmail(email);
-};
+  createUser = async (user) => {
+    return await this.dao.createUser(user);
+  };
 
-const createUser = async (user) => {
-  return await userManager.createUser(user);
-};
+  updateUser = async (uid, user) => {
+    return await this.dao.updateUser(uid, user);
+  };
 
-const updateUser = async (uid, user) => {
-  return await userManager.updateUser(uid, user);
-};
+  updateUserByEmail = async (userEmail, user) => {
+    return await this.dao.updateUserByEmail(userEmail, user);
+  };
 
-const updateUserByEmail = async (userEmail, user) => {
-  return await userManager.updateUserByEmail(userEmail, user);
-};
+  deleteUserByEmail = async (userEmail) => {
+    return await this.dao.deleteUserByEmail(userEmail);
+  };
 
-const deleteUserByEmail = async (userEmail) => {
-  return await userManager.deleteUserByEmail(userEmail);
-};
+  deleteUserById = async (uid) => {
+    return await this.dao.deleteUserById(uid);
+  };
 
-export default {
-  getAllUsers,
-  getUserById,
-  getUserByEmail,
-  createUser,
-  updateUser,
-  updateUserByEmail,
-  deleteUserByEmail,
-};
+  deleteUsers = async (filter) => {
+    return await this.dao.deleteUsers(filter);
+  };
+}

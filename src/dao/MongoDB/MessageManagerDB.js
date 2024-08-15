@@ -1,21 +1,22 @@
-import MessageRepository from "../../repositories/messages.repository.js";
+import { messageModel } from "../../models/messageModel.js";
 
-class MessageManager {
-  constructor() {
-    this.messageRepository = new MessageRepository();
-  }
-
+export default class MessageManager {
   async getMessages() {
-    return await this.messageRepository.getMessages();
-  }
-
-  async addMessage(message) {
-    return await this.messageRepository.addMessage(message);
+    try {
+      const messages = await messageModel.find();
+      return messages;
+    } catch (error) {
+      console.error("Error al obtener los mensajes:", error);
+      throw new Error("Error al obtener los mensajes");
+    }
   }
 
   async saveMessage(message) {
-    return await this.messageRepository.saveMessage(message);
+    try {
+      return await messageModel.create(message);
+    } catch (error) {
+      console.error("Error al guardar el mensaje en la base de datos:", error);
+      throw new Error("Error al guardar el mensaje en la base de datos");
+    }
   }
 }
-
-export default MessageManager;

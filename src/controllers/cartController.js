@@ -1,6 +1,6 @@
-import cartService from "../services/cartService.js";
-import productService from "../services/productService.js";
-import ticketService from "../services/ticketService.js";
+import { cartService } from "../services/index.js";
+import { productService } from "../services/index.js";
+import { ticketService } from "../services/index.js";
 
 export const getAllCarts = async (req, res) => {
   req.logger.info("Solicitud para obtener todos los carritos recibida.");
@@ -132,7 +132,7 @@ export const purchaseCart = async (req, res) => {
   try {
     const cart = await cartService.getCartById(req.params.cid);
     if (!cart) {
-      req.logger.warn(`Carrito con ID: ${req.params.cid} no encontrado.`);
+      req.logger.warning(`Carrito con ID: ${req.params.cid} no encontrado.`);
       return res.status(404).json({ error: "El carrito no fue encontrado" });
     }
     const productsInCart = cart.products;
@@ -146,7 +146,7 @@ export const purchaseCart = async (req, res) => {
       const { _id: idproduct, quantity } = product;
       const productInDB = await productService.getProductByID(idproduct);
       if (!productInDB) {
-        req.logger.warn(`Producto con ID ${idproduct} no encontrado en la base de datos.`);
+        req.logger.warning(`Producto con ID ${idproduct} no encontrado en la base de datos.`);
         return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
       }
       const monto = productInDB.price * quantity;
@@ -154,14 +154,14 @@ export const purchaseCart = async (req, res) => {
       if (quantity > productInDB.stock) {
         notProcessedAmount += monto;
         purchaseError.push(product);
-        req.logger.warn(`Stock insuficiente para el producto (ID: ${idproduct}).`);
+        req.logger.warning(`Stock insuficiente para el producto (ID: ${JSON.stringify(idproduct._id)}).`);
       } else {
         const updatedStock = productInDB.stock - quantity;
         await productService.updateProduct(idproduct, { stock: updatedStock });
 
         processedAmount += monto;
         purchaseSuccess.push(product);
-        req.logger.info(`Producto (ID: ${idproduct}) procesado exitosamente.`);
+        req.logger.info(`Producto (ID: ${JSON.stringify(idproduct._id)}) procesado exitosamente.`);
       }
     }
 

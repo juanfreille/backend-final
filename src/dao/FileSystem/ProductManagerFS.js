@@ -1,13 +1,15 @@
+import path from "path";
+import __dirname from "../../utils/constantsUtil.js";
 import { readFromFile, writeToFile } from "../../utils/fileManager.js";
-import { generateNewId } from "../../utils/idGenerator.js";
+import { ObjectId } from "mongodb";
 import { productValidator } from "../../utils/productValidator.js";
 
-class productManagerFS {
-  constructor(file) {
-    this.file = file;
+export default class productManager {
+  constructor() {
+    this.file = path.join(__dirname, "../../data/products.json");
   }
 
-  async getAllProducts() {
+  async getAllProducts(filter, options) {
     try {
       const products = await readFromFile(this.file);
       return JSON.parse(products);
@@ -17,13 +19,55 @@ class productManagerFS {
     }
   }
 
+  getPaginateProducts = async (filter, options) => {
+    try {
+      let products = await this.getAllProducts();
+
+      if (Object.keys(filter).length > 0) {
+        products = products.filter((product) => {
+          for (let key in filter) {
+            if (product[key] !== filter[key]) {
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+      if (options.sort) {
+        products.sort((a, b) => options.sort * (a.price - b.price));
+      }
+
+      const totalPages = Math.ceil(products.length / options.limit);
+      const start = (options.page - 1) * options.limit;
+      const end = start + options.limit;
+      products = products.slice(start, end);
+
+      return {
+        docs: products,
+        totalDocs: products.length,
+        limit: options.limit,
+        totalPages: totalPages,
+        page: options.page,
+        pagingCounter: start + 1,
+        hasPrevPage: options.page > 1,
+        hasNextPage: options.page < totalPages,
+        prevPage: options.page > 1 ? options.page - 1 : null,
+        nextPage: options.page < totalPages ? options.page + 1 : null,
+      };
+    } catch (error) {
+      console.log("Error al obtener productos con consulta:", error.message);
+      return "Error al obtener productos con consulta: " + error.message;
+    }
+  };
+
   async getProductByID(pid) {
     const products = await this.getAllProducts();
-    const productFilter = products.filter((product) => product.id == pid);
-    if (productFilter.length > 0) {
-      return productFilter[0];
+    for (const item of products) {
+      if (item._id === pid) {
+        return item;
+      }
     }
-    throw new Error(`El producto ${pid} no existe!`);
+    return "Not found";
   }
 
   async createProduct(product) {
@@ -35,7 +79,7 @@ class productManagerFS {
 
     const products = await this.getAllProducts();
     const newProduct = {
-      id: generateNewId(products),
+      id: new ObjectId(),
       title,
       description,
       code,
@@ -55,31 +99,26 @@ class productManagerFS {
   }
 
   async updateProduct(pid, productUpdate) {
-    const { title, description, code, price, status, stock, category, thumbnails } = productUpdate;
-
-    const updatedPrice = parseFloat(price);
-    const updatedStock = parseFloat(stock);
-
     const products = await this.getAllProducts();
-    let i = 0;
-    const productIndex = products.findIndex((product, index) => {
-      i = index;
-      return product.id === parseInt(pid);
-    });
+    const productIndex = products.findIndex((product) => product._id.toString() === pid.toString());
     if (productIndex !== -1) {
-      products[productIndex].title = title || products[productIndex].title;
-      products[productIndex].description = description || products[productIndex].description;
-      products[productIndex].code = code || products[productIndex].code;
-      products[productIndex].price = updatedPrice || products[productIndex].price;
-      products[productIndex].status = status || products[productIndex].status;
-      products[productIndex].stock = updatedStock || products[productIndex].stock;
-      products[productIndex].category = category || products[productIndex].category;
-      products[productIndex].thumbnails = thumbnails || products[productIndex].thumbnails;
+      const product = products[productIndex];
+
+      // Actualiza solo los campos presentes en productUpdate
+      if (productUpdate.title !== undefined) product.title = productUpdate.title;
+      if (productUpdate.description !== undefined) product.description = productUpdate.description;
+      if (productUpdate.code !== undefined) product.code = productUpdate.code;
+      if (productUpdate.price !== undefined) product.price = parseFloat(productUpdate.price);
+      if (productUpdate.status !== undefined) product.status = productUpdate.status;
+      if (productUpdate.stock !== undefined) product.stock = parseFloat(productUpdate.stock);
+      if (productUpdate.category !== undefined) product.category = productUpdate.category;
+      if (productUpdate.thumbnails !== undefined) product.thumbnails = productUpdate.thumbnails;
+
       try {
         await writeToFile(this.file, products);
-        return products[productIndex];
+        return product;
       } catch (error) {
-        throw new Error(`Error al actualizar el producto`);
+        throw new Error(`Error al actualizar el producto: ${error.message}`);
       }
     } else {
       throw new Error(`El producto ${pid} no existe`);
@@ -88,7 +127,7 @@ class productManagerFS {
 
   async deleteProduct(pid) {
     const products = await this.getAllProducts();
-    const updatedProducts = products.filter((product) => product.id != pid);
+    const updatedProducts = products.filter((product) => product._id != pid);
 
     if (updatedProducts.length === products.length) {
       throw new Error(`El producto ${pid} no existe!`);
@@ -101,5 +140,21 @@ class productManagerFS {
       throw new Error(`Error al eliminar el producto ${pid}`);
     }
   }
+  async getDistinctCategories() {
+    try {
+      const products = await this.getAllProducts();
+      const categoriesSet = new Set();
+
+      products.forEach((product) => {
+        if (product.category) {
+          categoriesSet.add(product.category);
+        }
+      });
+
+      return Array.from(categoriesSet);
+    } catch (error) {
+      console.error("Error al obtener categorías únicas:", error);
+      throw error;
+    }
+  }
 }
-export { productManagerFS };

@@ -1,19 +1,14 @@
-import productService from "../services/productService.js";
-import cartService from "../services/cartService.js";
-import userService from "../services/userService.js";
-import ticketService from "../services/ticketService.js";
+import { productService } from "../services/index.js";
+import { cartService } from "../services/index.js";
+import { userService } from "../services/index.js";
+import { ticketService } from "../services/index.js";
 
 //Funciones de ayuda
-export const calculateTotalQuantityInCart = (user) => {
-  if (!user.cart) return 0;
-  return user.cart.products.reduce((total, { quantity }) => total + quantity, 0);
-};
-
 const formatProducts = (products) =>
-  products.map(({ _id, quantity }) => ({
-    _id: _id._id,
+  products.map(({ _id, quantity, title }) => ({
+    _id: _id ? _id._id || _id : undefined,
     quantity,
-    name: _id.title,
+    name: _id ? _id.title || title : "Desconocido",
   }));
 
 const buildPaginationLinks = (req, products) => {
@@ -32,23 +27,17 @@ const buildPaginationLinks = (req, products) => {
   };
 };
 
-export const getAvatarPath = async (userId) => {
-  try {
-    if (!userId) {
-      return `/img/profiles/defaultProfilePic.jpg`;
-    }
-
-    const user = await userService.getUserById(userId);
-    if (!user || !user.documents) {
-      return `/img/profiles/defaultProfilePic.jpg`;
-    }
-
-    const avatarDoc = user.documents.find((doc) => doc.docType === "avatar");
-    return avatarDoc ? `/img/profiles/${userId}/ProfilePic` : `/img/profiles/defaultProfilePic.jpg`;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error al obtener la ruta del avatar");
+export const isAdminOrPremium = (req, res, next) => {
+  if (req.user) {
+    res.locals.isAdmin = req.user.role === "admin";
+    res.locals.isPremium = req.user.role === "premium";
+    res.locals.isAdminOrPremium = res.locals.isAdmin || res.locals.isPremium;
+  } else {
+    res.locals.isAdmin = false;
+    res.locals.isPremium = false;
+    res.locals.isAdminOrPremium = false;
   }
+  next();
 };
 
 //Controllers
@@ -64,17 +53,22 @@ export const goHome = async (req, res) => {
 
 export const renderHome = async (req, res) => {
   try {
-    const products = await productService.getPaginateProducts({}, { limit: 5, lean: true });
-    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
-    const avatar = await getAvatarPath(req.user ? req.user._id : null);
+    const { page = 1, limit = 5, sort } = req.query;
+
+    const options = {
+      page: Number(page),
+      limit: Number(limit),
+      lean: true,
+    };
+
+    const products = await productService.getPaginateProducts({}, options);
+    const totalQuantityInCart = req.user && req.user.cart ? await cartService.getTotalQuantityInCart(req.user.cart._id) : 0;
 
     res.render("home", {
       title: "JIF STYLE STORE - Home",
       style: "styles.css",
       products: products.docs,
       user: req.user,
-      avatar,
-      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
   } catch (error) {
@@ -104,7 +98,6 @@ export const renderRegister = (req, res) => {
 
 export const getProducts = async (req, res) => {
   req.logger.info("getProducts: Solicitud recibida.");
-  const avatar = await getAvatarPath(req.user ? req.user._id : null);
   try {
     const { page = 1, limit = 8, sort } = req.query;
     //uso limit 8 solo por cuestiones esteticas para que funcione bien con mi frontEnd
@@ -138,8 +131,7 @@ export const getProducts = async (req, res) => {
     const products = await productService.getPaginateProducts(searchQuery, options);
     const paginationLinks = buildPaginationLinks(req, products);
     const categories = await productService.getDistinctCategories();
-    const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
-    const avatar = await getAvatarPath(req.user ? req.user._id : null);
+    const totalQuantityInCart = req.user && req.user.cart ? await cartService.getTotalQuantityInCart(req.user.cart._id) : 0;
 
     const response = {
       title: "JIF STYLE STORE - Productos",
@@ -151,9 +143,7 @@ export const getProducts = async (req, res) => {
       hasNextPage: products.hasNextPage,
       ...paginationLinks,
       categories: categories,
-      avatar,
       user: req.user,
-      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     };
 
@@ -166,29 +156,23 @@ export const getProducts = async (req, res) => {
 
 export const renderRealTimeProducts = async (req, res) => {
   req.logger.info("renderRealTimeProducts: Solicitud recibida.");
-  const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-  const avatar = await getAvatarPath(req.user ? req.user._id : null);
+  const totalQuantityInCart = req.user && req.user.cart ? await cartService.getTotalQuantityInCart(req.user.cart._id) : 0;
 
   res.render("realTimeProducts", {
     title: "JIF STYLE STORE - Gestión de productos",
     products: productService.getAllProducts,
     style: "styles.css",
     user: req.user,
-    avatar,
-    userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
 
 export const renderChat = async (req, res) => {
-  const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-  const avatar = await getAvatarPath(req.user ? req.user._id : null);
+  const totalQuantityInCart = req.user && req.user.cart ? await cartService.getTotalQuantityInCart(req.user.cart._id) : 0;
   res.render("chat", {
     title: "JIF STYLE STORE - Chat",
     style: "styles.css",
     user: req.user,
-    avatar,
-    userAdminOrPremium: req.isAdminOrPremium,
     totalQuantityInCart,
   });
 };
@@ -199,25 +183,18 @@ export const renderCart = async (req, res) => {
     const cart = await cartService.getCartById(req.params.cid);
 
     if (!cart) {
-      req.logger.warn(`renderCart: Carrito con ID ${req.params.cid} no encontrado.`);
+      req.logger.warning(`renderCart: Carrito con ID ${req.params.cid} no encontrado.`);
       return res.status(404).json({ error: "No se encontró el carrito" });
     }
-    const products = await Promise.all(
-      cart.products.map(async (item) => {
-        const productData = await productService.getProductByID(item._id._id);
-        return { ...item, product: productData };
-      })
-    );
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-    const avatar = await getAvatarPath(req.user ? req.user._id : null);
+
+    const cantidadencart = await cartService.getTotalQuantityInCart(cart._id);
+
     res.render("cart", {
       title: "JIF STYLE STORE - Carrito",
       style: "styles.css",
-      payload: products,
+      payload: cart.products,
       user: req.user,
-      avatar,
-      userAdminOrPremium: req.isAdminOrPremium,
-      totalQuantityInCart,
+      totalQuantityInCart: cantidadencart,
     });
   } catch (error) {
     req.logger.error(`renderCart: ${error.message}`);
@@ -231,18 +208,15 @@ export const renderProductDetails = async (req, res) => {
     const { pid } = req.params;
     const product = await productService.getProductByID(pid);
     if (!product) {
-      req.logger.warn(`renderProductDetails: Producto con ID ${pid} no encontrado.`);
+      req.logger.warning(`renderProductDetails: Producto con ID ${pid} no encontrado.`);
       return res.status(404).json({ error: "Producto no encontrado" });
     }
-    const totalQuantityInCart = calculateTotalQuantityInCart(req.user);
-    const avatar = await getAvatarPath(req.user ? req.user._id : null);
+    const totalQuantityInCart = req.user && req.user.cart ? await cartService.getTotalQuantityInCart(req.user.cart._id) : 0;
     res.render("product-details", {
       title: "JIF STYLE STORE - Detalles del Producto",
       style: "styles.css",
       product: product,
-      avatar,
       user: req.user,
-      userAdminOrPremium: req.isAdminOrPremium,
       totalQuantityInCart,
     });
   } catch (error) {
@@ -260,26 +234,12 @@ export const redirectIfLoggedIn = (req, res, next) => {
   next();
 };
 
-export const isAdminOrPremium = (req, res, next) => {
-  if (req.user) {
-    req.isAdmin = req.user.role === "admin";
-    req.isPremium = req.user.role === "premium";
-    req.isAdminOrPremium = req.isAdmin || req.isPremium;
-  } else {
-    req.isAdmin = false;
-    req.isPremium = false;
-    req.isAdminOrPremium = false;
-  }
-  next();
-};
-
 export const purchaseView = async (req, res) => {
-  req.logger.info("purchaseView: Solicitud recibida.");
-  const avatar = await getAvatarPath(req.user ? req.user._id : null);
+  req.logger.info(`Solicitud para comprar el carrito con ID: ${req.params.cid} recibida.`);
   try {
     const cart = await cartService.getCartById(req.params.cid);
     if (!cart) {
-      req.logger.warn(`purchaseView: Carrito con ID ${req.params.cid} no encontrado.`);
+      req.logger.warning(`Carrito con ID: ${req.params.cid} no encontrado.`);
       return res.status(404).json({ error: "El carrito no fue encontrado" });
     }
     const productsInCart = cart.products;
@@ -288,24 +248,26 @@ export const purchaseView = async (req, res) => {
     let processedAmount = 0,
       notProcessedAmount = 0;
 
+    req.logger.info(`Procesando productos del carrito (ID: ${req.params.cid}).`);
     for (let product of productsInCart) {
       const { _id: idproduct, quantity } = product;
       const productInDB = await productService.getProductByID(idproduct);
       if (!productInDB) {
-        req.logger.warn(`purchaseView: Producto con ID ${idproduct} no encontrado.`);
-        return res.status(404).json({ error: `Producto con ID ${idproduct} no encontrado` });
+        req.logger.warning(`Producto con ID ${idproduct._id} no encontrado en la base de datos.`);
+        return res.status(404).json({ error: `Producto con ID ${idproduct._id} no encontrado` });
       }
       const monto = productInDB.price * quantity;
-
       if (quantity > productInDB.stock) {
         notProcessedAmount += monto;
         purchaseError.push(product);
       } else {
         const updatedStock = productInDB.stock - quantity;
+
         await productService.updateProduct(idproduct, { stock: updatedStock });
 
         processedAmount += monto;
         purchaseSuccess.push(product);
+        req.logger.info(`Producto (ID: ${idproduct._id}) procesado exitosamente.`);
       }
     }
 
@@ -332,11 +294,9 @@ export const purchaseView = async (req, res) => {
         style: "styles.css",
         payload: purchaseData,
         processedAmount,
-        avatar,
         notProcessedAmount,
         user: req.user,
-        userAdminOrPremium: req.isAdminOrPremium,
-        totalQuantityInCart: calculateTotalQuantityInCart(req.user),
+        totalQuantityInCart: await cartService.getTotalQuantityInCart(req.user.cart._id),
       });
     }
 
@@ -346,11 +306,9 @@ export const purchaseView = async (req, res) => {
       style: "styles.css",
       processedAmount,
       notProcessedAmount,
-      avatar,
       notProcessed,
       user: req.user,
-      userAdminOrPremium: req.isAdminOrPremium,
-      totalQuantityInCart: calculateTotalQuantityInCart(req.user),
+      totalQuantityInCart: await cartService.getTotalQuantityInCart(req.user.cart._id),
     });
   } catch (error) {
     req.logger.error(`purchaseView: ${error.message}`);
@@ -371,7 +329,6 @@ export const newPasswordView = (req, res) => {
 
 export const profileView = async (req, res) => {
   try {
-    const avatar = await getAvatarPath(req.user ? req.user._id : null);
     const userId = req.user._id;
     const user = await userService.getUserById(userId);
     const documentsJson = JSON.stringify(user);
@@ -381,14 +338,25 @@ export const profileView = async (req, res) => {
       cartId,
       title: "JIF STYLE STORE - Mi Perfil",
       style: "styles.css",
-      user: req.user,
-      avatar,
       documentsJson,
-      userAdminOrPremium: req.isAdminOrPremium,
-      totalQuantityInCart: calculateTotalQuantityInCart(req.user),
+      totalQuantityInCart: await cartService.getTotalQuantityInCart(req.user.cart._id),
     });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: error.message });
   }
+};
+
+export const adminPanel = async (req, res) => {
+  const userId = req.user._id;
+  const user = req.user;
+  const users = await userService.getAllUsers();
+
+  res.render("adminPanel", {
+    user,
+    users,
+    userId,
+    title: "JIF STYLE STORE - Panel de administrador",
+    style: "styles.css",
+  });
 };

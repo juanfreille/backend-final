@@ -1,0 +1,109 @@
+[
+	{
+		"_id": "6627159d53031ad1064097e0",
+		"first_name": "Juan",
+		"last_name": "Freille",
+		"email": "juanfreillee@gmail.com",
+		"age": 38,
+		"password": "$2b$10$f.gsWHIIiDdRd9W15rFyxuoZtrgOtfmB9753Gmo1UVMROf0NPmx2i",
+		"role": "user",
+		"__v": 0,
+		"cart": {
+			"_id": "6685aade9a7f7ff631567122",
+			"products": []
+		},
+		"last_connection": 1723265212746,
+		"documents": []
+	},
+	{
+		"_id": "662beaeea51c4f716889cd09",
+		"first_name": "luchy",
+		"last_name": "la tutora del mal",
+		"email": "lu@mail.com",
+		"age": 20,
+		"password": "$2b$10$nqhGEBgfSaGREJDISDEtc.eqSazkdBTjy9eY4iUDunLxycsvKw9Jy",
+		"role": "user",
+		"cart": {
+			"_id": "",
+			"products": [
+				{
+					"_id": "",
+					"quantity": 0
+				}
+			]
+		},
+		"last_connection": "2024-08-09T00:05:01.047Z",
+		"documents": []
+	},
+	{
+		"_id": "6630fb59d29f8f001e87f90c",
+		"first_name": "luchyGigena",
+		"last_name": " ",
+		"email": "gigenalucian@gmail.com",
+		"age": 30,
+		"password": "$2b$10$bcUOcAMSyY9bTW3QDVHjEep7LmG394AFl92ipZOU71z.rN2q4NRI2",
+		"role": "premium",
+		"cart": {
+			"_id": "668c822fea0070798bb307eb",
+			"products": [
+				{
+					"quantity": 3,
+					"_id": "660725f2d49ab55bf9c00d9c"
+				},
+				{
+					"quantity": 6,
+					"_id": "660725f2d49ab55bf9c00d9b"
+				},
+				{
+					"quantity": 1,
+					"_id": "660725f2d49ab55bf9c00d9d"
+				}
+			]
+		},
+		"last_connection": "2024-08-09T00:05:01.047Z",
+		"documents": []
+	},
+	{
+		"_id": "663969750977eb229f2a40b4",
+		"first_name": "Juan Ignacio",
+		"last_name": "Freille",
+		"email": "juanfreilleeee@gmail.com",
+		"age": 30,
+		"password": "$2b$10$tY/se1Nt98qT2XuzOflLTO7dyJZ1N8GE6FeujJ6vWgusi2t8ctwSm",
+		"cart": {
+			"_id": "663969750977eb229f2a40b2",
+			"products": []
+		},
+		"role": "premium",
+		"last_connection": 1723316857088,
+		"documents": []
+	},
+	{
+		"_id": "664a687c638bb448b20bfdd2",
+		"first_name": "Luchyta",
+		"last_name": "Gigenita",
+		"email": "lgigena@cuatroi.com",
+		"age": 19,
+		"password": "$2b$10$Kb/DkK/SP35xgCmp93BmceTN99KTVGExnE/Ii49V3nctge5ZNerbK",
+		"cart": "664a687b638bb448b20bfdd0",
+		"role": "user",
+		"__v": 0,
+		"last_connection": "2024-08-09T00:05:01.047Z",
+		"documents": []
+	},
+	{
+		"first_name": "aaa",
+		"last_name": "aaa",
+		"email": "aaa@aaa.com",
+		"age": "30",
+		"cart": {
+			"_id": "66b6ce10f703d7c17bd523cc",
+			"products": []
+		},
+		"password": "$2b$10$BqarllpaEiMFBX2aBevs1.j.MDl6XTfTIQkdQl6zTwfs/iS8tUA8u",
+		"documents": [],
+		"role": "user",
+		"last_connection": 1723256664777,
+		"_id": "66b6ce10f703d7c17bd523cd"
+	}
+]

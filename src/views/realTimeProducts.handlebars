@@ -5,10 +5,10 @@
   <div class="form-holder">
     <div class="form-content">
       <div class="form-items">
-        <h3>Agregar nuevo producto</h3>
+        <h3 class="text-center">Agregar nuevo producto</h3>
         <br />
-        <form id="formulario" method="post" class="flexForm" enctype="multipart/form-data">
-          <div class="col-md-12 col-padding">
+        <form id="formulario" method="post" class="flexForm realTimeForm" enctype="multipart/form-data">
+          <div class="col-12">
             <label for="title">Nombre</label>
             <input
               class="form-control"
@@ -18,7 +18,7 @@
               required
             />
           </div>
-          <div class="col-md-12 col-padding">
+          <div class="col-12">
             <label for="description">Descripción</label>
             <input
               class="form-control"
@@ -28,7 +28,7 @@
               required
             />
           </div>
-          <div class="col-md-12 split col-padding">
+          <div class="col-12 split col-padding">
             <label for="category">Categoria</label>
             <input
               class="form-control"
@@ -38,7 +38,7 @@
               required
             />
           </div>
-          <div class="col-md-12 split col-padding">
+          <div class="col-12 split">
             <label for="price">Precio:</label>
             <input
               class="form-control"
@@ -48,7 +48,7 @@
               required
             />
           </div>
-          <div class="col-md-12 split col-padding">
+          <div class="col-12 split col-padding">
             <label for="code">Código</label><br />
             <input
               class="form-control"
@@ -58,7 +58,7 @@
               required
             />
           </div>
-          <div class="col-md-12 split col-padding">
+          <div class="col-12 split">
             <label for="stock">Stock</label><br />
             <input
               class="form-control"
@@ -68,7 +68,7 @@
               required
             />
           </div>
-          <div class="col-md-12 col-padding">
+          <div class="col-12">
             <label class="file-label" for="thumbnails">Imagen</label>
             <input
               class="form-control"
@@ -88,7 +88,7 @@
               ></div>
             </div>
           </div>
-          <div class="col-md-12 col-padding mt-4" style="text-align: center;">
+          <div class="col-12 mt-4" style="text-align: center;">
             <button
               class="btn btn-effect btn-dark btn-jif bg-black zoomy"
               id="addProduct"
@@ -107,12 +107,12 @@
         <tr class="text-uppercase">
           <th>ID</th>
           <th>Título</th>
-          <th>Descripción</th>
+          <th class="">Descripción</th>
           <th>Precio</th>
-          <th>Categoria</th>
+          <th class="">Categoria</th>
           <th>Stock</th>
-          <th>Código</th>
-          <th>Imagen</th>
+          <th class="">Código</th>
+          <th class="">Imagen</th>
           <th style="text-align: center">Owner</th>          
           <th></th>
         </tr>
@@ -127,4 +127,3 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/realTimeProductsScript.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="https://kit.fontawesome.com/4e9044019f.js" crossorigin="anonymous"></script>

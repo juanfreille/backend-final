@@ -79,25 +79,24 @@ function handleEnterPress(event) {
 
 function loadOldMessages(data) {
   messagesLogs.innerHTML = "";
-  data.forEach(({ user, message }) => {
-    const messageElement = generateMessageElement(user, message);
+  data.forEach(({ user, message, avatar }) => {
+    const messageElement = generateMessageElement(user, message, avatar);
     messagesLogs.appendChild(messageElement);
     messagesLogs.scrollTop = messagesLogs.scrollHeight;
   });
 }
 
-function generateMessageElement(user, message) {
+function generateMessageElement(user, message, avatar) {
   const userColor = getUserColor(user);
   const messageElement = document.createElement("div");
   messageElement.classList.add("message-container");
-
   const horizontalAlignment = user === currentUser ? "right" : "left";
   messageElement.classList.add(horizontalAlignment);
   const horizontalClass = horizontalAlignment === "right" ? "far-right" : "far-left";
 
   messageElement.innerHTML = `
     <div class="chat-avatar">
-      <img style="border-radius: 50%;" src="../img/user_1.jpg" alt="">
+      <img style="border-radius: 50%;" src="${avatar}" alt="">
     </div>
     <div class="message-body ${horizontalClass}">
       <p style="color: ${userColor};width: -webkit-fill-available;">${user}</p>

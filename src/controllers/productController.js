@@ -1,11 +1,16 @@
 import CustomError from "../services/errors/CustomError.js";
 import { generateProductsErrorInfo, generateNotFoundErrorInfo, generateDefaultErrorInfo } from "../services/errors/info.js";
 import { ErrorCodes } from "../services/errors/enums.js";
-import productService from "../services/productService.js";
+import { productService } from "../services/index.js";
 import ProductDTO from "../dto/productDTO.js";
-import userService from "../services/userService.js";
+import { userService } from "../services/index.js";
+import nodemailer from "nodemailer";
+import config from "../config/config.js";
+import fs from "fs";
+import path from "path";
+import __dirname from "../utils/constantsUtil.js";
 
-export const getPaginateProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   req.logger.info("Solicitud para obtener productos paginados recibida.");
   try {
     const { page = 1, limit = 10, sort, category, title, stock } = req.query;
@@ -146,6 +151,20 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+function deleteImage(imagePath) {
+  if (imagePath) {
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.log(`Error al eliminar la imagen: ${err.message}`);
+      } else {
+        console.log(`Imagen eliminada correctamente: ${imagePath}`);
+      }
+    });
+  } else {
+    console.log("Ruta de imagen no proporcionada.");
+  }
+}
+
 export const deleteProduct = async (req, res) => {
   req.logger.info(`Solicitud para eliminar el producto con ID: ${req.params.pid}`);
   const productID = req.params.pid;
@@ -157,11 +176,36 @@ export const deleteProduct = async (req, res) => {
       req.logger.warning(`Producto con ID: ${productID} no encontrado para eliminar.`);
       throw new CustomError(ErrorCodes.NOT_FOUND_ERROR, generateNotFoundErrorInfo("Product", productID).message);
     }
-    console.log("product owner", product.owner);
-    console.log("req.user.id", req.user._id);
 
     if (req.user.role === "admin" || product.owner.toString() === req.user._id.toString()) {
       await productService.deleteProduct(productID);
+      if (product.thumbnails && product.thumbnails.length > 0) {
+        const imagePath = path.join(__dirname, "../../public/img/products", product.thumbnails[0]);
+        deleteImage(imagePath);
+      } else {
+        req.logger.info("No se encontraron imágenes para eliminar.");
+      }
+      if (product.owner !== "admin") {
+        const productOwner = await userService.getUserById(product.owner);
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          port: 587,
+          auth: {
+            user: config.EMAIL_USER,
+            pass: config.EMAIL_PASSWORD,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `JIF Style Store: <${config.EMAIL_USER}>`,
+          to: productOwner.email,
+          subject: "Confirmación de eliminación de producto",
+          text: `Hola ${productOwner.first_name} ${productOwner.last_name}, te informamos que el producto "${product.title}" con ID: ${product._id} ha sido eliminado.`,
+        });
+
+        req.logger.info(`Correo de producto eliminado enviado a: ${productOwner.email}`);
+      }
+
       req.logger.info(`Producto (ID: ${productID}) eliminado con éxito.`);
       return res.status(200).json({ status: "success", message: "Product eliminado con éxito" });
     } else {

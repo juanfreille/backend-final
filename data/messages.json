@@ -1,0 +1,55 @@
+[
+	{
+		"_id": "660e196aa6a2b52cb8c37fee",
+		"user": "juanfreille@gmail.com",
+		"message": "¡Hola! Estaba buscando algunas camisetas nuevas para esta temporada. ¿Qué tienes disponible?!",
+		"__v": 0
+	},
+	{
+		"_id": "660e196ea6a2b52cb8c37ff0",
+		"user": "adminCoder@coder.com",
+		"message": "¡Hola! Bienvenido/a a nuestra tienda. Tenemos una amplia selección de camisetas en diferentes estilos y colores. ¿Hay algo en particular que estés buscando?",
+		"__v": 0
+	},
+	{
+		"_id": "6610516e6392e6d2066f25c1",
+		"user": "juanfreille@gmail.com",
+		"message": "Me gustaría algo casual pero elegante al mismo tiempo. ¿Tienen alguna recomendación?",
+		"__v": 0
+	},
+	{
+		"_id": "661051ae6392e6d2066f25c3",
+		"user": "adminCoder@coder.com",
+		"message": "Por supuesto. Te recomendaría echar un vistazo a nuestras camisetas polo. Son perfectas para lucir un aspecto sofisticado pero relajado. ¿Te gustaría ver algunos modelos?",
+		"__v": 0
+	},
+	{
+		"_id": "6610cf0d2155ef5d338daa30",
+		"user": "julio@gmail.com",
+		"message": "Hola! buen día, tienen algun catálogo disponible?",
+		"__v": 0
+	},
+	{
+		"_id": "66301c4c49b671f18a19706f",
+		"user": "juanfreillee@gmail.com",
+		"message": "pruebaaaa",
+		"__v": 0
+	},
+	{
+		"_id": "66a461d0dd9a08f317d69712",
+		"user": "juanfreilleeee@gmail.com",
+		"message": "Probando nuevamente",
+		"__v": 0
+	},
+	{
+		"_id": "66b179c2b402270c5a3816db",
+		"user": "freillejuan@gmail.com",
+		"message": "?",
+		"__v": 0
+	},
+	{
+		"user": "adminCoder@coder.com",
+		"message": "sdf",
+		"_id": "66b7767cdc30127521ab45be"
+	}
+]

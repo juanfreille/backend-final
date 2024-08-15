@@ -1,5 +1,6 @@
 import passport from "passport";
-import { calculateTotalQuantityInCart, getAvatarPath } from "../controllers/viewsController.js";
+import { isAdminOrPremium } from "../controllers/viewsController.js";
+import { cartService } from "../services/index.js";
 
 export const passportCall = (strategy) => {
   return (req, res, next) => {
@@ -23,7 +24,7 @@ export const passportCallRedirect = (strategy) => {
         return res.redirect("/login");
       }
       req.user = user;
-      next();
+      isAdminOrPremium(req, res, () => next());
     })(req, res, next);
   };
 };
@@ -36,7 +37,7 @@ export const passportCallHome = (strategy) => {
         return next();
       }
       req.user = user;
-      next();
+      isAdminOrPremium(req, res, () => next());
     })(req, res, next);
   };
 };
@@ -76,8 +77,7 @@ export const handlePoliciesViews = (roles) => {
         code = "Acceso denegado";
         message = `No tienes permisos suficientes para acceder a esta página. Asegúrate de haber iniciado sesión con una cuenta con los permisos adecuados.<br><br>Si crees que esto es un error, por favor contacta con el administrador.`;
       }
-      const totalQuantityInCart = req.user ? calculateTotalQuantityInCart(req.user) : 0;
-      const avatar = await getAvatarPath(req.user ? req.user._id : null);
+      const totalQuantityInCart = req.user && req.user.cart ? await cartService.getTotalQuantityInCart(req.user.cart._id) : 0;
 
       return res.status(403).render("forbidden", {
         title: "Error de Autorización",
@@ -85,7 +85,6 @@ export const handlePoliciesViews = (roles) => {
         message,
         style: "styles.css",
         user: req.user,
-        avatar,
         totalQuantityInCart,
         redirect: "/",
       });

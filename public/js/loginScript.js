@@ -1,22 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const urlParams = new URLSearchParams(window.location.search);
-  const failLogin = urlParams.get("failLogin");
-  const errorMessage = document.getElementById("errorMessage");
-
-  if (failLogin && errorMessage) {
-    Toastify({
-      text: errorMessage.value,
-      duration: 3200,
-      gravity: "bottom",
-      position: "right",
-      close: false,
-      style: {
-        textAlign: "center",
-        background: "#b14040",
-      },
-    }).showToast();
-  }
-
   document.getElementById("loginForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     const formData = new FormData(this);
@@ -54,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1300);
       } else {
         Toastify({
-          text: result.error || "Ocurrió un error al loguearse, verifique sus datos",
+          text: result.message || "Ocurrió un error al loguearse, verifique sus datos",
           duration: 3200,
           gravity: "bottom",
           position: "right",

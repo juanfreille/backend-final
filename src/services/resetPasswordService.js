@@ -1,16 +1,15 @@
-import { resetPasswordModel } from "../models/resetPasswordModel.js";
+export default class ResetPasswordRepository {
+  constructor(dao) {
+    this.dao = dao;
+  }
 
-class resetPasswordService {
-  constructor() {}
   getCode = async (code) => {
-    const resetCode = await resetPasswordModel.findOne({ code }).lean();
+    const resetCode = await this.dao.getCode(code);
     return resetCode;
   };
 
   saveCode = async (email, code) => {
-    const newCode = await resetPasswordModel.create({ email, code });
+    const newCode = await this.dao.saveCode(email, code);
     return newCode;
   };
 }
-
-export default resetPasswordService;

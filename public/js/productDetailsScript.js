@@ -48,6 +48,8 @@ function showSuccessMessage(cartId) {
   }).then((result) => {
     if (result.isConfirmed) {
       window.location.href = `/cart/${cartId}`;
+    } else if (result.isDismissed) {
+      window.location.href = `/products`;
     }
   });
 }

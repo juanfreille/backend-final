@@ -1,37 +1,31 @@
-import { ProductRepository } from "../../repositories/products.repository.js";
+import { productModel } from "../../models/productModel.js";
 
-class ProductManager {
-  constructor() {
-    this.productRepository = new ProductRepository();
+export default class ProductManger {
+  async getAllProducts() {
+    return await productModel.find();
+  }
+  async getPaginateProducts(filter, options) {
+    return await productModel.paginate(filter, options);
   }
 
-  getAllProducts() {
-    return this.productRepository.getAllProducts();
+  async getProductByID(pid) {
+    return await productModel.findById(pid).lean();
   }
 
-  getPaginateProducts(filter, options) {
-    return this.productRepository.getPaginateProducts(filter, options);
+  async createProduct(product) {
+    const newProduct = new productModel(product);
+    return await newProduct.save();
   }
 
-  getProductByID(pid) {
-    return this.productRepository.getProductByID(pid);
+  async updateProduct(pid, productData) {
+    return await productModel.findByIdAndUpdate(pid, productData, { new: true });
   }
 
-  createProduct(product) {
-    return this.productRepository.createProduct(product);
+  async deleteProduct(pid) {
+    return await productModel.findByIdAndDelete(pid);
   }
 
-  updateProduct(pid, productUpdate) {
-    return this.productRepository.updateProduct(pid, productUpdate);
-  }
-
-  deleteProduct(pid) {
-    return this.productRepository.deleteProduct(pid);
-  }
-
-  getDistinctCategories() {
-    return this.productRepository.getDistinctCategories();
+  async getDistinctCategories() {
+    return await productModel.distinct("category");
   }
 }
-
-export default ProductManager;
