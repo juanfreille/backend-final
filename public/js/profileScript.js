@@ -78,8 +78,9 @@ function uploadFile(type, inputId, docType) {
         },
       }).showToast();
       socket.emit("documentUploadSuccess", { userId: userId, documentType: docType });
-      updateProfilePic();
-
+      if (!docType) {
+        updateProfilePic();
+      }
       const fileInput = document.getElementById(inputId);
       if (fileInput) fileInput.value = "";
       if (inputId === "profilePictureInput") {
