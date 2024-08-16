@@ -78,7 +78,7 @@ function uploadFile(type, inputId, docType) {
         },
       }).showToast();
       socket.emit("documentUploadSuccess", { userId: userId, documentType: docType });
-      if (!docType) {
+      if (docType === "avatar") {
         updateProfilePic();
       }
       const fileInput = document.getElementById(inputId);
