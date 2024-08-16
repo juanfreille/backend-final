@@ -62,7 +62,7 @@ export const resetPassword = async (req, res, next) => {
         subject: "Recupera tu Contraseña",
         html: `
         <div>
-          <p>Hola,<br>Para restablecer tu contraseña, por favor haz clic en el siguiente enlace:<br><a href="http://localhost:8080/newpassword/${code}">Restablecer mi Contraseña</a></p>
+          <p>Hola!<br>Para restablecer tu contraseña, por favor haz clic en el siguiente enlace:<br><a href="${config.BASE_URL}/newpassword/${code}">Restablecer mi Contraseña</a></p>
           <p>Tu código de recuperación es: <strong>${code}</strong><br>Si no solicitaste este cambio, por favor ignora este mensaje.</p>
         </div>
       `,

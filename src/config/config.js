@@ -21,4 +21,5 @@ export default {
   EMAIL_USER: process.env.EMAIL_USER,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   NODE_ENV: node_env,
+  BASE_URL: process.env.BASE_URL,
 };
